@@ -13,7 +13,7 @@ function required(name: keyof ImportMetaEnv): string {
 }
 
 export const env = {
-  apiUrl: required("VITE_API_URL").replace(/\/$/, ""),
+  apiUrl: (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, ""),
   supabaseAnonKey: required("VITE_SUPABASE_ANON_KEY"),
   supabaseUrl: required("VITE_SUPABASE_URL"),
 };

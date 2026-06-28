@@ -12,5 +12,15 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    proxy: {
+      "/api": {
+        changeOrigin: true,
+        target: "https://cousin-backend.onrender.com",
+      },
+      "/health": {
+        changeOrigin: true,
+        target: "https://cousin-backend.onrender.com",
+      },
+    },
   },
 });
