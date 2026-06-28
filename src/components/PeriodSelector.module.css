@@ -1,0 +1,99 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-sub);
+  font-size: var(--text-body);
+  letter-spacing: 0.04em;
+  padding: var(--space-3) var(--space-4);
+}
+
+.trigger:hover {
+  border-color: var(--color-text-muted);
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-dropdown);
+  min-width: 192px;
+  padding: var(--space-1);
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: 10;
+}
+
+.option {
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+  color: var(--color-text-sub);
+  display: block;
+  font-size: var(--text-body);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  width: 100%;
+}
+
+.option:hover {
+  background: var(--color-bg);
+}
+
+.optionActive {
+  background: color-mix(in srgb, var(--color-revenue) 10%, transparent);
+  color: var(--color-revenue);
+}
+
+.customRange {
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.dateRow {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.dateLabel {
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  width: 30px;
+}
+
+.dateInput {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  flex: 1;
+  font-family: inherit;
+  font-size: var(--text-body);
+  padding: var(--space-2) var(--space-3);
+}
+
+.applyBtn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-sub);
+  font-size: var(--text-body);
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+
+.applyBtn:hover {
+  border-color: var(--color-text-muted);
+}

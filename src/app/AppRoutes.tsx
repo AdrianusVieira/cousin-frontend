@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
+import { Dashboard } from "@/pages/Dashboard/Dashboard";
 import { PagePlaceholder } from "@/pages/PagePlaceholder";
 
 import { ROUTES } from "./navigation";
@@ -8,7 +9,7 @@ import { ROUTES } from "./navigation";
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path={ROUTES.dashboard} element={<PagePlaceholder title="Dashboard" />} />
+      <Route path={ROUTES.dashboard} element={<Dashboard />} />
 
       <Route path={ROUTES.transactions} element={<PagePlaceholder title="Transactions" />} />
       <Route path={ROUTES.credit} element={<PagePlaceholder title="Credit" />} />
