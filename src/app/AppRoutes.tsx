@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 
 import { Dashboard } from "@/pages/Dashboard/Dashboard";
 import { PagePlaceholder } from "@/pages/PagePlaceholder";
+import { Transactions } from "@/pages/Transactions/Transactions";
 
 import { ROUTES } from "./navigation";
 
@@ -11,7 +12,7 @@ export function AppRoutes() {
     <Routes>
       <Route path={ROUTES.dashboard} element={<Dashboard />} />
 
-      <Route path={ROUTES.transactions} element={<PagePlaceholder title="Transactions" />} />
+      <Route path={ROUTES.transactions} element={<Transactions />} />
       <Route path={ROUTES.credit} element={<PagePlaceholder title="Credit" />} />
 
       <Route path={ROUTES.bills} element={<PagePlaceholder title="Bills" />} />

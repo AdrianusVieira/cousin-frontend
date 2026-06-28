@@ -1,0 +1,29 @@
+.pill {
+  border-radius: var(--radius);
+  display: inline-block;
+  font-size: var(--text-label);
+  letter-spacing: 0.15em;
+  padding: var(--space-1) var(--space-2);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.credit {
+  background: color-mix(in srgb, var(--color-credit) 10%, transparent);
+  color: var(--color-credit);
+}
+
+.net {
+  background: color-mix(in srgb, var(--color-net) 10%, transparent);
+  color: var(--color-net);
+}
+
+.outcome {
+  background: color-mix(in srgb, var(--color-outcome) 10%, transparent);
+  color: var(--color-outcome);
+}
+
+.revenue {
+  background: color-mix(in srgb, var(--color-revenue) 10%, transparent);
+  color: var(--color-revenue);
+}
