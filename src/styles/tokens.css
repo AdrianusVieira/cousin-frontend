@@ -1,0 +1,79 @@
+/* Design tokens — design-system.md v0.2. Light is default; [data-theme="dark"] overrides. */
+
+:root {
+  /* Surfaces — VS Code Light+ */
+  --color-bg: #f3f3f3;
+  --color-surface: #ffffff;
+
+  /* Text */
+  --color-text: #1f1f1f;
+  --color-text-sub: #3b3b3b;
+  --color-text-muted: #717171;
+
+  /* Structure */
+  --color-border: #e4e4e4;
+  --color-rule: rgba(0, 0, 0, 0.055);
+
+  /* Semantic accents — VS Code Light+ syntax tokens */
+  --color-revenue: #098658;
+  --color-outcome: #a31515;
+  --color-net: #267f99;
+  --color-credit: #795e26;
+
+  /* Elevation (light only; dark is flat) */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
+  --shadow-dropdown: 0 6px 18px rgba(0, 0, 0, 0.15);
+
+  /* Typography */
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --text-label: 9px;
+  --text-body: 12px;
+  --text-title: 15px;
+  --text-value-sm: 21px;
+  --text-value-lg: 27px;
+
+  /* Spacing — base unit 3px, strict multiples */
+  --space-1: 3px;
+  --space-2: 6px;
+  --space-3: 9px;
+  --space-4: 12px;
+  --space-5: 15px;
+  --space-6: 18px;
+  --space-7: 21px;
+  --space-8: 24px;
+  --space-9: 27px;
+
+  /* Shape */
+  --radius: 3px;
+
+  /* Layout */
+  --max-width: 1200px;
+  --sidebar-width: 201px;
+}
+
+[data-theme="dark"] {
+  /* Surfaces — VS Code Dark+ */
+  --color-bg: #1e1e1e;
+  --color-surface: #252526;
+
+  /* Text */
+  --color-text: #d4d4d4;
+  --color-text-sub: #9d9d9d;
+  --color-text-muted: #6e6e6e;
+
+  /* Structure */
+  --color-border: #3c3c3c;
+  --color-rule: rgba(255, 255, 255, 0.04);
+
+  /* Semantic accents — VS Code Dark+ syntax tokens */
+  --color-revenue: #4ec9b0;
+  --color-outcome: #ce9178;
+  --color-net: #569cd6;
+  --color-credit: #dcdcaa;
+
+  /* Flat in dark mode */
+  --shadow-card: none;
+  --shadow-dropdown: 0 6px 18px rgba(0, 0, 0, 0.45);
+}

@@ -1,0 +1,59 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* No font-weight above 400 anywhere (design-system §8). */
+strong,
+b {
+  font-weight: 400;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+/* Every number renders with tabular figures (design-system §8, non-negotiable). */
+input,
+table,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Page shell carries the ledger-line texture; cards stay opaque over it (§6). */
+.page-shell {
+  background-color: var(--color-bg);
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 27px,
+    var(--color-rule) 27px,
+    var(--color-rule) 28px
+  );
+}
