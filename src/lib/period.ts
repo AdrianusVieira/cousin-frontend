@@ -117,7 +117,12 @@ export function usePeriod(defaultPreset: PeriodPreset = PERIOD_PRESET.Last3Month
 
   const setPeriod = useCallback(
     (next: Period) => {
-      setSearchParams({ from: next.from, to: next.to }, { replace: true });
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        params.set("from", next.from);
+        params.set("to", next.to);
+        return params;
+      }, { replace: true });
     },
     [setSearchParams],
   );
