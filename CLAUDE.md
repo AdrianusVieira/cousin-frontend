@@ -102,6 +102,13 @@ anyway — `erasableSyntaxOnly` forbids it, which is why `as const` is the stand
 ## Conventions
 
 Path alias `@/` → `src/`. Imports/keys/props ordered alphabetically where order has no meaning; hook
-return objects group values (alphabetical) then functions (alphabetical). Static strings live in named
-objects outside components. `erasableSyntaxOnly` is on — no TS parameter properties or other
-non-erasable syntax. CSS Modules per component (`*.module.css`).
+return objects group values (alphabetical) then functions (alphabetical). `erasableSyntaxOnly` is on —
+no TS parameter properties or other non-erasable syntax. CSS Modules per component (`*.module.css`).
+
+**No static text inside components or hooks.** Every user-visible string (labels, messages, tooltips,
+placeholders, fallback values like `"—"`) must live in a `const` object declared **outside** the
+component/hook, at the top of the file (after imports, before the function). Name the object `LABELS`
+when it holds UI labels, `TEXT` when the strings are longer-form copy (messages, descriptions), or a
+domain-specific name when that's clearer. Keys are alphabetical. This applies to every layer —
+components, hooks, and pages. The only exemption is structural/technical strings (CSS class names,
+query keys, route paths, HTML attributes) which are not user-visible.

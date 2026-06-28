@@ -1,0 +1,68 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  flex-shrink: 0;
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  width: 279px;
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.total {
+  color: var(--color-credit);
+  font-family: var(--font-serif);
+  font-size: var(--text-value-sm);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+  margin-top: var(--space-2);
+}
+
+.wallets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.walletRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.walletHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.walletName {
+  color: var(--color-text-sub);
+  font-size: var(--text-body);
+}
+
+.walletTotal {
+  color: var(--color-text-sub);
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.progressTrack {
+  background: var(--color-border);
+  border-radius: 0;
+  height: 3px;
+}
+
+.progressFill {
+  background: var(--color-credit);
+  border-radius: 0;
+  height: 100%;
+  opacity: 0.7;
+  transition: width 150ms;
+}
