@@ -1,19 +1,16 @@
 import { useMemo } from "react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";
 
+import { ChartFrame } from "@/components/ChartFrame";
 import { useTheme } from "@/hooks/useTheme";
-import { chartColor, formatChartDate, formatChartTick } from "@/lib/chart";
+import {
+  CHART_AXIS,
+  CHART_TOOLTIP_STYLE,
+  chartColor,
+  formatChartDate,
+  formatChartTick,
+} from "@/lib/chart";
 import type { ISODate, Money } from "@/types/api";
-
-import styles from "./CashFlowChart.module.css";
 
 interface CashFlowDataPoint {
   date: ISODate;
@@ -41,72 +38,44 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
   );
 
   return (
-    <div className={styles.card}>
-      <div className={styles.label}>{LABELS.title}</div>
+    <ChartFrame fill title={LABELS.title}>
+      <AreaChart data={chartData}>
+        <defs>
+          <linearGradient id="gradIn" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={colors.in} stopOpacity={0.2} />
+            <stop offset="100%" stopColor={colors.in} stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="gradOut" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={colors.out} stopOpacity={0.2} />
+            <stop offset="100%" stopColor={colors.out} stopOpacity={0} />
+          </linearGradient>
+        </defs>
 
-      <div className={styles.chartWrap}>
-        <ResponsiveContainer height="100%" width="100%">
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient id="gradIn" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={colors.in} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={colors.in} stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="gradOut" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={colors.out} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={colors.out} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-
-            <CartesianGrid stroke="none" />
-            <XAxis
-              axisLine={false}
-              dataKey="date"
-              fontSize={12}
-              tick={{ fill: "var(--color-text-muted)" }}
-              tickFormatter={formatChartDate}
-              tickLine={false}
-            />
-            <YAxis
-              axisLine={false}
-              fontSize={12}
-              tick={{ fill: "var(--color-text-muted)" }}
-              tickFormatter={formatChartTick}
-              tickLine={false}
-              width={42}
-            />
-            <Tooltip
-              contentStyle={{
-                background: "var(--color-surface)",
-                border: "1px solid var(--color-border)",
-                borderRadius: 3,
-                fontSize: 12,
-              }}
-              labelFormatter={formatChartDate}
-            />
-            <Area
-              activeDot={{ r: 3, strokeWidth: 0 }}
-              dataKey="in"
-              dot={false}
-              fill="url(#gradIn)"
-              name={LABELS.moneyIn}
-              stroke={colors.in}
-              strokeWidth={1.2}
-              type="monotone"
-            />
-            <Area
-              activeDot={{ r: 3, strokeWidth: 0 }}
-              dataKey="out"
-              dot={false}
-              fill="url(#gradOut)"
-              name={LABELS.moneyOut}
-              stroke={colors.out}
-              strokeWidth={1.2}
-              type="monotone"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+        <CartesianGrid stroke="none" />
+        <XAxis dataKey="date" tickFormatter={formatChartDate} {...CHART_AXIS} />
+        <YAxis tickFormatter={formatChartTick} width={42} {...CHART_AXIS} />
+        <Tooltip contentStyle={CHART_TOOLTIP_STYLE} labelFormatter={formatChartDate} />
+        <Area
+          activeDot={{ r: 3, strokeWidth: 0 }}
+          dataKey="in"
+          dot={false}
+          fill="url(#gradIn)"
+          name={LABELS.moneyIn}
+          stroke={colors.in}
+          strokeWidth={1.2}
+          type="monotone"
+        />
+        <Area
+          activeDot={{ r: 3, strokeWidth: 0 }}
+          dataKey="out"
+          dot={false}
+          fill="url(#gradOut)"
+          name={LABELS.moneyOut}
+          stroke={colors.out}
+          strokeWidth={1.2}
+          type="monotone"
+        />
+      </AreaChart>
+    </ChartFrame>
   );
 }
