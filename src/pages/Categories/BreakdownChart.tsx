@@ -13,32 +13,33 @@ import { useTheme } from "@/hooks/useTheme";
 import { chartColor, formatChartDate, formatChartTick } from "@/lib/chart";
 import type { ISODate, Money } from "@/types/api";
 
-import styles from "./CashFlowChart.module.css";
-
-interface CashFlowDataPoint {
-  date: ISODate;
-  in: Money;
-  out: Money;
-}
-
-interface CashFlowChartProps {
-  data: CashFlowDataPoint[];
-}
+import styles from "./BreakdownChart.module.css";
 
 const LABELS = {
-  moneyIn: "Money in",
-  moneyOut: "Money out",
-  title: "Cash Flow",
+  income: "Income",
+  outcome: "Outcome",
+  title: "Breakdown",
 };
 
-export function CashFlowChart({ data }: CashFlowChartProps) {
+interface BreakdownChartProps {
+  data: Array<{ bucket: ISODate; income: Money; outcome: Money }>;
+}
+
+export function BreakdownChart({ data }: BreakdownChartProps) {
   const { theme } = useTheme();
-  const colors = { in: chartColor("revenue", theme), out: chartColor("outcome", theme) };
+  const colors = { income: chartColor("revenue", theme), outcome: chartColor("outcome", theme) };
 
   const chartData = useMemo(
-    () => data.map((d) => ({ date: d.date, in: Number(d.in), out: Number(d.out) })),
+    () =>
+      data.map((d) => ({
+        bucket: d.bucket,
+        income: Number(d.income),
+        outcome: Number(d.outcome),
+      })),
     [data],
   );
+
+  if (chartData.length === 0) return null;
 
   return (
     <div className={styles.card}>
@@ -48,20 +49,20 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
         <ResponsiveContainer height="100%" width="100%">
           <AreaChart data={chartData}>
             <defs>
-              <linearGradient id="gradIn" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={colors.in} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={colors.in} stopOpacity={0} />
+              <linearGradient id="gradIncome" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor={colors.income} stopOpacity={0.2} />
+                <stop offset="100%" stopColor={colors.income} stopOpacity={0} />
               </linearGradient>
-              <linearGradient id="gradOut" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={colors.out} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={colors.out} stopOpacity={0} />
+              <linearGradient id="gradOutcome" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor={colors.outcome} stopOpacity={0.2} />
+                <stop offset="100%" stopColor={colors.outcome} stopOpacity={0} />
               </linearGradient>
             </defs>
 
             <CartesianGrid stroke="none" />
             <XAxis
               axisLine={false}
-              dataKey="date"
+              dataKey="bucket"
               fontSize={12}
               tick={{ fill: "var(--color-text-muted)" }}
               tickFormatter={formatChartDate}
@@ -86,21 +87,21 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
             />
             <Area
               activeDot={{ r: 3, strokeWidth: 0 }}
-              dataKey="in"
+              dataKey="income"
               dot={false}
-              fill="url(#gradIn)"
-              name={LABELS.moneyIn}
-              stroke={colors.in}
+              fill="url(#gradIncome)"
+              name={LABELS.income}
+              stroke={colors.income}
               strokeWidth={1.2}
               type="monotone"
             />
             <Area
               activeDot={{ r: 3, strokeWidth: 0 }}
-              dataKey="out"
+              dataKey="outcome"
               dot={false}
-              fill="url(#gradOut)"
-              name={LABELS.moneyOut}
-              stroke={colors.out}
+              fill="url(#gradOutcome)"
+              name={LABELS.outcome}
+              stroke={colors.outcome}
               strokeWidth={1.2}
               type="monotone"
             />

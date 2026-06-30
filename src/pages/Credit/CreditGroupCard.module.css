@@ -1,0 +1,121 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.header {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.walletName {
+  color: var(--color-text);
+  font-size: var(--text-body);
+}
+
+.term {
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.headerRight {
+  align-items: center;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.total {
+  color: var(--color-credit);
+  font-family: var(--font-serif);
+  font-size: var(--text-value-sm);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.3px;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.th,
+.thRight {
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  padding: var(--space-2) var(--space-6);
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.thRight {
+  text-align: right;
+}
+
+.td,
+.tdRight,
+.tdAction {
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--text-body);
+  padding: var(--space-2) var(--space-6);
+  text-align: left;
+}
+
+.tdRight {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tdAction {
+  text-align: right;
+  white-space: nowrap;
+  width: 1%;
+}
+
+tr:last-child .td,
+tr:last-child .tdRight,
+tr:last-child .tdAction {
+  border-bottom: none;
+}
+
+.row {}
+
+.settleBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-sub);
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+  font-size: var(--text-label);
+  letter-spacing: 0.04em;
+  padding: var(--space-1) var(--space-3);
+  transition: background 150ms;
+}
+
+.settleBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-revenue) 5%, transparent);
+  color: var(--color-revenue);
+}
+
+.settleBtn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}

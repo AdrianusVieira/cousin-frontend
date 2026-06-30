@@ -4,18 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Frontend for **cou$in**, a single-owner personal-finance app. React + TypeScript (Vite) talking
-to a custom Node backend. The `*.md` spec files at the repo root are the source of truth and are
-detailed: `frontend-integration.md` (start here — auth, cold starts, conventions),
-`api-contracts.md` (request/response shapes), `ui-spec.md` + `components-tree.md` (screens &
-component composition), `design-system.md` (visual tokens & hard rules), `glossary.md`/`entities.md`
-(domain model). Consult them before building a screen rather than inferring from code.
+Frontend for **cou$in**, a single-owner personal-finance app. React 19 + TypeScript 6 (Vite 8)
+talking to a Node backend on Render. Feature-complete: 15 routes across Dashboard, Transactions,
+Credit, Bills, Revenues, Recurrences, Wallets, Sources, Categories (each with list + detail where
+applicable), plus Login.
 
 ## Commands
 
 ```bash
 npm run dev        # Vite dev server on :5173
 npm run build      # tsc -b && vite build (type-check is part of the build)
+npm run preview    # serve the production build locally
 npm run typecheck  # tsc only, no emit
 npm run lint       # ESLint (flat config, eslint.config.js)
 npm run format     # Prettier
@@ -102,8 +101,9 @@ anyway — `erasableSyntaxOnly` forbids it, which is why `as const` is the stand
 ## Conventions
 
 Path alias `@/` → `src/`. Imports/keys/props ordered alphabetically where order has no meaning; hook
-return objects group values (alphabetical) then functions (alphabetical). `erasableSyntaxOnly` is on —
-no TS parameter properties or other non-erasable syntax. CSS Modules per component (`*.module.css`).
+return objects group values (alphabetical) then functions (alphabetical). `erasableSyntaxOnly` and
+`verbatimModuleSyntax` are on — no TS enums or parameter properties; type-only imports must use
+`import type`. CSS Modules per component (`*.module.css`).
 
 **No static text inside components or hooks.** Every user-visible string (labels, messages, tooltips,
 placeholders, fallback values like `"—"`) must live in a `const` object declared **outside** the
@@ -112,3 +112,25 @@ when it holds UI labels, `TEXT` when the strings are longer-form copy (messages,
 domain-specific name when that's clearer. Keys are alphabetical. This applies to every layer —
 components, hooks, and pages. The only exemption is structural/technical strings (CSS class names,
 query keys, route paths, HTML attributes) which are not user-visible.
+
+## Established patterns (cross-cutting)
+
+**Server validation → RHF field errors.** Every form that talks to the API passes `serverError`
+(the mutation's `.error`) as a prop and maps it with `mapFieldErrors(serverError, setError)` inside a
+`useEffect`. The utility (`src/lib/api/mapFieldErrors.ts`) handles 422 responses only; other statuses
+are ignored. The return value (`true` if mapped) can prevent modal close on error.
+
+**`TransactionsTable` is a smart component.** Unlike other components, `TransactionsTable`
+(`src/components/TransactionsTable.tsx`) owns its own `useInfiniteQuery`, edit modal, and delete
+modal. It accepts `from`/`to` and optional `wallet`/`category` filter props, making it droppable
+into any detail page (WalletDetail, CategoryDetail) without the parent needing to manage transaction
+state.
+
+**`useWatch` over `watch()`.** For react-hook-form fields that drive conditional rendering (e.g.
+`intervalUnit` in BillForm/RevenueForm), use `useWatch({ control, name })` instead of `watch()`.
+This avoids `react-hooks/incompatible-library` lint warnings from the React Compiler eslint plugin.
+
+**Charts use `useTheme()` for colors.** Recharts components (`CashFlowChart`, `BalanceChart`,
+`VarianceChart`, `PatrimonyChart`, `BreakdownChart`, `DivergingBars`) read the current theme via
+`useTheme()` and pass JS hex colors to Recharts props. CSS custom properties can't be used here
+because Recharts expects resolved color values, not `var()` references.

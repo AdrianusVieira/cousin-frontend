@@ -1,0 +1,16 @@
+.link {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+  font-size: var(--text-body);
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-4);
+  padding: 0;
+  transition: color 150ms;
+}
+
+.link:hover {
+  color: var(--color-text);
+}
