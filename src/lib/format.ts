@@ -17,6 +17,20 @@ export function formatMoney(value: Money, compact = false): string {
   });
 }
 
+/** Display an ISO date as "5 Jun". */
+export function formatDate(iso: string): string {
+  const d = new Date(iso + "T00:00:00");
+
+  return d.toLocaleDateString("en-US", { day: "numeric", month: "short" });
+}
+
+/** Display an ISO date as "5 Jun 2026". */
+export function formatDateWithYear(iso: string): string {
+  const d = new Date(iso + "T00:00:00");
+
+  return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
+}
+
 export function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`;
 }

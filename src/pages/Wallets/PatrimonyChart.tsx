@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -13,32 +13,27 @@ import { useTheme } from "@/hooks/useTheme";
 import { chartColor, formatChartDate, formatChartTick } from "@/lib/chart";
 import type { ISODate, Money } from "@/types/api";
 
-import styles from "./CashFlowChart.module.css";
-
-interface CashFlowDataPoint {
-  date: ISODate;
-  in: Money;
-  out: Money;
-}
-
-interface CashFlowChartProps {
-  data: CashFlowDataPoint[];
-}
+import styles from "./PatrimonyChart.module.css";
 
 const LABELS = {
-  moneyIn: "Money in",
-  moneyOut: "Money out",
-  title: "Cash Flow",
+  title: "Patrimony Trend",
+  total: "Total",
 };
 
-export function CashFlowChart({ data }: CashFlowChartProps) {
+interface PatrimonyChartProps {
+  data: Array<{ date: ISODate; total: Money }>;
+}
+
+export function PatrimonyChart({ data }: PatrimonyChartProps) {
   const { theme } = useTheme();
-  const colors = { in: chartColor("revenue", theme), out: chartColor("outcome", theme) };
+  const color = chartColor("net", theme);
 
   const chartData = useMemo(
-    () => data.map((d) => ({ date: d.date, in: Number(d.in), out: Number(d.out) })),
+    () => data.map((d) => ({ date: d.date, total: Number(d.total) })),
     [data],
   );
+
+  if (chartData.length === 0) return null;
 
   return (
     <div className={styles.card}>
@@ -46,18 +41,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
 
       <div className={styles.chartWrap}>
         <ResponsiveContainer height="100%" width="100%">
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient id="gradIn" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={colors.in} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={colors.in} stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="gradOut" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={colors.out} stopOpacity={0.2} />
-                <stop offset="100%" stopColor={colors.out} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-
+          <LineChart data={chartData}>
             <CartesianGrid stroke="none" />
             <XAxis
               axisLine={false}
@@ -84,27 +68,16 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
               }}
               labelFormatter={formatChartDate}
             />
-            <Area
+            <Line
               activeDot={{ r: 3, strokeWidth: 0 }}
-              dataKey="in"
+              dataKey="total"
               dot={false}
-              fill="url(#gradIn)"
-              name={LABELS.moneyIn}
-              stroke={colors.in}
+              name={LABELS.total}
+              stroke={color}
               strokeWidth={1.2}
               type="monotone"
             />
-            <Area
-              activeDot={{ r: 3, strokeWidth: 0 }}
-              dataKey="out"
-              dot={false}
-              fill="url(#gradOut)"
-              name={LABELS.moneyOut}
-              stroke={colors.out}
-              strokeWidth={1.2}
-              type="monotone"
-            />
-          </AreaChart>
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>

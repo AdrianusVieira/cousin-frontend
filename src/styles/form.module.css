@@ -1,0 +1,72 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.input,
+.select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-family: "Courier New", Courier, monospace;
+  font-size: var(--text-body);
+  letter-spacing: 0.04em;
+  padding: var(--space-3) var(--space-4);
+  width: 100%;
+}
+
+.input:focus,
+.select:focus {
+  border-color: var(--color-text-muted);
+  outline: none;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23717171'/%3E%3C/svg%3E");
+  background-position: right var(--space-4) center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  padding-right: var(--space-9);
+}
+
+.btnPrimary {
+  background: var(--color-text);
+  border: 1px solid var(--color-text);
+  border-radius: var(--radius);
+  color: var(--color-surface);
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+  font-size: var(--text-body);
+  letter-spacing: 0.04em;
+  padding: var(--space-3) var(--space-6);
+  transition: opacity 150ms;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.btnPrimary:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.btnSecondary {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-sub);
+  cursor: pointer;
+  font-family: "Courier New", Courier, monospace;
+  font-size: var(--text-body);
+  letter-spacing: 0.04em;
+  padding: var(--space-3) var(--space-6);
+  transition: background 150ms;
+}
+
+.btnSecondary:hover {
+  background: color-mix(in srgb, var(--color-border) 30%, transparent);
+}

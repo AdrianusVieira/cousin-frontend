@@ -1,0 +1,42 @@
+.statGrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.chartRow {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.tableWrap {
+  margin-top: var(--space-4);
+}
+
+.dimmed {
+  opacity: 0.5;
+}
+
+.delta[data-sign="+"] {
+  color: var(--color-revenue);
+}
+
+.delta[data-sign="-"] {
+  color: var(--color-outcome);
+}
+
+.loading {
+  color: var(--color-text-muted);
+  font-size: var(--text-body);
+  padding: var(--space-9) 0;
+}
+
+.error {
+  background: color-mix(in srgb, var(--color-outcome) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-outcome) 30%, transparent);
+  border-radius: var(--radius);
+  color: var(--color-outcome);
+  font-size: var(--text-body);
+  padding: var(--space-3) var(--space-4);
+}

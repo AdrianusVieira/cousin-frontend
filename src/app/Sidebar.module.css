@@ -59,6 +59,24 @@
   padding-top: var(--space-6);
 }
 
+.themeToggle {
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: block;
+  font-size: var(--text-body);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  width: 100%;
+}
+
+.themeToggle:hover {
+  background: var(--color-bg);
+  color: var(--color-text-sub);
+}
+
 .signOut {
   background: none;
   border: none;
