@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 import { INTERVAL_UNIT_OPTIONS } from "@/constants/intervals";
 import { mapFieldErrors } from "@/lib/api/mapFieldErrors";
@@ -10,6 +11,7 @@ import { DataTable } from "@/components/DataTable";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
+import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
 import { VarianceChart } from "@/components/VarianceChart";
 import { formatDateWithYear, formatMoney } from "@/lib/format";
@@ -32,6 +34,7 @@ const LABELS = {
   recurrentDay: "Recurrent day",
   recurrentMonth: "Recurrent month",
   save: "Save",
+  status: "Status",
   term: "Term",
   title: "Edit Recurrence",
   type: "Type",
@@ -41,16 +44,33 @@ const LABELS = {
 
 const TEXT = {
   no: "No",
+  paid: "Paid",
+  pending: "Pending",
+  received: "Received",
+  unpaid: "Unpaid",
   yes: "Yes",
 };
 
 type Instance = Bill | Revenue;
 
-const INSTANCE_COLUMNS: Column<Instance>[] = [
-  { header: LABELS.name, key: "name", render: (i) => i.name },
-  { header: LABELS.term, key: "term", render: (i) => formatDateWithYear(i.term) },
-  { align: "right", header: LABELS.value, key: "value", render: (i) => formatMoney(i.value) },
-];
+function isSettled(instance: Instance): boolean {
+  return "paid" in instance ? instance.paid : instance.received;
+}
+
+function getInstanceColumns(type: "bill" | "revenue"): Column<Instance>[] {
+  return [
+    { header: LABELS.name, key: "name", render: (i) => i.name },
+    { header: LABELS.term, key: "term", render: (i) => formatDateWithYear(i.term) },
+    {
+      header: LABELS.status,
+      key: "status",
+      render: (i) => isSettled(i)
+        ? <Pill accent="revenue">{type === "bill" ? TEXT.paid : TEXT.received}</Pill>
+        : <Pill accent="outcome">{type === "bill" ? TEXT.unpaid : TEXT.pending}</Pill>,
+    },
+    { align: "right", header: LABELS.value, key: "value", render: (i) => formatMoney(i.value) },
+  ];
+}
 
 function EditModal({
   isSubmitting,
@@ -155,6 +175,8 @@ function EditModal({
 }
 
 export function RecurrenceDetail() {
+  const navigate = useNavigate();
+
   const {
     editOpen,
     error,
@@ -164,6 +186,7 @@ export function RecurrenceDetail() {
     isSubmitting,
     name,
     recurrence,
+    type,
     typeLabel,
     variance,
 
@@ -213,8 +236,9 @@ export function RecurrenceDetail() {
 
           <div className={styles.tableWrap}>
             <DataTable
-              columns={INSTANCE_COLUMNS}
+              columns={getInstanceColumns(type)}
               keyExtractor={(i) => i.id}
+              onRowClick={(i) => navigate(`/${type === "bill" ? "bills" : "revenues"}/${i.id}`)}
               rows={instances}
             />
           </div>

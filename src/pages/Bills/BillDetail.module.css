@@ -1,11 +1,7 @@
 .statGrid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.tableWrap {
-  margin-top: var(--space-4);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .form {

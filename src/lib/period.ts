@@ -38,12 +38,11 @@ function toISODate(d: Date): string {
 function trimesterRange(today: Date): Period {
   const month = today.getMonth();
   const year = today.getFullYear();
-  const trimesterStart = Math.floor(month / 3) * 3;
 
-  return {
-    from: `${year}-${pad(trimesterStart + 1)}-01`,
-    to: toISODate(today),
-  };
+  const from = new Date(year, month - 1, 1);
+  const to = new Date(year, month + 2, 0);
+
+  return { from: toISODate(from), to: toISODate(to) };
 }
 
 function last3MonthsRange(today: Date): Period {

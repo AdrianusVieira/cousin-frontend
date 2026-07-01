@@ -1,17 +1,15 @@
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 import { mapFieldErrors } from "@/lib/api/mapFieldErrors";
 
 import { BackLink } from "@/components/BackLink";
-import type { Column } from "@/components/DataTable";
-import { DataTable } from "@/components/DataTable";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
-import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
-import { formatDateWithYear, formatMoney } from "@/lib/format";
+import { formatDateWithYear } from "@/lib/format";
 import type { Revenue } from "@/types/api";
 
 import form from "@/styles/form.module.css";
@@ -24,7 +22,6 @@ const LABELS = {
   delete: "Delete",
   description: "Description",
   edit: "Edit",
-  flag: "Flag",
   linkedTxn: "Linked Transaction",
   loading: "Loading…",
   markPending: "Mark pending",
@@ -35,27 +32,13 @@ const LABELS = {
   term: "Term",
   title: "Edit Revenue",
   value: "Value",
+  viewRecurrence: "View recurrence",
 };
 
 const TEXT = {
   deleteBlocked: "! Cannot delete a received revenue.",
   flagged: "! This revenue is flagged — check its receipt status.",
-  pending: "Pending",
-  received: "Received",
 };
-
-const INSTANCE_COLUMNS: Column<Revenue>[] = [
-  { header: LABELS.name, key: "name", render: (r) => r.name },
-  { header: LABELS.term, key: "term", render: (r) => formatDateWithYear(r.term) },
-  {
-    header: LABELS.status,
-    key: "status",
-    render: (r) => r.received
-      ? <Pill accent="revenue">{TEXT.received}</Pill>
-      : <Pill accent="outcome">{TEXT.pending}</Pill>,
-  },
-  { align: "right", header: LABELS.value, key: "value", render: (r) => formatMoney(r.value) },
-];
 
 function EditModal({
   isSubmitting,
@@ -144,11 +127,12 @@ function EditModal({
 }
 
 export function RevenueDetail() {
+  const navigate = useNavigate();
+
   const {
     deleteBlocked,
     editOpen,
     error,
-    instances,
     isLoading,
     isSubmitting,
     linkedTxnValue,
@@ -177,6 +161,15 @@ export function RevenueDetail() {
           <PageHead
             actions={
               <>
+                {revenue.recurrenceId && (
+                  <button
+                    className={form.btnSecondary}
+                    onClick={() => navigate(`/recurrences/${revenue.recurrenceId}`)}
+                    type="button"
+                  >
+                    {LABELS.viewRecurrence}
+                  </button>
+                )}
                 <button className={form.btnSecondary} onClick={openEdit} type="button">
                   {LABELS.edit}
                 </button>
@@ -201,20 +194,13 @@ export function RevenueDetail() {
 
           <div className={styles.statGrid}>
             <StatCard accent="net" label={LABELS.value} value={valueFormatted} />
+            <StatCard accent="net" label={LABELS.term} value={formatDateWithYear(revenue.term)} />
             <StatCard
               accent={revenue.received ? "revenue" : "outcome"}
               label={LABELS.status}
               value={statusValue}
             />
             <StatCard accent="credit" label={LABELS.linkedTxn} value={linkedTxnValue} />
-          </div>
-
-          <div className={styles.tableWrap}>
-            <DataTable
-              columns={INSTANCE_COLUMNS}
-              keyExtractor={(r) => r.id}
-              rows={instances}
-            />
           </div>
         </>
       )}

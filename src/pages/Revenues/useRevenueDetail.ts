@@ -35,6 +35,8 @@ export function useRevenueDetail() {
       queryClient.invalidateQueries({ queryKey: ["revenues"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["sources"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrence"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
       setEditOpen(false);
     },
   });
@@ -44,6 +46,8 @@ export function useRevenueDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["revenues"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrence"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
       navigate("/revenues");
     },
   });
@@ -60,7 +64,6 @@ export function useRevenueDetail() {
     editError: editMutation.error,
     editOpen,
     error: query.error,
-    instances: data?.instances ?? [],
     isLoading: query.isLoading,
     isSubmitting: editMutation.isPending,
     linkedTxnValue: data?.linkedTransaction ? TEXT.linked : TEXT.no,
