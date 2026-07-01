@@ -1,17 +1,15 @@
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 import { mapFieldErrors } from "@/lib/api/mapFieldErrors";
 
 import { BackLink } from "@/components/BackLink";
-import type { Column } from "@/components/DataTable";
-import { DataTable } from "@/components/DataTable";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
-import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
-import { formatDateWithYear, formatMoney } from "@/lib/format";
+import { formatDateWithYear } from "@/lib/format";
 import type { Bill } from "@/types/api";
 
 import form from "@/styles/form.module.css";
@@ -24,7 +22,6 @@ const LABELS = {
   delete: "Delete",
   description: "Description",
   edit: "Edit",
-  flag: "Flag",
   linkedTxn: "Linked Transaction",
   loading: "Loading…",
   markPaid: "Mark paid",
@@ -35,27 +32,13 @@ const LABELS = {
   term: "Term",
   title: "Edit Bill",
   value: "Value",
+  viewRecurrence: "View recurrence",
 };
 
 const TEXT = {
   deleteBlocked: "! Cannot delete a paid bill.",
   flagged: "! This bill is flagged — check its payment status.",
-  paid: "Paid",
-  unpaid: "Unpaid",
 };
-
-const INSTANCE_COLUMNS: Column<Bill>[] = [
-  { header: LABELS.name, key: "name", render: (b) => b.name },
-  { header: LABELS.term, key: "term", render: (b) => formatDateWithYear(b.term) },
-  {
-    header: LABELS.status,
-    key: "status",
-    render: (b) => b.paid
-      ? <Pill accent="revenue">{TEXT.paid}</Pill>
-      : <Pill accent="outcome">{TEXT.unpaid}</Pill>,
-  },
-  { align: "right", header: LABELS.value, key: "value", render: (b) => formatMoney(b.value) },
-];
 
 function EditModal({
   bill,
@@ -144,12 +127,13 @@ function EditModal({
 }
 
 export function BillDetail() {
+  const navigate = useNavigate();
+
   const {
     bill,
     deleteBlocked,
     editOpen,
     error,
-    instances,
     isLoading,
     isSubmitting,
     linkedTxnValue,
@@ -177,6 +161,15 @@ export function BillDetail() {
           <PageHead
             actions={
               <>
+                {bill.recurrenceId && (
+                  <button
+                    className={form.btnSecondary}
+                    onClick={() => navigate(`/recurrences/${bill.recurrenceId}`)}
+                    type="button"
+                  >
+                    {LABELS.viewRecurrence}
+                  </button>
+                )}
                 <button className={form.btnSecondary} onClick={openEdit} type="button">
                   {LABELS.edit}
                 </button>
@@ -201,20 +194,13 @@ export function BillDetail() {
 
           <div className={styles.statGrid}>
             <StatCard accent="net" label={LABELS.value} value={valueFormatted} />
+            <StatCard accent="net" label={LABELS.term} value={formatDateWithYear(bill.term)} />
             <StatCard
               accent={bill.paid ? "revenue" : "outcome"}
               label={LABELS.status}
               value={statusValue}
             />
             <StatCard accent="credit" label={LABELS.linkedTxn} value={linkedTxnValue} />
-          </div>
-
-          <div className={styles.tableWrap}>
-            <DataTable
-              columns={INSTANCE_COLUMNS}
-              keyExtractor={(b) => b.id}
-              rows={instances}
-            />
           </div>
         </>
       )}
