@@ -7,7 +7,7 @@ import type { Category, CategoryListResponse } from "@/types/api";
 
 export function useCategories() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.Last3Months);
+  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
   const [formOpen, setFormOpen] = useState(false);
 
   const query = useQuery({

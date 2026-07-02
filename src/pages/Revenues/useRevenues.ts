@@ -20,7 +20,7 @@ const TEXT = {
 
 export function useRevenues() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.Last3Months);
+  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
   const [searchParams, setSearchParams] = useSearchParams();
   const [formOpen, setFormOpen] = useState(false);
 

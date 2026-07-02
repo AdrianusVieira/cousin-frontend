@@ -39,10 +39,11 @@ function trimesterRange(today: Date): Period {
   const month = today.getMonth();
   const year = today.getFullYear();
   const trimesterStart = Math.floor(month / 3) * 3;
+  const end = new Date(year, trimesterStart + 3, 0);
 
   return {
     from: `${year}-${pad(trimesterStart + 1)}-01`,
-    to: toISODate(today),
+    to: toISODate(end),
   };
 }
 
@@ -54,9 +55,13 @@ function last3MonthsRange(today: Date): Period {
 }
 
 function thisMonthRange(today: Date): Period {
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const end = new Date(year, month + 1, 0);
+
   return {
-    from: `${today.getFullYear()}-${pad(today.getMonth() + 1)}-01`,
-    to: toISODate(today),
+    from: `${year}-${pad(month + 1)}-01`,
+    to: toISODate(end),
   };
 }
 
@@ -78,7 +83,7 @@ export function resolvePreset(preset: PeriodPreset, today = new Date()): Period 
     case PERIOD_PRESET.ThisYear:
       return thisYearRange(today);
     case PERIOD_PRESET.Custom:
-      return last3MonthsRange(today);
+      return trimesterRange(today);
   }
 }
 
@@ -101,7 +106,7 @@ export function formatPeriodLabel(period: Period): string {
  * Reads `from` and `to` from URL search params and provides a setter. The period doubles
  * as the TanStack Query key, so changing it triggers a refetch.
  */
-export function usePeriod(defaultPreset: PeriodPreset = PERIOD_PRESET.Last3Months) {
+export function usePeriod(defaultPreset: PeriodPreset = PERIOD_PRESET.CurrentTrimester) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const period = useMemo<Period>(() => {

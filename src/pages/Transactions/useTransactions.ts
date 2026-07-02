@@ -28,7 +28,7 @@ const TEXT = {
 
 export function useTransactions() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.Last3Months);
+  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
   const [searchParams, setSearchParams] = useSearchParams();
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [editAmount, setEditAmount] = useState("");

@@ -19,7 +19,7 @@ const TEXT = {
 
 export function useCredit() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.Last3Months);
+  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
   const [searchParams, setSearchParams] = useSearchParams();
   const [settlingGroupKey, setSettlingGroupKey] = useState<string | null>(null);
 
