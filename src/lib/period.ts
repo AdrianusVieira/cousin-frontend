@@ -38,12 +38,12 @@ function toISODate(d: Date): string {
 function trimesterRange(today: Date): Period {
   const month = today.getMonth();
   const year = today.getFullYear();
-  const trimesterStart = Math.floor(month / 3) * 3;
+  const to = new Date(year, month + 2, 0);
   const end = new Date(year, trimesterStart + 3, 0);
 
   return {
     from: `${year}-${pad(trimesterStart + 1)}-01`,
-    to: toISODate(end),
+    to: toISODate(today),
   };
 }
 
@@ -91,13 +91,11 @@ export function formatPeriodLabel(period: Period): string {
   const from = new Date(period.from + "T00:00:00");
   const to = new Date(period.to + "T00:00:00");
 
-  const fmt = (d: Date) =>
-    d.toLocaleDateString("en-US", { day: "numeric", month: "short" });
+  const fmt = (d: Date) => d.toLocaleDateString("en-US", { day: "numeric", month: "short" });
 
   const fromStr = fmt(from);
-  const toStr = to.getFullYear() !== from.getFullYear()
-    ? `${fmt(to)} ${to.getFullYear()}`
-    : fmt(to);
+  const toStr =
+    to.getFullYear() !== from.getFullYear() ? `${fmt(to)} ${to.getFullYear()}` : fmt(to);
 
   return `${fromStr} – ${toStr}`;
 }
@@ -122,12 +120,15 @@ export function usePeriod(defaultPreset: PeriodPreset = PERIOD_PRESET.CurrentTri
 
   const setPeriod = useCallback(
     (next: Period) => {
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
-        params.set("from", next.from);
-        params.set("to", next.to);
-        return params;
-      }, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const params = new URLSearchParams(prev);
+          params.set("from", next.from);
+          params.set("to", next.to);
+          return params;
+        },
+        { replace: true },
+      );
     },
     [setSearchParams],
   );
