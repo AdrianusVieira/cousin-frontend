@@ -35,6 +35,8 @@ export function useBillDetail() {
       queryClient.invalidateQueries({ queryKey: ["bills"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["sources"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrence"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
       setEditOpen(false);
     },
   });
@@ -44,6 +46,8 @@ export function useBillDetail() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bills"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrence"] });
+      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
       navigate("/bills");
     },
   });
@@ -61,7 +65,6 @@ export function useBillDetail() {
     editError: editMutation.error,
     editOpen,
     error: query.error,
-    instances: data?.instances ?? [],
     isLoading: query.isLoading,
     isSubmitting: editMutation.isPending,
     linkedTxnValue: data?.linkedTransaction ? TEXT.linked : TEXT.no,
