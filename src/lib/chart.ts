@@ -36,5 +36,10 @@ export function formatChartDate(value: unknown): string {
 export function formatChartTick(value: number): string {
   if (value === 0) return "";
 
-  return `${(value / 1000).toFixed(0)}k`;
+  const abs = Math.abs(value);
+  if (abs >= 1_000) {
+    return `${(value / 1_000).toFixed(abs >= 10_000 ? 0 : 1)}k`;
+  }
+
+  return String(Math.round(value));
 }

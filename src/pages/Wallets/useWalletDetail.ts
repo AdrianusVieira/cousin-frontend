@@ -16,7 +16,7 @@ const TEXT = {
 export function useWalletDetail() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.Last3Months);
+  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
   const [editOpen, setEditOpen] = useState(false);
 
   const query = useQuery({

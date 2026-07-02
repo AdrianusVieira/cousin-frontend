@@ -10,7 +10,7 @@ const TEXT = {
 };
 
 export function useRecurrences() {
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.Last3Months);
+  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
 
   const query = useQuery({
     queryFn: () =>
