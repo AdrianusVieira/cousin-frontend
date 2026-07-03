@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { api } from "@/lib/api/client";
 import { formatMoney } from "@/lib/format";
-import { formatPeriodLabel, PERIOD_PRESET, usePeriod } from "@/lib/period";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { CreditResponse, Transaction } from "@/types/api";
 
 const STATUS_OPTIONS = [
@@ -14,12 +14,12 @@ const STATUS_OPTIONS = [
 ] as const;
 
 const TEXT = {
-  empty: "—",
+  empty: "â€”",
 };
 
 export function useCredit() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
+  const { period } = usePeriod();
   const [searchParams, setSearchParams] = useSearchParams();
   const [settlingGroupKey, setSettlingGroupKey] = useState<string | null>(null);
 
@@ -73,7 +73,6 @@ export function useCredit() {
     isSettling: settleMutation.isPending,
     openStatementsValue: data ? String(data.summary.openStatements) : TEXT.empty,
     pendingCreditValue: data ? formatMoney(data.summary.pendingCredit) : TEXT.empty,
-    period,
     periodLabel: formatPeriodLabel(period),
     settledInPeriodValue: data ? formatMoney(data.summary.settledInPeriod) : TEXT.empty,
     settlingGroupKey,
@@ -84,7 +83,6 @@ export function useCredit() {
     cancelSettle: useCallback(() => setSettlingGroupKey(null), []),
     confirmSettle: settleMutation.mutate,
     requestSettle: setSettlingGroupKey,
-    setPeriod,
     setStatus,
     settleRow: useCallback(
       (txnId: string) => settleMutation.mutate([txnId]),

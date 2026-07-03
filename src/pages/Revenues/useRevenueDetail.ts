@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -8,7 +8,7 @@ import { formatMoney } from "@/lib/format";
 import type { Revenue, RevenueDetailResponse } from "@/types/api";
 
 const TEXT = {
-  empty: "—",
+  empty: "â€”",
   linked: "Yes",
   no: "No",
   pending: "Pending",
@@ -64,7 +64,9 @@ export function useRevenueDetail() {
     editError: editMutation.error,
     editOpen,
     error: query.error,
-    isLoading: query.isLoading,
+    // isFetching (not isLoading) so a post-mutation refetch blocks the view,
+    // preventing a stale value from flashing before the BE confirms the edit.
+    isLoading: query.isFetching,
     isSubmitting: editMutation.isPending,
     linkedTxnValue: data?.linkedTransaction ? TEXT.linked : TEXT.no,
     revenue,

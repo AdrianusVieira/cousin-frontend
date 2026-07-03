@@ -1,6 +1,5 @@
 import { FilterSegment } from "@/components/FilterSegment";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { StatCard } from "@/components/StatCard";
 
 import { CreditGroupCard } from "./CreditGroupCard";
@@ -24,25 +23,19 @@ export function Credit() {
     isSettling,
     openStatementsValue,
     pendingCreditValue,
-    period,
     periodLabel,
     settledInPeriodValue,
     status,
     statusOptions,
 
     confirmSettle,
-    setPeriod,
     setStatus,
     settleRow,
   } = useCredit();
 
   return (
     <>
-      <PageHead
-        actions={<PeriodSelector onChange={setPeriod} value={period} />}
-        periodLabel={periodLabel}
-        title={LABELS.title}
-      />
+      <PageHead periodLabel={periodLabel} title={LABELS.title} />
 
       {error && <div className={styles.error}>! {error.message}</div>}
 

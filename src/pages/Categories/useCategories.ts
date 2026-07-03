@@ -1,13 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 import { api } from "@/lib/api/client";
-import { formatPeriodLabel, PERIOD_PRESET, usePeriod } from "@/lib/period";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { Category, CategoryListResponse } from "@/types/api";
 
 export function useCategories() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
+  const { period } = usePeriod();
   const [formOpen, setFormOpen] = useState(false);
 
   const query = useQuery({
@@ -35,13 +35,11 @@ export function useCategories() {
     isLoading: query.isLoading,
     isSubmitting: createMutation.isPending,
     items: query.data?.items ?? [],
-    period,
     periodLabel: formatPeriodLabel(period),
 
     // handlers
     closeForm: useCallback(() => setFormOpen(false), []),
     createCategory: createMutation.mutate,
     openForm: useCallback(() => setFormOpen(true), []),
-    setPeriod,
   };
 }

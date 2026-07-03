@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { queryClient } from "@/lib/query";
 import { Login } from "@/pages/Login/Login";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { PeriodProvider } from "@/providers/PeriodProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
 function AuthGate() {
@@ -29,13 +30,15 @@ function AuthGate() {
 export function App() {
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AuthProvider>
-            <AuthGate />
-          </AuthProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
+      <PeriodProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthProvider>
+              <AuthGate />
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </PeriodProvider>
     </ThemeProvider>
   );
 }

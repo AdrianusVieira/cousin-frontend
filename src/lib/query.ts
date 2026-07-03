@@ -17,6 +17,7 @@ export const queryClient = new QueryClient({
 
         return failureCount < 4;
       },
+      refetchOnWindowFocus: false,
       retryDelay: (attempt) => Math.min(1_000 * 2 ** attempt, 15_000),
       staleTime: 30_000,
     },

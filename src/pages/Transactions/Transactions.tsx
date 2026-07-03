@@ -4,7 +4,6 @@ import { FilterSegment } from "@/components/FilterSegment";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -161,7 +160,6 @@ export function Transactions() {
     method,
     methodOptions,
     netValue,
-    period,
     periodLabel,
     revenues,
     totalInValue,
@@ -181,7 +179,6 @@ export function Transactions() {
     setEditDate,
     setEditDescription,
     setMethod,
-    setPeriod,
     submitEdit,
   } = useTransactions();
 
@@ -189,12 +186,9 @@ export function Transactions() {
     <>
       <PageHead
         actions={
-          <>
-            <PeriodSelector onChange={setPeriod} value={period} />
-            <button className={form.btnPrimary} onClick={openForm} type="button">
-              {LABELS.newTransaction}
-            </button>
-          </>
+          <button className={form.btnPrimary} onClick={openForm} type="button">
+            {LABELS.newTransaction}
+          </button>
         }
         periodLabel={periodLabel}
         title={LABELS.title}

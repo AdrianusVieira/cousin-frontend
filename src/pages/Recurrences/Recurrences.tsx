@@ -1,7 +1,6 @@
 import type { Column } from "@/components/DataTable";
 import { DataTable } from "@/components/DataTable";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -82,20 +81,13 @@ export function Recurrences() {
     inactiveCountValue,
     isLoading,
     items,
-    period,
     periodLabel,
     recurringOutflowValue,
-
-    setPeriod,
   } = useRecurrences();
 
   return (
     <>
-      <PageHead
-        actions={<PeriodSelector onChange={setPeriod} value={period} />}
-        periodLabel={periodLabel}
-        title={LABELS.title}
-      />
+      <PageHead periodLabel={periodLabel} title={LABELS.title} />
 
       {error && <div className={styles.error}>! {error.message}</div>}
 

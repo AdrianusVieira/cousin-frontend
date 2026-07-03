@@ -1,11 +1,11 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { api } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
 import { formatMoney } from "@/lib/format";
-import { formatPeriodLabel, PERIOD_PRESET, usePeriod } from "@/lib/period";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type {
   BillListResponse,
   CategoryListResponse,
@@ -23,12 +23,12 @@ const METHOD_OPTIONS = [
 ] as const;
 
 const TEXT = {
-  empty: "—",
+  empty: "â€”",
 };
 
 export function useTransactions() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
+  const { period } = usePeriod();
   const [searchParams, setSearchParams] = useSearchParams();
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [editAmount, setEditAmount] = useState("");
@@ -178,7 +178,6 @@ export function useTransactions() {
     method,
     methodOptions: METHOD_OPTIONS,
     netValue: summary ? formatMoney(summary.net) : TEXT.empty,
-    period,
     periodLabel: formatPeriodLabel(period),
     revenues: revenuesQuery.data?.items ?? [],
     totalInValue: summary ? formatMoney(summary.totalIn) : TEXT.empty,
@@ -201,7 +200,6 @@ export function useTransactions() {
     setEditDate,
     setEditDescription,
     setMethod,
-    setPeriod,
     submitEdit,
   };
 }

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 import { api } from "@/lib/api/client";
@@ -6,7 +6,7 @@ import { formatMoney, formatMoneyDelta, formatPercent } from "@/lib/format";
 import type { Wallet, WalletListResponse } from "@/types/api";
 
 const TEXT = {
-  empty: "—",
+  empty: "â€”",
 };
 
 export function useWallets() {

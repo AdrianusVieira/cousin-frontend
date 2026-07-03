@@ -1,7 +1,6 @@
 import type { Column } from "@/components/DataTable";
 import { DataTable } from "@/components/DataTable";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { Pill } from "@/components/Pill";
 import { formatMoney } from "@/lib/format";
 import type { Category, Money } from "@/types/api";
@@ -65,26 +64,21 @@ export function Categories() {
     isLoading,
     isSubmitting,
     items,
-    period,
     periodLabel,
 
     closeForm,
     createCategory,
     createError,
     openForm,
-    setPeriod,
   } = useCategories();
 
   return (
     <>
       <PageHead
         actions={
-          <>
-            <PeriodSelector onChange={setPeriod} value={period} />
-            <button className={form.btnPrimary} onClick={openForm} type="button">
-              {LABELS.newCategory}
-            </button>
-          </>
+          <button className={form.btnPrimary} onClick={openForm} type="button">
+            {LABELS.newCategory}
+          </button>
         }
         periodLabel={periodLabel}
         title={LABELS.title}

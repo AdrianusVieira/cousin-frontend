@@ -1,22 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { api } from "@/lib/api/client";
 import { formatMoney } from "@/lib/format";
-import { formatPeriodLabel, PERIOD_PRESET, usePeriod } from "@/lib/period";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { Wallet, WalletDetailResponse } from "@/types/api";
 
 const TEXT = {
   active: "Active",
   archived: "Archived",
-  empty: "—",
+  empty: "â€”",
 };
 
 export function useWalletDetail() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
+  const { period } = usePeriod();
   const [editOpen, setEditOpen] = useState(false);
 
   const query = useQuery({
@@ -80,7 +80,6 @@ export function useWalletDetail() {
     archive: useCallback(() => archiveMutation.mutate(), [archiveMutation]),
     closeEdit: useCallback(() => setEditOpen(false), []),
     openEdit: useCallback(() => setEditOpen(true), []),
-    setPeriod,
     submitEdit: editMutation.mutate,
     unarchive: useCallback(() => unarchiveMutation.mutate(), [unarchiveMutation]),
   };
