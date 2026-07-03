@@ -131,6 +131,6 @@ state.
 This avoids `react-hooks/incompatible-library` lint warnings from the React Compiler eslint plugin.
 
 **Charts use `useTheme()` for colors.** Recharts components (`CashFlowChart`, `BalanceChart`,
-`VarianceChart`, `PatrimonyChart`, `BreakdownChart`, `DivergingBars`) read the current theme via
+`VarianceChart`, `PatrimonyChart`, `BreakdownChart`) read the current theme via
 `useTheme()` and pass JS hex colors to Recharts props. CSS custom properties can't be used here
 because Recharts expects resolved color values, not `var()` references.

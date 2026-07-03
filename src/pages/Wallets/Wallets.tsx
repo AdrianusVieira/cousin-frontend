@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 
 import form from "@/styles/form.module.css";
 
-import { DivergingBars } from "./DivergingBars";
 import { PatrimonyChart } from "./PatrimonyChart";
 import { WalletForm } from "./WalletForm";
 import styles from "./Wallets.module.css";
@@ -21,7 +20,7 @@ const LABELS = {
   activeWallets: "Active Wallets",
   archived: "Archived",
   balance: "Balance",
-  delta: "vs 3-mo Avg",
+  delta: "vs Period Avg",
   loading: "Loading…",
   name: "Name",
   newWallet: "New wallet",
@@ -90,6 +89,7 @@ export function Wallets() {
     items,
     patrimonyNote,
     patrimonyValue,
+    periodLabel,
     trend,
 
     closeForm,
@@ -106,6 +106,7 @@ export function Wallets() {
             {LABELS.newWallet}
           </button>
         }
+        periodLabel={periodLabel}
         title={LABELS.title}
       />
 
@@ -128,7 +129,6 @@ export function Wallets() {
 
           <div className={styles.chartRow}>
             <PatrimonyChart data={trend} />
-            <DivergingBars items={items} />
           </div>
 
           <div className={styles.tableWrap}>

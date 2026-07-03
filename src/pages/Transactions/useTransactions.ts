@@ -36,6 +36,7 @@ export function useTransactions() {
   const [editDescription, setEditDescription] = useState("");
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const method = searchParams.get("method") ?? "all";
 
@@ -169,6 +170,7 @@ export function useTransactions() {
     error: query.error,
     formOpen,
     hasNextPage: query.hasNextPage,
+    importOpen,
     isDeletingTxn: deleteMutation.isPending,
     isEditingTxn: editMutation.isPending,
     isFetchingNextPage: query.isFetchingNextPage,
@@ -188,6 +190,7 @@ export function useTransactions() {
     cancelDelete: useCallback(() => setDeleting(null), []),
     cancelEdit: useCallback(() => setEditing(null), []),
     closeForm: useCallback(() => setFormOpen(false), []),
+    closeImport: useCallback(() => setImportOpen(false), []),
     confirmDelete: useCallback(() => {
       if (deleting) deleteMutation.mutate(deleting.id);
     }, [deleteMutation, deleting]),
@@ -195,6 +198,7 @@ export function useTransactions() {
     fetchNextPage: query.fetchNextPage,
     openEditModal,
     openForm: useCallback(() => setFormOpen(true), []),
+    openImport: useCallback(() => setImportOpen(true), []),
     requestDelete: setDeleting,
     setEditAmount,
     setEditDate,

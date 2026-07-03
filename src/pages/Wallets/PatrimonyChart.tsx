@@ -3,6 +3,7 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -10,12 +11,13 @@ import {
 } from "recharts";
 
 import { useTheme } from "@/hooks/useTheme";
-import { chartColor, formatChartDate, formatChartTick } from "@/lib/chart";
+import { CHART_REFERENCE_LABEL, chartColor, formatChartDate, formatChartTick } from "@/lib/chart";
 import type { ISODate, Money } from "@/types/api";
 
 import styles from "./PatrimonyChart.module.css";
 
 const LABELS = {
+  average: "Avg",
   title: "Patrimony Trend",
   total: "Total",
 };
@@ -31,6 +33,14 @@ export function PatrimonyChart({ data }: PatrimonyChartProps) {
   const chartData = useMemo(
     () => data.map((d) => ({ date: d.date, total: Number(d.total) })),
     [data],
+  );
+
+  const averageValue = useMemo(
+    () =>
+      chartData.length === 0
+        ? null
+        : chartData.reduce((sum, d) => sum + d.total, 0) / chartData.length,
+    [chartData],
   );
 
   if (chartData.length === 0) return null;
@@ -68,6 +78,15 @@ export function PatrimonyChart({ data }: PatrimonyChartProps) {
               }}
               labelFormatter={formatChartDate}
             />
+            {averageValue !== null && (
+              <ReferenceLine
+                label={{ ...CHART_REFERENCE_LABEL, value: LABELS.average }}
+                stroke={color}
+                strokeDasharray="6 3"
+                strokeWidth={1}
+                y={averageValue}
+              />
+            )}
             <Line
               activeDot={{ r: 3, strokeWidth: 0 }}
               dataKey="total"

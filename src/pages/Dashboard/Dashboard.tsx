@@ -20,7 +20,6 @@ export function Dashboard() {
     cashFlow,
     error,
     isLoading,
-    netNote,
     netValue,
     outcomeValue,
     pendingCreditPerWallet,
@@ -44,7 +43,7 @@ export function Dashboard() {
           <div className={styles.statGrid}>
             <StatCard accent="revenue" label={LABELS.revenue} value={revenueValue} />
             <StatCard accent="outcome" label={LABELS.outcome} value={outcomeValue} />
-            <StatCard accent="net" label={LABELS.net} note={netNote} value={netValue} />
+            <StatCard accent="net" label={LABELS.net} value={netValue} />
             <StatCard
               accent="credit"
               label={LABELS.savingsRate}
