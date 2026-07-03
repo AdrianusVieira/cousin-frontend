@@ -1,7 +1,6 @@
 import type { Column } from "@/components/DataTable";
 import { DataTable } from "@/components/DataTable";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { Pill } from "@/components/Pill";
 import { formatMoney } from "@/lib/format";
 import type { Money, Source } from "@/types/api";
@@ -70,26 +69,21 @@ export function Sources() {
     isLoading,
     isSubmitting,
     items,
-    period,
     periodLabel,
 
     closeForm,
     createError,
     createSource,
     openForm,
-    setPeriod,
   } = useSources();
 
   return (
     <>
       <PageHead
         actions={
-          <>
-            <PeriodSelector onChange={setPeriod} value={period} />
-            <button className={form.btnPrimary} onClick={openForm} type="button">
-              {LABELS.newSource}
-            </button>
-          </>
+          <button className={form.btnPrimary} onClick={openForm} type="button">
+            {LABELS.newSource}
+          </button>
         }
         periodLabel={periodLabel}
         title={LABELS.title}

@@ -36,6 +36,20 @@ export function VarianceChart({ data }: VarianceChartProps) {
     [data],
   );
 
+  const domain = useMemo<[number, number]>(() => {
+    const values = chartData.flatMap((d) =>
+      d.actual === null ? [d.estimated] : [d.estimated, d.actual],
+    );
+    if (values.length === 0) return [0, 0];
+
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+    const range = max - min;
+    const pad = range > 0 ? range * 0.2 : Math.abs(max) * 0.1 || 1;
+
+    return [Math.floor(min - pad), Math.ceil(max + pad)];
+  }, [chartData]);
+
   if (chartData.length === 0) return null;
 
   return (
@@ -43,7 +57,7 @@ export function VarianceChart({ data }: VarianceChartProps) {
       <LineChart data={chartData}>
         <CartesianGrid stroke="none" />
         <XAxis dataKey="date" tickFormatter={formatChartDate} {...CHART_AXIS} />
-        <YAxis tickFormatter={formatChartTick} width={42} {...CHART_AXIS} />
+        <YAxis domain={domain} tickFormatter={formatChartTick} width={42} {...CHART_AXIS} />
         <Tooltip contentStyle={CHART_TOOLTIP_STYLE} labelFormatter={formatChartDate} />
         <Line
           activeDot={{ r: 3, strokeWidth: 0 }}

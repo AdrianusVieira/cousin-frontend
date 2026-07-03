@@ -9,7 +9,6 @@ import { DataTable } from "@/components/DataTable";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -152,7 +151,6 @@ export function SourceDetail() {
     error,
     isLoading,
     isSubmitting,
-    period,
     periodLabel,
     revenues,
     source,
@@ -163,7 +161,6 @@ export function SourceDetail() {
     closeEdit,
     editError,
     openEdit,
-    setPeriod,
     submitEdit,
     unarchive,
   } = useSourceDetail();
@@ -181,7 +178,6 @@ export function SourceDetail() {
           <PageHead
             actions={
               <>
-                <PeriodSelector onChange={setPeriod} value={period} />
                 <button className={form.btnSecondary} onClick={openEdit} type="button">
                   {LABELS.edit}
                 </button>

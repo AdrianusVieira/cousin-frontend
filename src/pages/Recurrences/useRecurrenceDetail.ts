@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -8,7 +8,7 @@ import type { Recurrence, RecurrenceDetailResponse } from "@/types/api";
 
 const TEXT = {
   bill: "Bill",
-  empty: "—",
+  empty: "â€”",
   revenue: "Revenue",
 };
 
@@ -34,6 +34,14 @@ export function useRecurrenceDetail() {
     },
   });
 
+  const recomputeMutation = useMutation({
+    mutationFn: () => api.post<void>(`/recurrences/${id}/recompute-estimate`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recurrence", id] });
+      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
+    },
+  });
+
   const deactivateMutation = useMutation({
     mutationFn: () => api.post<void>(`/recurrences/${id}/deactivate`),
     onSuccess: () => {
@@ -46,6 +54,16 @@ export function useRecurrenceDetail() {
   const data = query.data;
   const recurrence = data?.recurrence;
 
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const allVariance = data?.variance ?? [];
+  const currentTerm = allVariance
+    .map((entry) => entry.date)
+    .filter((date) => date >= todayISO)
+    .sort()[0];
+  const variance = currentTerm
+    ? allVariance.filter((entry) => entry.date <= currentTerm)
+    : allVariance;
+
   return {
     // data
     editError: editMutation.error,
@@ -55,18 +73,22 @@ export function useRecurrenceDetail() {
       ? formatMoney(recurrence.estimatedValue)
       : TEXT.empty,
     instances: data?.instances ?? [],
-    isLoading: query.isLoading,
+    // isFetching (not isLoading) so a post-mutation refetch blocks the view,
+    // preventing a stale value from flashing before the BE confirms the edit.
+    isLoading: query.isFetching,
+    isRecomputing: recomputeMutation.isPending,
     isSubmitting: editMutation.isPending,
     name: data?.name ?? "",
     recurrence,
     type: data?.type ?? "bill",
     typeLabel: data?.type === "revenue" ? TEXT.revenue : TEXT.bill,
-    variance: data?.variance ?? [],
+    variance,
 
     // handlers
     closeEdit: useCallback(() => setEditOpen(false), []),
     deactivate: useCallback(() => deactivateMutation.mutate(), [deactivateMutation]),
     openEdit: useCallback(() => setEditOpen(true), []),
+    recompute: useCallback(() => recomputeMutation.mutate(), [recomputeMutation]),
     submitEdit: editMutation.mutate,
   };
 }

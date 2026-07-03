@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 
+import { PeriodSelector } from "@/components/PeriodSelector";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 
@@ -9,6 +10,7 @@ import styles from "./Sidebar.module.css";
 const LABELS = {
   dark: "Dark",
   light: "Light",
+  period: "Period",
   signOut: "Sign out",
 };
 
@@ -19,6 +21,11 @@ export function Sidebar() {
   return (
     <nav className={styles.sidebar} aria-label="Primary">
       <div className={styles.brand}>cou$in</div>
+
+      <div className={styles.period}>
+        <div className={styles.groupTitle}>{LABELS.period}</div>
+        <PeriodSelector />
+      </div>
 
       {NAV_GROUPS.map((group) => (
         <div key={group.title} className={styles.group}>

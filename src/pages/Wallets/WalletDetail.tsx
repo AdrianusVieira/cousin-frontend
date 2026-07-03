@@ -8,7 +8,6 @@ import { BalanceChart } from "@/components/BalanceChart";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { StatCard } from "@/components/StatCard";
 import { TransactionsTable } from "@/components/TransactionsTable";
 
@@ -145,7 +144,6 @@ export function WalletDetail() {
     closeEdit,
     editError,
     openEdit,
-    setPeriod,
     submitEdit,
     unarchive,
   } = useWalletDetail();
@@ -163,7 +161,6 @@ export function WalletDetail() {
           <PageHead
             actions={
               <>
-                <PeriodSelector onChange={setPeriod} value={period} />
                 <button className={form.btnSecondary} onClick={openEdit} type="button">
                   {LABELS.edit}
                 </button>

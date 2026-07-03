@@ -2,7 +2,6 @@ import type { Column } from "@/components/DataTable";
 import { DataTable } from "@/components/DataTable";
 import { FilterSegment } from "@/components/FilterSegment";
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -85,7 +84,6 @@ export function Bills() {
     isSubmitting,
     items,
     overdueValue,
-    period,
     periodLabel,
     sources,
     status,
@@ -98,7 +96,6 @@ export function Bills() {
     createBill,
     createError,
     openForm,
-    setPeriod,
     setStatus,
   } = useBills();
 
@@ -106,12 +103,9 @@ export function Bills() {
     <>
       <PageHead
         actions={
-          <>
-            <PeriodSelector onChange={setPeriod} value={period} />
-            <button className={form.btnPrimary} onClick={openForm} type="button">
-              {LABELS.newBill}
-            </button>
-          </>
+          <button className={form.btnPrimary} onClick={openForm} type="button">
+            {LABELS.newBill}
+          </button>
         }
         periodLabel={periodLabel}
         title={LABELS.title}

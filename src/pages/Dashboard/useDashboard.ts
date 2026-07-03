@@ -1,17 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+﻿import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api/client";
 import { formatDelta, formatMoney, formatMoneyDelta, formatPercent } from "@/lib/format";
-import { PERIOD_PRESET, formatPeriodLabel, usePeriod } from "@/lib/period";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { DashboardResponse } from "@/types/api";
 
 const TEXT = {
-  empty: "—",
+  empty: "â€”",
   vsPrior: "vs prior",
 };
 
 export function useDashboard() {
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
+  const { period } = usePeriod();
 
   const query = useQuery({
     queryFn: () =>
@@ -37,13 +37,9 @@ export function useDashboard() {
     outcomeValue: data ? formatMoney(data.outcome) : TEXT.empty,
     pendingCreditPerWallet: data?.pendingCredit.perWallet ?? [],
     pendingCreditTotal: data?.pendingCredit.total ?? "0",
-    period,
     periodLabel,
     revenueValue: data ? formatMoney(data.revenue) : TEXT.empty,
     savingsRateNote,
     savingsRateValue: data ? formatPercent(data.savingsRate) : TEXT.empty,
-
-    // handlers
-    setPeriod,
   };
 }

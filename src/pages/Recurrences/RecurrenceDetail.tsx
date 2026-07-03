@@ -31,6 +31,7 @@ const LABELS = {
   intervalValue: "Interval",
   loading: "Loading…",
   name: "Name",
+  recompute: "Recompute estimate",
   recurrentDay: "Recurrent day",
   recurrentMonth: "Recurrent month",
   save: "Save",
@@ -183,6 +184,7 @@ export function RecurrenceDetail() {
     estimatedValueFormatted,
     instances,
     isLoading,
+    isRecomputing,
     isSubmitting,
     name,
     recurrence,
@@ -194,6 +196,7 @@ export function RecurrenceDetail() {
     deactivate,
     editError,
     openEdit,
+    recompute,
     submitEdit,
   } = useRecurrenceDetail();
 
@@ -210,6 +213,16 @@ export function RecurrenceDetail() {
           <PageHead
             actions={
               <>
+                {recurrence.isVariable && (
+                  <button
+                    className={form.btnSecondary}
+                    disabled={isRecomputing}
+                    onClick={recompute}
+                    type="button"
+                  >
+                    {LABELS.recompute}
+                  </button>
+                )}
                 <button className={form.btnSecondary} onClick={openEdit} type="button">
                   {LABELS.edit}
                 </button>

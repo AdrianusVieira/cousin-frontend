@@ -1,5 +1,4 @@
 import { PageHead } from "@/components/PageHead";
-import { PeriodSelector } from "@/components/PeriodSelector";
 import { StatCard } from "@/components/StatCard";
 
 import { CashFlowChart } from "./CashFlowChart";
@@ -26,21 +25,15 @@ export function Dashboard() {
     outcomeValue,
     pendingCreditPerWallet,
     pendingCreditTotal,
-    period,
     periodLabel,
     revenueValue,
     savingsRateNote,
     savingsRateValue,
-    setPeriod,
   } = useDashboard();
 
   return (
     <>
-      <PageHead
-        actions={<PeriodSelector onChange={setPeriod} value={period} />}
-        periodLabel={periodLabel}
-        title={LABELS.title}
-      />
+      <PageHead periodLabel={periodLabel} title={LABELS.title} />
 
       {error && <div className={styles.error}>! {error.message}</div>}
 

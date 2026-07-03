@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+﻿import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { api } from "@/lib/api/client";
 import { formatMoney } from "@/lib/format";
-import { formatPeriodLabel, PERIOD_PRESET, usePeriod } from "@/lib/period";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { CreateRevenue, Revenue, RevenueListResponse, SourceListResponse } from "@/types/api";
 
 const STATUS_OPTIONS = [
@@ -15,12 +15,12 @@ const STATUS_OPTIONS = [
 ] as const;
 
 const TEXT = {
-  empty: "—",
+  empty: "â€”",
 };
 
 export function useRevenues() {
   const queryClient = useQueryClient();
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
+  const { period } = usePeriod();
   const [searchParams, setSearchParams] = useSearchParams();
   const [formOpen, setFormOpen] = useState(false);
 
@@ -80,7 +80,6 @@ export function useRevenues() {
     isSubmitting: createMutation.isPending,
     items: data?.items ?? [],
     overdueValue: data ? formatMoney(data.summary.overdue) : TEXT.empty,
-    period,
     periodLabel: formatPeriodLabel(period),
     sources: sourcesQuery.data?.items ?? [],
     status,
@@ -93,7 +92,6 @@ export function useRevenues() {
     closeForm: useCallback(() => setFormOpen(false), []),
     createRevenue: createMutation.mutate,
     openForm: useCallback(() => setFormOpen(true), []),
-    setPeriod,
     setStatus,
   };
 }

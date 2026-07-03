@@ -1,16 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+﻿import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api/client";
 import { formatMoney } from "@/lib/format";
-import { formatPeriodLabel, PERIOD_PRESET, usePeriod } from "@/lib/period";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { RecurrenceListResponse } from "@/types/api";
 
 const TEXT = {
-  empty: "—",
+  empty: "â€”",
 };
 
 export function useRecurrences() {
-  const { period, setPeriod } = usePeriod(PERIOD_PRESET.CurrentTrimester);
+  const { period } = usePeriod();
 
   const query = useQuery({
     queryFn: () =>
@@ -29,11 +29,7 @@ export function useRecurrences() {
     inactiveCountValue: data ? String(data.summary.inactiveCount) : TEXT.empty,
     isLoading: query.isLoading,
     items: data?.items ?? [],
-    period,
     periodLabel: formatPeriodLabel(period),
     recurringOutflowValue: data ? formatMoney(data.summary.recurringOutflow) : TEXT.empty,
-
-    // handlers
-    setPeriod,
   };
 }
