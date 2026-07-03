@@ -1,0 +1,28 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.row {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr 1fr;
+}
+
+.tableWrap {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.error {
+  color: var(--color-outcome);
+  font-size: var(--text-body);
+  margin: 0;
+}
+
+.summary {
+  color: var(--color-text);
+  font-size: var(--text-body);
+  margin: 0;
+}

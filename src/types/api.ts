@@ -212,7 +212,7 @@ export interface WalletListResponse {
     totalPatrimony: Money;
     activeCount: number;
     archivedCount: number;
-    patrimonyVs3moAvg: { delta: Money; pct: number };
+    patrimonyVsAverage: { delta: Money; pct: number };
   };
   trend: Array<{ date: ISODate; total: Money }>;
   items: Array<Wallet & { vsAverageDelta: Money }>;
@@ -220,7 +220,7 @@ export interface WalletListResponse {
 
 export interface WalletDetailResponse {
   wallet: Wallet;
-  summary: { currentBalance: Money; threeMonthAverage: Money };
+  summary: { currentBalance: Money; periodAverage: Money };
   balanceSeries: Array<{ date: ISODate; balance: Money }>;
 }
 
@@ -295,4 +295,33 @@ export type CreateTransaction = CreateDebitTransaction | CreateCreditTransaction
 
 export interface SettleRequest {
   transactionIds: UUID[];
+}
+
+export interface ImportTransactionRow {
+  amount: Money; // may be negative
+  date: ISODate;
+  description?: string;
+  installmentNumber?: number;
+  installmentTotal?: number;
+}
+
+export interface ImportTransactionsRequest {
+  rows: ImportTransactionRow[];
+  walletId: UUID;
+}
+
+export type SkippedImportReason = "duplicate" | "negativeAmount";
+
+export interface SkippedImportRow {
+  amount: Money;
+  date: ISODate;
+  description: string | null;
+  index: number;
+  reason: SkippedImportReason;
+}
+
+export interface ImportTransactionsResponse {
+  imported: Transaction[];
+  skipped: SkippedImportRow[];
+  summary: { importedCount: number; skippedCount: number; totalRows: number };
 }

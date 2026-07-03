@@ -15,6 +15,13 @@ export const CHART_AXIS = {
   tickLine: false,
 } as const;
 
+/** Shared Recharts ReferenceLine label styling (e.g. the average baseline). */
+export const CHART_REFERENCE_LABEL = {
+  fill: "var(--color-text-muted)",
+  fontSize: 11,
+  position: "insideTopLeft",
+} as const;
+
 /** Shared Recharts Tooltip contentStyle. */
 export const CHART_TOOLTIP_STYLE = {
   background: "var(--color-surface)",

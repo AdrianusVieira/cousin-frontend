@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 
 import { api } from "@/lib/api/client";
 import { formatMoney, formatMoneyDelta, formatPercent } from "@/lib/format";
+import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { Wallet, WalletListResponse } from "@/types/api";
 
 const TEXT = {
@@ -11,11 +12,15 @@ const TEXT = {
 
 export function useWallets() {
   const queryClient = useQueryClient();
+  const { period } = usePeriod();
   const [formOpen, setFormOpen] = useState(false);
 
   const query = useQuery({
-    queryFn: () => api.get<WalletListResponse>("/wallets"),
-    queryKey: ["wallets"],
+    queryFn: () =>
+      api.get<WalletListResponse>("/wallets", {
+        query: { from: period.from, to: period.to },
+      }),
+    queryKey: ["wallets", period.from, period.to],
   });
 
   const createMutation = useMutation({
@@ -29,8 +34,8 @@ export function useWallets() {
 
   const data = query.data;
 
-  const patrimonyNote = data?.summary.patrimonyVs3moAvg
-    ? `${formatMoneyDelta(data.summary.patrimonyVs3moAvg.delta)} (${formatPercent(data.summary.patrimonyVs3moAvg.pct)})`
+  const patrimonyNote = data?.summary.patrimonyVsAverage
+    ? `${formatMoneyDelta(data.summary.patrimonyVsAverage.delta)} (${formatPercent(data.summary.patrimonyVsAverage.pct)})`
     : undefined;
 
   return {
@@ -45,6 +50,7 @@ export function useWallets() {
     items: data?.items ?? [],
     patrimonyNote,
     patrimonyValue: data ? formatMoney(data.summary.totalPatrimony) : TEXT.empty,
+    periodLabel: formatPeriodLabel(period),
     trend: data?.trend ?? [],
 
     // handlers

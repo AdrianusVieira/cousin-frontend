@@ -25,9 +25,9 @@ const LABELS = {
   edit: "Edit",
   loading: "Loading…",
   name: "Name",
+  periodAvg: "Period Average",
   save: "Save",
   status: "Status",
-  threeMonthAvg: "3-mo Average",
   title: "Edit Wallet",
   unarchive: "Unarchive",
 };
@@ -135,9 +135,10 @@ export function WalletDetail() {
     isLoading,
     isSubmitting,
     period,
+    periodAverage,
+    periodAvgValue,
     periodLabel,
     statusValue,
-    threeMonthAvgValue,
     wallet,
 
     archive,
@@ -181,12 +182,12 @@ export function WalletDetail() {
 
           <div className={styles.statGrid}>
             <StatCard accent="net" label={LABELS.currentBalance} value={currentBalanceValue} />
-            <StatCard accent="revenue" label={LABELS.threeMonthAvg} value={threeMonthAvgValue} />
+            <StatCard accent="revenue" label={LABELS.periodAvg} value={periodAvgValue} />
             <StatCard accent={isArchived ? "outcome" : "revenue"} label={LABELS.status} value={statusValue} />
           </div>
 
           <div className={styles.chartWrap}>
-            <BalanceChart data={balanceSeries} />
+            <BalanceChart average={periodAverage} data={balanceSeries} />
           </div>
 
           <div className={styles.tableWrap}>

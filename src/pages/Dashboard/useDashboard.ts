@@ -1,7 +1,7 @@
 ﻿import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api/client";
-import { formatDelta, formatMoney, formatMoneyDelta, formatPercent } from "@/lib/format";
+import { formatDelta, formatMoney, formatPercent } from "@/lib/format";
 import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { DashboardResponse } from "@/types/api";
 
@@ -21,7 +21,6 @@ export function useDashboard() {
 
   const data = query.data;
 
-  const netNote = data?.netDelta != null ? formatMoneyDelta(data.netDelta) : undefined;
   const periodLabel = formatPeriodLabel(period);
   const savingsRateNote = data?.savingsRateDelta != null
     ? `${formatDelta(data.savingsRateDelta)} ${TEXT.vsPrior}`
@@ -32,7 +31,6 @@ export function useDashboard() {
     cashFlow: data?.cashFlow ?? [],
     error: query.error,
     isLoading: query.isLoading,
-    netNote,
     netValue: data ? formatMoney(data.net) : TEXT.empty,
     outcomeValue: data ? formatMoney(data.outcome) : TEXT.empty,
     pendingCreditPerWallet: data?.pendingCredit.perWallet ?? [],

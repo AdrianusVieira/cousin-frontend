@@ -1,10 +1,11 @@
 import { useMemo } from "react";
-import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
 
 import { ChartFrame } from "@/components/ChartFrame";
 import { useTheme } from "@/hooks/useTheme";
 import {
   CHART_AXIS,
+  CHART_REFERENCE_LABEL,
   CHART_TOOLTIP_STYLE,
   chartColor,
   formatChartDate,
@@ -13,17 +14,20 @@ import {
 import type { ISODate, Money } from "@/types/api";
 
 const LABELS = {
+  average: "Avg",
   balance: "Balance",
   title: "Balance Over Period",
 };
 
 interface BalanceChartProps {
+  average?: Money;
   data: Array<{ balance: Money; date: ISODate }>;
 }
 
-export function BalanceChart({ data }: BalanceChartProps) {
+export function BalanceChart({ average, data }: BalanceChartProps) {
   const { theme } = useTheme();
   const color = chartColor("net", theme);
+  const averageValue = average !== undefined ? Number(average) : null;
 
   const chartData = useMemo(
     () => data.map((d) => ({ balance: Number(d.balance), date: d.date })),
@@ -39,6 +43,15 @@ export function BalanceChart({ data }: BalanceChartProps) {
         <XAxis dataKey="date" tickFormatter={formatChartDate} {...CHART_AXIS} />
         <YAxis tickFormatter={formatChartTick} width={42} {...CHART_AXIS} />
         <Tooltip contentStyle={CHART_TOOLTIP_STYLE} labelFormatter={formatChartDate} />
+        {averageValue !== null && (
+          <ReferenceLine
+            label={{ ...CHART_REFERENCE_LABEL, value: LABELS.average }}
+            stroke={color}
+            strokeDasharray="6 3"
+            strokeWidth={1}
+            y={averageValue}
+          />
+        )}
         <Line
           activeDot={{ r: 3, strokeWidth: 0 }}
           dataKey="balance"

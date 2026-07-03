@@ -71,9 +71,10 @@ export function useWalletDetail() {
     isLoading: query.isLoading,
     isSubmitting: editMutation.isPending,
     period,
+    periodAverage: data?.summary.periodAverage,
+    periodAvgValue: data ? formatMoney(data.summary.periodAverage) : TEXT.empty,
     periodLabel: formatPeriodLabel(period),
     statusValue: wallet?.archived ? TEXT.archived : TEXT.active,
-    threeMonthAvgValue: data ? formatMoney(data.summary.threeMonthAverage) : TEXT.empty,
     wallet,
 
     // handlers

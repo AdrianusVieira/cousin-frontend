@@ -11,6 +11,7 @@ import type { Transaction } from "@/types/api";
 
 import form from "@/styles/form.module.css";
 
+import { ImportCsvModal } from "./ImportCsvModal";
 import { TransactionForm } from "./TransactionForm";
 import styles from "./Transactions.module.css";
 import { useTransactions } from "./useTransactions";
@@ -27,6 +28,7 @@ const LABELS = {
   edit: "Edit",
   editTitle: "Edit Transaction",
   fromTo: "From → To",
+  importCsv: "Import CSV",
   loading: "Loading…",
   loadMore: "Load more",
   method: "Method",
@@ -151,6 +153,7 @@ export function Transactions() {
     error,
     formOpen,
     hasNextPage,
+    importOpen,
     isDeletingTxn,
     isEditingTxn,
     isFetchingNextPage,
@@ -169,11 +172,13 @@ export function Transactions() {
     cancelDelete,
     cancelEdit,
     closeForm,
+    closeImport,
     confirmDelete,
     createTransaction,
     fetchNextPage,
     openEditModal,
     openForm,
+    openImport,
     requestDelete,
     setEditAmount,
     setEditDate,
@@ -186,9 +191,14 @@ export function Transactions() {
     <>
       <PageHead
         actions={
-          <button className={form.btnPrimary} onClick={openForm} type="button">
-            {LABELS.newTransaction}
-          </button>
+          <>
+            <button className={form.btnSecondary} onClick={openImport} type="button">
+              {LABELS.importCsv}
+            </button>
+            <button className={form.btnPrimary} onClick={openForm} type="button">
+              {LABELS.newTransaction}
+            </button>
+          </>
         }
         periodLabel={periodLabel}
         title={LABELS.title}
@@ -237,6 +247,8 @@ export function Transactions() {
           )}
         </>
       )}
+
+      {importOpen && <ImportCsvModal onClose={closeImport} />}
 
       {formOpen && (
         <TransactionForm
