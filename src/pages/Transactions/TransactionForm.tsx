@@ -168,6 +168,7 @@ export function TransactionForm({
       setValue("method", val);
       if (val === TXN_METHOD.Credit) {
         setValue("fromType", "wallet");
+        setValue("toType", "external");
       }
     },
     [setValue],
