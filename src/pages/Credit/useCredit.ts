@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router-dom";
 
 import { api } from "@/lib/api/client";
 import { formatMoney } from "@/lib/format";
-import { formatPeriodLabel, usePeriod } from "@/lib/period";
 import type { CreditResponse, Transaction } from "@/types/api";
 
 const STATUS_OPTIONS = [
@@ -19,7 +18,6 @@ const TEXT = {
 
 export function useCredit() {
   const queryClient = useQueryClient();
-  const { period } = usePeriod();
   const [searchParams, setSearchParams] = useSearchParams();
   const [settlingGroupKey, setSettlingGroupKey] = useState<string | null>(null);
 
@@ -41,15 +39,8 @@ export function useCredit() {
   );
 
   const query = useQuery({
-    queryFn: () =>
-      api.get<CreditResponse>("/credit", {
-        query: {
-          from: period.from,
-          status,
-          to: period.to,
-        },
-      }),
-    queryKey: ["credit", period.from, period.to, status],
+    queryFn: () => api.get<CreditResponse>("/credit", { query: { status } }),
+    queryKey: ["credit", status],
   });
 
   const settleMutation = useMutation({
@@ -73,7 +64,6 @@ export function useCredit() {
     isSettling: settleMutation.isPending,
     openStatementsValue: data ? String(data.summary.openStatements) : TEXT.empty,
     pendingCreditValue: data ? formatMoney(data.summary.pendingCredit) : TEXT.empty,
-    periodLabel: formatPeriodLabel(period),
     settledInPeriodValue: data ? formatMoney(data.summary.settledInPeriod) : TEXT.empty,
     settlingGroupKey,
     status,

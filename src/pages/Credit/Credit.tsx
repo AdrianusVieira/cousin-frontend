@@ -8,10 +8,10 @@ import { useCredit } from "./useCredit";
 
 const LABELS = {
   loading: "Loading…",
-  noGroups: "No credit transactions for this period.",
+  noGroups: "No credit transactions.",
   openStatements: "Open Statements",
   pendingCredit: "Pending Credit",
-  settledInPeriod: "Settled in Period",
+  settledInPeriod: "Total Settled",
   title: "Credit",
 };
 
@@ -23,7 +23,6 @@ export function Credit() {
     isSettling,
     openStatementsValue,
     pendingCreditValue,
-    periodLabel,
     settledInPeriodValue,
     status,
     statusOptions,
@@ -35,7 +34,7 @@ export function Credit() {
 
   return (
     <>
-      <PageHead periodLabel={periodLabel} title={LABELS.title} />
+      <PageHead title={LABELS.title} />
 
       {error && <div className={styles.error}>! {error.message}</div>}
 
