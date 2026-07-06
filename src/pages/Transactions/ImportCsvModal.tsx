@@ -21,6 +21,7 @@ const LABELS = {
   description: "Description",
   file: "CSV file",
   status: "Status",
+  term: "Statement due date",
   title: "Import CSV (Fatura)",
   wallet: "Card (wallet)",
 };
@@ -113,11 +114,13 @@ export function ImportCsvModal({ onClose }: ImportCsvModalProps) {
     parseError,
     previewRows,
     result,
+    term,
     walletId,
     wallets,
 
     confirm,
     handleFileChange,
+    setTerm,
     setWalletId,
   } = useImportTransactions();
 
@@ -174,6 +177,15 @@ export function ImportCsvModal({ onClose }: ImportCsvModalProps) {
                 </option>
               ))}
             </select>
+          </FormField>
+
+          <FormField label={LABELS.term}>
+            <input
+              className={form.input}
+              onChange={(e) => setTerm(e.target.value)}
+              type="date"
+              value={term}
+            />
           </FormField>
         </div>
 
