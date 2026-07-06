@@ -32,11 +32,13 @@ export class ApiError extends Error {
 /** Network/timeout failure before any HTTP status was received. */
 export class NetworkError extends Error {
   readonly cause?: unknown;
+  readonly method?: string;
 
-  constructor(message: string, cause?: unknown) {
+  constructor(message: string, cause?: unknown, method?: string) {
     super(message);
     this.name = "NetworkError";
     this.cause = cause;
+    this.method = method;
   }
 }
 
