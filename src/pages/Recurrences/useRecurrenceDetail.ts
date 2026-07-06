@@ -4,7 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { api } from "@/lib/api/client";
 import { formatMoney } from "@/lib/format";
+import { monthsBefore, type Period } from "@/lib/period";
 import type { Recurrence, RecurrenceDetailResponse } from "@/types/api";
+
+const CHART_TRAILING_MONTHS = 12;
 
 const TEXT = {
   bill: "Bill",
@@ -16,6 +19,7 @@ export function useRecurrenceDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [chartRangeOverride, setChartRangeOverride] = useState<Period | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
   const query = useQuery({
@@ -60,19 +64,26 @@ export function useRecurrenceDetail() {
     .map((entry) => entry.date)
     .filter((date) => date >= todayISO)
     .sort()[0];
-  const variance = currentTerm
-    ? allVariance.filter((entry) => entry.date <= currentTerm)
-    : allVariance;
+
+  const defaultChartTo = currentTerm ?? todayISO;
+  const defaultChartFrom = monthsBefore(defaultChartTo, CHART_TRAILING_MONTHS);
+  const chartFrom = chartRangeOverride?.from ?? defaultChartFrom;
+  const chartTo = chartRangeOverride?.to ?? defaultChartTo;
+  const variance = allVariance.filter((entry) => entry.date >= chartFrom && entry.date <= chartTo);
+
+  const instances = [...(data?.instances ?? [])].sort((a, b) => b.term.localeCompare(a.term));
 
   return {
     // data
+    chartFrom,
+    chartTo,
     editError: editMutation.error,
     editOpen,
     error: query.error,
     estimatedValueFormatted: recurrence?.estimatedValue
       ? formatMoney(recurrence.estimatedValue)
       : TEXT.empty,
-    instances: data?.instances ?? [],
+    instances,
     // isFetching (not isLoading) so a post-mutation refetch blocks the view,
     // preventing a stale value from flashing before the BE confirms the edit.
     isLoading: query.isFetching,
@@ -89,6 +100,14 @@ export function useRecurrenceDetail() {
     deactivate: useCallback(() => deactivateMutation.mutate(), [deactivateMutation]),
     openEdit: useCallback(() => setEditOpen(true), []),
     recompute: useCallback(() => recomputeMutation.mutate(), [recomputeMutation]),
+    setChartFrom: useCallback(
+      (from: string) => setChartRangeOverride({ from, to: chartTo }),
+      [chartTo],
+    ),
+    setChartTo: useCallback(
+      (to: string) => setChartRangeOverride({ from: chartFrom, to }),
+      [chartFrom],
+    ),
     submitEdit: editMutation.mutate,
   };
 }

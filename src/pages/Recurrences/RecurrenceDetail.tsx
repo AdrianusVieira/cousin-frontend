@@ -27,6 +27,7 @@ const LABELS = {
   deactivate: "Deactivate",
   edit: "Edit config",
   estimatedValue: "Estimated Value",
+  from: "From",
   intervalUnit: "Interval unit",
   intervalValue: "Interval",
   loading: "Loading…",
@@ -38,6 +39,7 @@ const LABELS = {
   status: "Status",
   term: "Term",
   title: "Edit Recurrence",
+  to: "To",
   type: "Type",
   value: "Value",
   variable: "Variable amount",
@@ -179,6 +181,8 @@ export function RecurrenceDetail() {
   const navigate = useNavigate();
 
   const {
+    chartFrom,
+    chartTo,
     editOpen,
     error,
     estimatedValueFormatted,
@@ -197,6 +201,8 @@ export function RecurrenceDetail() {
     editError,
     openEdit,
     recompute,
+    setChartFrom,
+    setChartTo,
     submitEdit,
   } = useRecurrenceDetail();
 
@@ -244,6 +250,34 @@ export function RecurrenceDetail() {
           </div>
 
           <div className={styles.chartWrap}>
+            <div className={styles.chartHeader}>
+              <label className={styles.rangeField}>
+                <span className={styles.rangeLabel}>{LABELS.from}</span>
+                <input
+                  className={styles.rangeInput}
+                  max={chartTo}
+                  onChange={(e) => {
+                    if (e.target.value) setChartFrom(e.target.value);
+                  }}
+                  type="date"
+                  value={chartFrom}
+                />
+              </label>
+
+              <label className={styles.rangeField}>
+                <span className={styles.rangeLabel}>{LABELS.to}</span>
+                <input
+                  className={styles.rangeInput}
+                  min={chartFrom}
+                  onChange={(e) => {
+                    if (e.target.value) setChartTo(e.target.value);
+                  }}
+                  type="date"
+                  value={chartTo}
+                />
+              </label>
+            </div>
+
             <VarianceChart data={variance} />
           </div>
 
