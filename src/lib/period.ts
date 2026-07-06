@@ -24,6 +24,14 @@ export function currentMonthRange(today = new Date()): Period {
   };
 }
 
+/** ISO date `months` months before the given ISO date (day-of-month clamped by JS `Date`). */
+export function monthsBefore(iso: string, months: number): string {
+  const d = new Date(iso + "T00:00:00");
+  d.setMonth(d.getMonth() - months);
+
+  return toISODate(d);
+}
+
 export function formatPeriodLabel(period: Period): string {
   const from = new Date(period.from + "T00:00:00");
   const to = new Date(period.to + "T00:00:00");
