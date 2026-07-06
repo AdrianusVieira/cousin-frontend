@@ -55,11 +55,12 @@ export function useCredit() {
   });
 
   const data = query.data;
+  const groups = [...(data?.groups ?? [])].sort((a, b) => b.term.localeCompare(a.term));
 
   return {
     // data
     error: query.error,
-    groups: data?.groups ?? [],
+    groups,
     isLoading: query.isLoading,
     isSettling: settleMutation.isPending,
     openStatementsValue: data ? String(data.summary.openStatements) : TEXT.empty,
