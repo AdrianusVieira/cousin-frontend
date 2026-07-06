@@ -34,6 +34,7 @@ export function useImportTransactions() {
   const [parsedRows, setParsedRows] = useState<ParsedFaturaRow[]>([]);
   const [parseError, setParseError] = useState<string | null>(null);
   const [result, setResult] = useState<ImportTransactionsResponse | null>(null);
+  const [term, setTerm] = useState("");
   const [walletId, setWalletId] = useState("");
 
   const walletsQuery = useQuery({
@@ -97,7 +98,7 @@ export function useImportTransactions() {
   );
 
   const canConfirm =
-    !!walletId && wireIndexToPreviewIndex.length > 0 && !result && !dedupQuery.isFetching;
+    !!term && !!walletId && wireIndexToPreviewIndex.length > 0 && !result && !dedupQuery.isFetching;
 
   const importMutation = useMutation({
     mutationFn: () => {
@@ -112,7 +113,7 @@ export function useImportTransactions() {
         };
       });
 
-      return api.post<ImportTransactionsResponse>("/transactions/import", { rows, walletId });
+      return api.post<ImportTransactionsResponse>("/transactions/import", { rows, term, walletId });
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -156,6 +157,7 @@ export function useImportTransactions() {
     setParsedRows([]);
     setParseError(null);
     setResult(null);
+    setTerm("");
     setWalletId("");
   }, []);
 
@@ -167,6 +169,7 @@ export function useImportTransactions() {
     parseError,
     previewRows: resultRows,
     result,
+    term,
     walletId,
     wallets: walletsQuery.data?.items ?? [],
 
@@ -174,6 +177,7 @@ export function useImportTransactions() {
     confirm: importMutation.mutate,
     handleFileChange,
     reset,
+    setTerm,
     setWalletId,
   };
 }

@@ -307,6 +307,7 @@ export interface ImportTransactionRow {
 
 export interface ImportTransactionsRequest {
   rows: ImportTransactionRow[];
+  term: ISODate;
   walletId: UUID;
 }
 
