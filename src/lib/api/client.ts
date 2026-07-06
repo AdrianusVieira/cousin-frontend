@@ -51,8 +51,10 @@ async function parseError(response: Response): Promise<ApiError> {
  * - applies a 60s timeout,
  * - on `401`, refreshes the Supabase session once and retries before surfacing.
  *
- * Cold-start *retry/backoff* lives in the TanStack Query defaults (lib/query.ts), so a
- * transient first-call failure self-heals without bespoke logic here.
+ * Cold-start *retry/backoff* lives in the TanStack Query defaults (lib/query.ts): queries
+ * retry any non-4xx failure, mutations retry a dropped connection (`NetworkError`) only for
+ * idempotent methods (GET/PATCH/DELETE) — a POST is never retried since a dropped connection
+ * can't prove the create didn't already reach the server.
  */
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   return send<T>(path, options, true);
@@ -85,6 +87,7 @@ async function send<T>(path: string, options: RequestOptions, allowRefresh: bool
     throw new NetworkError(
       controller.signal.aborted ? "Request timed out (server may be waking up)" : "Network error",
       cause,
+      method,
     );
   } finally {
     clearTimeout(timeout);
