@@ -297,32 +297,3 @@ export interface SettleRequest {
   transactionIds: UUID[];
 }
 
-export interface ImportTransactionRow {
-  amount: Money; // may be negative
-  date: ISODate;
-  description?: string;
-  installmentNumber?: number;
-  installmentTotal?: number;
-}
-
-export interface ImportTransactionsRequest {
-  rows: ImportTransactionRow[];
-  term: ISODate;
-  walletId: UUID;
-}
-
-export type SkippedImportReason = "duplicate" | "negativeAmount";
-
-export interface SkippedImportRow {
-  amount: Money;
-  date: ISODate;
-  description: string | null;
-  index: number;
-  reason: SkippedImportReason;
-}
-
-export interface ImportTransactionsResponse {
-  imported: Transaction[];
-  skipped: SkippedImportRow[];
-  summary: { importedCount: number; skippedCount: number; totalRows: number };
-}
