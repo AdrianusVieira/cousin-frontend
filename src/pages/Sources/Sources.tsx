@@ -81,9 +81,11 @@ export function Sources() {
     <>
       <PageHead
         actions={
-          <button className={form.btnPrimary} onClick={openForm} type="button">
-            {LABELS.newSource}
-          </button>
+          !isLoading && (
+            <button className={form.btnPrimary} onClick={openForm} type="button">
+              {LABELS.newSource}
+            </button>
+          )
         }
         periodLabel={periodLabel}
         title={LABELS.title}

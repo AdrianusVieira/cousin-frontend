@@ -102,9 +102,11 @@ export function Wallets() {
     <>
       <PageHead
         actions={
-          <button className={form.btnPrimary} onClick={openForm} type="button">
-            {LABELS.newWallet}
-          </button>
+          !isLoading && (
+            <button className={form.btnPrimary} onClick={openForm} type="button">
+              {LABELS.newWallet}
+            </button>
+          )
         }
         periodLabel={periodLabel}
         title={LABELS.title}

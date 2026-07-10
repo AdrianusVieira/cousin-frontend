@@ -103,9 +103,11 @@ export function Bills() {
     <>
       <PageHead
         actions={
-          <button className={form.btnPrimary} onClick={openForm} type="button">
-            {LABELS.newBill}
-          </button>
+          !isLoading && (
+            <button className={form.btnPrimary} onClick={openForm} type="button">
+              {LABELS.newBill}
+            </button>
+          )
         }
         periodLabel={periodLabel}
         title={LABELS.title}

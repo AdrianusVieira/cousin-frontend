@@ -76,9 +76,11 @@ export function Categories() {
     <>
       <PageHead
         actions={
-          <button className={form.btnPrimary} onClick={openForm} type="button">
-            {LABELS.newCategory}
-          </button>
+          !isLoading && (
+            <button className={form.btnPrimary} onClick={openForm} type="button">
+              {LABELS.newCategory}
+            </button>
+          )
         }
         periodLabel={periodLabel}
         title={LABELS.title}
