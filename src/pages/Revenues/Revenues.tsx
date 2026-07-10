@@ -103,9 +103,11 @@ export function Revenues() {
     <>
       <PageHead
         actions={
-          <button className={form.btnPrimary} onClick={openForm} type="button">
-            {LABELS.newRevenue}
-          </button>
+          !isLoading && (
+            <button className={form.btnPrimary} onClick={openForm} type="button">
+              {LABELS.newRevenue}
+            </button>
+          )
         }
         periodLabel={periodLabel}
         title={LABELS.title}
