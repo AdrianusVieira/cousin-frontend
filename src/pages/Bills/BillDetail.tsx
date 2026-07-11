@@ -37,7 +37,7 @@ const LABELS = {
 
 const TEXT = {
   deleteBlocked: "! Cannot delete a paid bill.",
-  flagged: "! This bill is flagged — check its payment status.",
+  flagged: "! This bill is overdue and unpaid.",
 };
 
 function EditModal({

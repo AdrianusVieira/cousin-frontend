@@ -37,7 +37,7 @@ const LABELS = {
 
 const TEXT = {
   deleteBlocked: "! Cannot delete a received revenue.",
-  flagged: "! This revenue is flagged — check its receipt status.",
+  flagged: "! This revenue is overdue and not yet received.",
 };
 
 function EditModal({
