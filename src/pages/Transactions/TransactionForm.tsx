@@ -34,6 +34,7 @@ const LABELS = {
   installments: "Installments",
   method: "Method",
   none: "None",
+  placeholder: "—",
   term: "Term",
   title: "New Transaction",
   to: "To",
@@ -121,12 +122,12 @@ export function TransactionForm({
       date: todayISO(),
       description: "",
       fromId: "",
-      fromType: "external",
+      fromType: "",
       installmentTotal: "",
       method: "debit",
       term: defaultTerm(),
       toId: "",
-      toType: "wallet",
+      toType: "",
     },
   });
 
@@ -149,8 +150,8 @@ export function TransactionForm({
   }, [fromType, isCredit]);
 
   useEffect(() => {
-    if (!validToTypes.includes(toType as typeof validToTypes[number])) {
-      setValue("toType", validToTypes[0]);
+    if (toType && !validToTypes.includes(toType as typeof validToTypes[number])) {
+      setValue("toType", "");
       resetField("toId", { defaultValue: "" });
     }
   }, [resetField, setValue, toType, validToTypes]);
@@ -166,16 +167,14 @@ export function TransactionForm({
   const handleMethodChange = useCallback(
     (val: string) => {
       setValue("method", val);
-      if (val === TXN_METHOD.Credit) {
-        setValue("fromType", "wallet");
-        setValue("toType", "external");
-      }
+      setValue("fromType", val === TXN_METHOD.Credit ? "wallet" : "");
+      setValue("toType", "");
     },
     [setValue],
   );
 
-  const showFromId = isCredit || fromType !== "external";
-  const showToId = toType !== "external";
+  const showFromId = isCredit || (fromType !== "" && fromType !== "external");
+  const showToId = toType !== "" && toType !== "external";
 
   const fromIdOptions = useMemo(() => {
     if (isCredit || fromType === "wallet") return wallets;
@@ -200,6 +199,16 @@ export function TransactionForm({
 
       if (!values.date) {
         setError("date", { message: "Required" });
+        return;
+      }
+
+      if (!isCredit && !values.fromType) {
+        setError("fromType", { message: "Required" });
+        return;
+      }
+
+      if (!values.toType) {
+        setError("toType", { message: "Required" });
         return;
       }
 
@@ -245,7 +254,7 @@ export function TransactionForm({
         onSubmit(payload);
       }
     },
-    [onSubmit, setError, showFromId, showToId],
+    [isCredit, onSubmit, setError, showFromId, showToId],
   );
 
   return (
@@ -295,8 +304,9 @@ export function TransactionForm({
         </div>
 
         {!isCredit && (
-          <FormField label={LABELS.fromType}>
+          <FormField error={errors.fromType?.message} label={LABELS.fromType} required>
             <select className={form.select} {...register("fromType")}>
+              <option value="">{LABELS.placeholder}</option>
               {FROM_TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
@@ -307,7 +317,7 @@ export function TransactionForm({
         {showFromId && (
           <FormField error={errors.fromId?.message} label={LABELS.from} required>
             <select className={form.select} {...register("fromId")}>
-              <option value="">{LABELS.none}</option>
+              <option value="">{LABELS.placeholder}</option>
               {fromIdOptions.map((item) => (
                 <option key={item.id} value={item.id}>{item.name}</option>
               ))}
@@ -315,8 +325,9 @@ export function TransactionForm({
           </FormField>
         )}
 
-        <FormField label={LABELS.toType}>
+        <FormField error={errors.toType?.message} label={LABELS.toType} required>
           <select className={form.select} {...register("toType")}>
+            <option value="">{LABELS.placeholder}</option>
             {validToTypes.map((t) => (
               <option key={t} value={t}>{TO_TYPE_LABELS[t]}</option>
             ))}
@@ -326,7 +337,7 @@ export function TransactionForm({
         {showToId && (
           <FormField error={errors.toId?.message} label={LABELS.to} required>
             <select className={form.select} {...register("toId")}>
-              <option value="">{LABELS.none}</option>
+              <option value="">{LABELS.placeholder}</option>
               {toIdOptions.map((item) => (
                 <option key={item.id} value={item.id}>{item.name}</option>
               ))}
