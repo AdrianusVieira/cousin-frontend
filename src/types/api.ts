@@ -135,12 +135,10 @@ export interface Transaction {
 /* ---------------------------------------------------------------- responses */
 
 export interface DashboardResponse {
-  revenue: Money;
-  outcome: Money;
+  income: { total: Money; transactions: Money; unreceived: Money };
+  outcome: { total: Money; transactions: Money; unpaid: Money };
   net: Money;
   savingsRate: number;
-  savingsRateDelta: number | null;
-  netDelta: Money | null;
   cashFlow: Array<{ date: ISODate; in: Money; out: Money }>;
   pendingCredit: {
     total: Money;
