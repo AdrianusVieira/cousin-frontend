@@ -1,13 +1,19 @@
-.statGrid {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(4, 1fr);
+.chartRow {
+  display: flex;
+  margin-top: var(--space-4);
 }
 
-.bottomRow {
+.flowBars {
   display: flex;
+  flex-direction: column;
   gap: var(--space-4);
   margin-top: var(--space-4);
+}
+
+.statRow {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .loading {
