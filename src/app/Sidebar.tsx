@@ -14,12 +14,15 @@ const LABELS = {
   signOut: "Sign out",
 };
 
-export function Sidebar() {
+export function Sidebar({ hidden }: { hidden: boolean }) {
   const { signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <nav className={styles.sidebar} aria-label="Primary">
+    <nav
+      aria-label="Primary"
+      className={hidden ? `${styles.sidebar} ${styles.sidebarHidden}` : styles.sidebar}
+    >
       <div className={styles.brand}>cou$in</div>
 
       <div className={styles.period}>
