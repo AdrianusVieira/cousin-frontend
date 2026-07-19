@@ -10,7 +10,20 @@
   padding: var(--space-6) var(--space-4);
   position: sticky;
   top: 0;
+  transition:
+    margin-left 180ms ease,
+    visibility 0s;
   width: var(--sidebar-width);
+}
+
+/* Off-canvas slide keeps content rigid (vs. width-animation squish); the delayed
+   visibility flip removes hidden links from the tab order after the slide. */
+.sidebarHidden {
+  margin-left: calc(-1 * var(--sidebar-width));
+  transition:
+    margin-left 180ms ease,
+    visibility 0s 180ms;
+  visibility: hidden;
 }
 
 .brand {
@@ -101,4 +114,11 @@
 .signOut:hover {
   background: var(--color-bg);
   color: var(--color-text-sub);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebarHidden {
+    transition: none;
+  }
 }

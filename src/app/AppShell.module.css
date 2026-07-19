@@ -3,6 +3,26 @@
   min-height: 100vh;
 }
 
+.sidebarToggle {
+  background: var(--color-surface);
+  border: none;
+  border-right: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: var(--text-body);
+  height: 100vh;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  width: var(--space-5);
+}
+
+.sidebarToggle:hover {
+  background: var(--color-bg);
+  color: var(--color-text-sub);
+}
+
 .main {
   flex: 1;
   min-width: 0;
