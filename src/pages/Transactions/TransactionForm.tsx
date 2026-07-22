@@ -94,7 +94,10 @@ function defaultTerm(): string {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
 
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-15`;
+  const monthOffset = d.getDate() > 9 ? 1 : 0;
+  const term = new Date(d.getFullYear(), d.getMonth() + monthOffset, 15);
+
+  return `${term.getFullYear()}-${pad(term.getMonth() + 1)}-15`;
 }
 
 export function TransactionForm({
