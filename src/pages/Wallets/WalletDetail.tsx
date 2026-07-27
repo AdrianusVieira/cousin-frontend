@@ -20,6 +20,7 @@ const LABELS = {
   archive: "Archive",
   balance: "Balance",
   cancel: "Cancel",
+  creditEnabled: "Credit enabled",
   currentBalance: "Current Balance",
   description: "Description",
   edit: "Edit",
@@ -32,6 +33,11 @@ const LABELS = {
   unarchive: "Unarchive",
 };
 
+const TEXT = {
+  no: "No",
+  yes: "Yes",
+};
+
 function EditModal({
   isSubmitting,
   onClose,
@@ -41,9 +47,9 @@ function EditModal({
 }: {
   isSubmitting: boolean;
   onClose: () => void;
-  onSubmit: (data: { balance?: string; description?: string; name?: string }) => void;
+  onSubmit: (data: { balance?: string; creditEnabled?: boolean; description?: string; name?: string }) => void;
   serverError?: unknown;
-  wallet: { balance: string; description: string | null; name: string };
+  wallet: { balance: string; creditEnabled: boolean; description: string | null; name: string };
 }) {
   const {
     formState: { errors },
@@ -53,6 +59,7 @@ function EditModal({
   } = useForm({
     defaultValues: {
       balance: wallet.balance,
+      creditEnabled: String(wallet.creditEnabled),
       description: wallet.description ?? "",
       name: wallet.name,
     },
@@ -63,17 +70,19 @@ function EditModal({
   }, [serverError, setError]);
 
   const processSubmit = useCallback(
-    (values: { balance: string; description: string; name: string }) => {
+    (values: { balance: string; creditEnabled: string; description: string; name: string }) => {
       if (!values.name.trim()) {
         setError("name", { message: "Required" });
         return;
       }
 
-      const payload: Record<string, string> = {};
+      const payload: { balance?: string; creditEnabled?: boolean; description?: string; name?: string } = {};
       if (values.name.trim() !== wallet.name) payload.name = values.name.trim();
       if (values.description.trim() !== (wallet.description ?? ""))
         payload.description = values.description.trim();
       if (values.balance !== wallet.balance) payload.balance = values.balance;
+      if (values.creditEnabled !== String(wallet.creditEnabled))
+        payload.creditEnabled = values.creditEnabled === "true";
 
       if (Object.keys(payload).length > 0) onSubmit(payload);
       else onClose();
@@ -118,6 +127,13 @@ function EditModal({
             type="number"
             {...register("balance")}
           />
+        </FormField>
+
+        <FormField label={LABELS.creditEnabled}>
+          <select className={form.select} {...register("creditEnabled")}>
+            <option value="false">{TEXT.no}</option>
+            <option value="true">{TEXT.yes}</option>
+          </select>
         </FormField>
       </div>
     </Modal>

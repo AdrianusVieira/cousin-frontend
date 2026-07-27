@@ -38,6 +38,7 @@ export interface Wallet {
   description: string | null;
   balance: Money;
   archived: boolean;
+  creditEnabled: boolean;
   createdAt: ISODateTime;
   updatedAt: ISODateTime;
 }

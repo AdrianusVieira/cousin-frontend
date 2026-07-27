@@ -24,7 +24,7 @@ export function useWallets() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: { description?: string; name: string }) =>
+    mutationFn: (data: { creditEnabled: boolean; description?: string; name: string }) =>
       api.post<Wallet>("/wallets", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallets"] });
