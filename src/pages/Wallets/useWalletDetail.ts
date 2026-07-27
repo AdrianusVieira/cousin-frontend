@@ -29,7 +29,7 @@ export function useWalletDetail() {
   });
 
   const editMutation = useMutation({
-    mutationFn: (data: { balance?: string; description?: string; name?: string }) =>
+    mutationFn: (data: { balance?: string; creditEnabled?: boolean; description?: string; name?: string }) =>
       api.patch<Wallet>(`/wallets/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", id] });

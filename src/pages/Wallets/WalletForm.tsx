@@ -11,12 +11,19 @@ import form from "@/styles/form.module.css";
 const LABELS = {
   cancel: "Cancel",
   create: "Create wallet",
+  creditEnabled: "Credit enabled",
   description: "Description",
   name: "Name",
   title: "New Wallet",
 };
 
+const TEXT = {
+  no: "No",
+  yes: "Yes",
+};
+
 interface FormValues {
+  creditEnabled: string;
   description: string;
   name: string;
 }
@@ -24,7 +31,7 @@ interface FormValues {
 interface WalletFormProps {
   isSubmitting: boolean;
   onClose: () => void;
-  onSubmit: (data: { description?: string; name: string }) => void;
+  onSubmit: (data: { creditEnabled: boolean; description?: string; name: string }) => void;
   serverError?: unknown;
 }
 
@@ -35,7 +42,7 @@ export function WalletForm({ isSubmitting, onClose, onSubmit, serverError }: Wal
     register,
     setError,
   } = useForm<FormValues>({
-    defaultValues: { description: "", name: "" },
+    defaultValues: { creditEnabled: "false", description: "", name: "" },
   });
 
   useEffect(() => {
@@ -50,6 +57,7 @@ export function WalletForm({ isSubmitting, onClose, onSubmit, serverError }: Wal
       }
 
       onSubmit({
+        creditEnabled: values.creditEnabled === "true",
         name: values.name.trim(),
         ...(values.description.trim() ? { description: values.description.trim() } : {}),
       });
@@ -84,6 +92,13 @@ export function WalletForm({ isSubmitting, onClose, onSubmit, serverError }: Wal
 
         <FormField label={LABELS.description}>
           <input className={form.input} type="text" {...register("description")} />
+        </FormField>
+
+        <FormField label={LABELS.creditEnabled}>
+          <select className={form.select} {...register("creditEnabled")}>
+            <option value="false">{TEXT.no}</option>
+            <option value="true">{TEXT.yes}</option>
+          </select>
         </FormField>
       </div>
     </Modal>

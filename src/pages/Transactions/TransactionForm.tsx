@@ -180,7 +180,8 @@ export function TransactionForm({
   const showToId = toType !== "" && toType !== "external";
 
   const fromIdOptions = useMemo(() => {
-    if (isCredit || fromType === "wallet") return wallets;
+    if (isCredit) return wallets.filter((wallet) => wallet.creditEnabled);
+    if (fromType === "wallet") return wallets;
     if (fromType === "revenue") return revenues;
 
     return [];
