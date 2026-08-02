@@ -18,11 +18,17 @@ npm run preview    # serve the production build locally
 npm run typecheck  # tsc only, no emit
 npm run lint       # ESLint (flat config, eslint.config.js)
 npm run format     # Prettier
+npm run test       # Vitest, single run
+npm run test:watch # Vitest, watch mode
 ```
 
-No test runner is wired yet. **The repo's `test-generator` skill is configured for React
-Native / Expo, but this is a web app** — if adding tests, use Vitest + `@testing-library/react`,
-not RN tooling.
+Tests are Vitest + `@testing-library/react` (jsdom, globals on), configured in the `test` block of
+`vite.config.ts` — so the `@/` alias works for free. Specs live in a `__tests__/` folder beside the
+code under test and are named `*.spec.ts(x)`. Coverage is currently pure logic only (`src/lib`,
+`src/constants`, and the exported derivation helpers in page hooks); components and hooks are
+untested. **The repo's `test-generator` skill is configured for React Native / Expo, but this is a
+web app** — take its conventions (`makeSut` factory, "should" test names, one assertion per `it`),
+not its Jest/RN tooling.
 
 Requires `.env` (copy `.env.example`). `VITE_SUPABASE_ANON_KEY` must be filled or the app throws
 a deliberate, descriptive boot error from `src/lib/env.ts`.

@@ -30,7 +30,7 @@ const TEXT = {
  * Per-wallet pending totals, largest first. Mirrors the backend's `summary.pendingCredit`:
  * a statement counts in full until every transaction in it is settled.
  */
-function toPendingCredit(groups: CreditResponse["groups"]) {
+export function toPendingCredit(groups: CreditResponse["groups"]) {
   const totals = new Map<string, { total: number; walletId: string; walletName: string }>();
 
   for (const group of groups) {
@@ -60,7 +60,7 @@ function toPendingCredit(groups: CreditResponse["groups"]) {
 }
 
 /** Pivot statement groups into one row per term with a total column per wallet. */
-function toHistory(groups: CreditResponse["groups"]) {
+export function toHistory(groups: CreditResponse["groups"]) {
   const wallets = new Map<string, CreditHistoryWallet>();
   const totalsByTerm = new Map<string, Map<string, number>>();
 
