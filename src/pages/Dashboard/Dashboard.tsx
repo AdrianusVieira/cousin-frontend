@@ -4,7 +4,6 @@ import { StatCard } from "@/components/StatCard";
 import { CashFlowChart } from "./CashFlowChart";
 import styles from "./Dashboard.module.css";
 import { FlowBar } from "./FlowBar";
-import { PendingCreditPanel } from "./PendingCreditPanel";
 import { useDashboard } from "./useDashboard";
 
 const LABELS = {
@@ -27,8 +26,6 @@ export function Dashboard() {
     netValue,
     outcomeSegments,
     outcomeTotal,
-    pendingCreditPerWallet,
-    pendingCreditTotal,
     periodLabel,
     savingsRateValue,
   } = useDashboard();
@@ -46,7 +43,6 @@ export function Dashboard() {
           <div className={styles.statRow}>
             <StatCard accent="net" label={LABELS.net} value={netValue} />
             <StatCard accent="credit" label={LABELS.savingsRate} value={savingsRateValue} />
-            <PendingCreditPanel perWallet={pendingCreditPerWallet} total={pendingCreditTotal} />
           </div>
 
           <div className={styles.flowBars}>

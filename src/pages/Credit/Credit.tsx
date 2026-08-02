@@ -5,13 +5,13 @@ import { StatCard } from "@/components/StatCard";
 import { CreditGroupCard } from "./CreditGroupCard";
 import { CreditHistoryChart } from "./CreditHistoryChart";
 import styles from "./Credit.module.css";
+import { PendingCreditPanel } from "./PendingCreditPanel";
 import { useCredit } from "./useCredit";
 
 const LABELS = {
   loading: "Loading…",
   noGroups: "No credit transactions.",
   openStatements: "Open Statements",
-  pendingCredit: "Pending Credit",
   settledInPeriod: "Total Settled",
   title: "Credit",
 };
@@ -25,7 +25,8 @@ export function Credit() {
     isLoading,
     isSettling,
     openStatementsValue,
-    pendingCreditValue,
+    pendingCreditPerWallet,
+    pendingCreditTotal,
     settledInPeriodValue,
     status,
     statusOptions,
@@ -46,7 +47,7 @@ export function Credit() {
       ) : (
         <>
           <div className={styles.statGrid}>
-            <StatCard accent="credit" label={LABELS.pendingCredit} value={pendingCreditValue} />
+            <PendingCreditPanel perWallet={pendingCreditPerWallet} total={pendingCreditTotal} />
             <StatCard accent="net" label={LABELS.openStatements} value={openStatementsValue} />
             <StatCard accent="revenue" label={LABELS.settledInPeriod} value={settledInPeriodValue} />
           </div>

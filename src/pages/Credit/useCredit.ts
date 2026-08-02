@@ -26,6 +26,39 @@ const TEXT = {
   empty: "â€”",
 };
 
+/**
+ * Per-wallet pending totals, largest first. Mirrors the backend's `summary.pendingCredit`:
+ * a statement counts in full until every transaction in it is settled.
+ */
+function toPendingCredit(groups: CreditResponse["groups"]) {
+  const totals = new Map<string, { total: number; walletId: string; walletName: string }>();
+
+  for (const group of groups) {
+    if (group.settled) continue;
+
+    const walletId = group.walletId || EXTERNAL_WALLET_ID;
+    const entry = totals.get(walletId) ?? {
+      total: 0,
+      walletId,
+      walletName: group.walletName || LABELS.externalWallet,
+    };
+
+    entry.total += Number(group.total);
+    totals.set(walletId, entry);
+  }
+
+  const sorted = [...totals.values()].sort((a, b) => b.total - a.total);
+
+  return {
+    perWallet: sorted.map(({ total, walletId, walletName }) => ({
+      total: total.toFixed(2),
+      walletId,
+      walletName,
+    })),
+    total: sorted.reduce((sum, entry) => sum + entry.total, 0).toFixed(2),
+  };
+}
+
 /** Pivot statement groups into one row per term with a total column per wallet. */
 function toHistory(groups: CreditResponse["groups"]) {
   const wallets = new Map<string, CreditHistoryWallet>();
@@ -90,7 +123,9 @@ export function useCredit() {
     queryKey: ["credit", "all"],
   });
 
-  const history = useMemo(() => toHistory(historyQuery.data?.groups ?? []), [historyQuery.data]);
+  const historyGroups = historyQuery.data?.groups;
+  const history = useMemo(() => toHistory(historyGroups ?? []), [historyGroups]);
+  const pendingCredit = useMemo(() => toPendingCredit(historyGroups ?? []), [historyGroups]);
 
   const settleMutation = useMutation({
     mutationFn: (transactionIds: string[]) =>
@@ -115,7 +150,8 @@ export function useCredit() {
     isLoading: query.isLoading,
     isSettling: settleMutation.isPending,
     openStatementsValue: data ? String(data.summary.openStatements) : TEXT.empty,
-    pendingCreditValue: data ? formatMoney(data.summary.pendingCredit) : TEXT.empty,
+    pendingCreditPerWallet: pendingCredit.perWallet,
+    pendingCreditTotal: pendingCredit.total,
     settledInPeriodValue: data ? formatMoney(data.summary.settledInPeriod) : TEXT.empty,
     settlingGroupKey,
     status,
