@@ -56,8 +56,6 @@ export function useDashboard() {
     netValue: data ? formatMoney(data.net) : TEXT.empty,
     outcomeSegments,
     outcomeTotal,
-    pendingCreditPerWallet: data?.pendingCredit.perWallet ?? [],
-    pendingCreditTotal: data?.pendingCredit.total ?? "0",
     periodLabel,
     savingsRateValue: data ? formatPercent(data.savingsRate) : TEXT.empty,
   };
