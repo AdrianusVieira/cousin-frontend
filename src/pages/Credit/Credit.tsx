@@ -3,6 +3,7 @@ import { PageHead } from "@/components/PageHead";
 import { StatCard } from "@/components/StatCard";
 
 import { CreditGroupCard } from "./CreditGroupCard";
+import { CreditHistoryChart } from "./CreditHistoryChart";
 import styles from "./Credit.module.css";
 import { useCredit } from "./useCredit";
 
@@ -19,6 +20,8 @@ export function Credit() {
   const {
     error,
     groups,
+    historyPoints,
+    historyWallets,
     isLoading,
     isSettling,
     openStatementsValue,
@@ -46,6 +49,10 @@ export function Credit() {
             <StatCard accent="credit" label={LABELS.pendingCredit} value={pendingCreditValue} />
             <StatCard accent="net" label={LABELS.openStatements} value={openStatementsValue} />
             <StatCard accent="revenue" label={LABELS.settledInPeriod} value={settledInPeriodValue} />
+          </div>
+
+          <div className={styles.chartSection}>
+            <CreditHistoryChart points={historyPoints} wallets={historyWallets} />
           </div>
 
           <div className={styles.filterBar}>

@@ -4,6 +4,15 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
+.chartSection {
+  margin-top: var(--space-4);
+}
+
+/* The chart renders nothing when there is no history — don't leave its spacing behind. */
+.chartSection:empty {
+  display: none;
+}
+
 .filterBar {
   margin-top: var(--space-4);
 }
