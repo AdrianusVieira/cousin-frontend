@@ -7,6 +7,20 @@ const CHART_COLORS = {
   revenue: { dark: "#4ec9b0", light: "#098658" },
 } as const;
 
+/**
+ * Categorical palette for charts with one series per entity (e.g. a wallet), where the
+ * colour carries identity rather than meaning. Kept separate from CHART_COLORS so the
+ * semantic net/outcome/revenue hues never stand in for "some wallet".
+ */
+const CHART_SERIES = [
+  { dark: "#569cd6", light: "#267f99" },
+  { dark: "#4ec9b0", light: "#098658" },
+  { dark: "#ce9178", light: "#a31515" },
+  { dark: "#c586c0", light: "#af00db" },
+  { dark: "#dcdcaa", light: "#795e26" },
+  { dark: "#9cdcfe", light: "#001080" },
+] as const;
+
 /** Shared Recharts XAxis/YAxis styling. Spread onto each axis alongside its unique props. */
 export const CHART_AXIS = {
   axisLine: false,
@@ -36,8 +50,20 @@ export function chartColor(key: ChartColorKey, theme: Theme): string {
   return CHART_COLORS[key][theme];
 }
 
+/** Colour for the nth series of a categorical chart; cycles once the palette runs out. */
+export function seriesColor(index: number, theme: Theme): string {
+  return CHART_SERIES[index % CHART_SERIES.length]![theme];
+}
+
 export function formatChartDate(value: unknown): string {
   return formatDate(String(value));
+}
+
+/** Display an ISO date as "Jul 26" — for axes bucketed by month. */
+export function formatChartMonth(value: unknown): string {
+  const d = new Date(String(value) + "T00:00:00");
+
+  return d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
 }
 
 export function formatChartTick(value: number): string {
