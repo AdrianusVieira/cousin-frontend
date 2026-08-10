@@ -45,7 +45,17 @@ const TEXT = {
   debit: "Debit",
   empty: "—",
   external: "External",
+  net:
+    "Total In minus Total Out for the rows currently listed. Internal transfers between your own " +
+    "wallets cancel out, so they do not move this figure.",
   settled: "Settled",
+  totalIn:
+    "Everything arriving in a wallet across the listed transactions — money in and realized " +
+    "revenues — counted on the purchase date and honouring the filters above.",
+  totalOut:
+    "Everything leaving a wallet across the listed transactions — money out and bill payments — " +
+    "counted on the purchase date, so a parcelled credit purchase shows in full on the day you " +
+    "bought it. The dashboard's Outcome spreads it across statement dates instead.",
   unsettled: "Unsettled",
 };
 
@@ -203,9 +213,19 @@ export function Transactions() {
       ) : (
         <>
           <div className={styles.statGrid}>
-            <StatCard accent="revenue" label={LABELS.totalIn} value={totalInValue} />
-            <StatCard accent="outcome" label={LABELS.totalOut} value={totalOutValue} />
-            <StatCard accent="net" label={LABELS.net} value={netValue} />
+            <StatCard
+              accent="revenue"
+              info={TEXT.totalIn}
+              label={LABELS.totalIn}
+              value={totalInValue}
+            />
+            <StatCard
+              accent="outcome"
+              info={TEXT.totalOut}
+              label={LABELS.totalOut}
+              value={totalOutValue}
+            />
+            <StatCard accent="net" info={TEXT.net} label={LABELS.net} value={netValue} />
           </div>
 
           <div className={styles.filterBar}>

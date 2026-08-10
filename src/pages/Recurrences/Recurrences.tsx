@@ -25,8 +25,18 @@ const LABELS = {
 };
 
 const TEXT = {
+  activeSchedules:
+    "Recurrences that have generated at least one bill or revenue. A schedule only counts as " +
+    "active once it has produced something — a template that never fired is not counted here.",
   bill: "Bill",
   empty: "—",
+  inactive:
+    "Recurrences that exist but have never generated a bill or revenue. Usually a schedule you " +
+    "set up and never let run, or one whose generated items were deleted.",
+  recurringOutflow:
+    "Estimated value of the recurring bills scheduled in the period. It is the template's " +
+    "estimate, not what was actually charged — check Estimated vs Actual on a recurrence for the " +
+    "gap.",
   revenue: "Revenue",
 };
 
@@ -96,9 +106,24 @@ export function Recurrences() {
       ) : (
         <>
           <div className={styles.statGrid}>
-            <StatCard accent="outcome" label={LABELS.recurringOutflow} value={recurringOutflowValue} />
-            <StatCard accent="revenue" label={LABELS.activeSchedules} value={activeCountValue} />
-            <StatCard accent="net" label={LABELS.inactive} value={inactiveCountValue} />
+            <StatCard
+              accent="outcome"
+              info={TEXT.recurringOutflow}
+              label={LABELS.recurringOutflow}
+              value={recurringOutflowValue}
+            />
+            <StatCard
+              accent="revenue"
+              info={TEXT.activeSchedules}
+              label={LABELS.activeSchedules}
+              value={activeCountValue}
+            />
+            <StatCard
+              accent="net"
+              info={TEXT.inactive}
+              label={LABELS.inactive}
+              value={inactiveCountValue}
+            />
           </div>
 
           <div className={styles.tableWrap}>

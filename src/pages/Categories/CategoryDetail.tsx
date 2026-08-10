@@ -32,6 +32,17 @@ const LABELS = {
   unarchive: "Unarchive",
 };
 
+const TEXT = {
+  totalIncome:
+    "Money that came in tagged with this category over the period, counted on the transaction " +
+    "date. The chart below breaks the same figure down over time.",
+  totalOutcome:
+    "Money that went out tagged with this category over the period, counted on the transaction " +
+    "date — so a parcelled credit purchase counts in full on the day you bought it. The " +
+    "dashboard's Outcome spreads it across statement dates instead, which is why the two can " +
+    "disagree for the same period.",
+};
+
 function EditModal({
   category,
   isSubmitting,
@@ -158,8 +169,18 @@ export function CategoryDetail() {
           />
 
           <div className={styles.statGrid}>
-            <StatCard accent="revenue" label={LABELS.totalIncome} value={totalIncomeValue} />
-            <StatCard accent="outcome" label={LABELS.totalOutcome} value={totalOutcomeValue} />
+            <StatCard
+              accent="revenue"
+              info={TEXT.totalIncome}
+              label={LABELS.totalIncome}
+              value={totalIncomeValue}
+            />
+            <StatCard
+              accent="outcome"
+              info={TEXT.totalOutcome}
+              label={LABELS.totalOutcome}
+              value={totalOutcomeValue}
+            />
           </div>
 
           <div className={styles.chartWrap}>

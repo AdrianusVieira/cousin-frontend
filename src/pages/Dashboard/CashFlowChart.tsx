@@ -30,10 +30,10 @@ const LABELS = {
 
 const TEXT = {
   info:
-    "Money entering and leaving your wallets, day by day, across the selected period. " +
-    "Debit counts on the purchase date and credit on its statement date, so each installment " +
-    "of a parcelled purchase lands in the month it is charged. Internal transfers and manual " +
-    "adjustments are excluded.",
+    "Money entering and leaving your wallets day by day, on the date each transaction was made — " +
+    "credit included, on its purchase date. Internal transfers and manual adjustments are excluded. " +
+    "This is the movement view; the Income and Outcome bars above are the settlement view, where " +
+    "credit counts on its statement date instead.",
 };
 
 export function CashFlowChart({ data }: CashFlowChartProps) {

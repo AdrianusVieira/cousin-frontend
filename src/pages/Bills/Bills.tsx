@@ -32,7 +32,19 @@ const LABELS = {
 
 const TEXT = {
   flag: "! flag",
+  overdue:
+    "Unpaid bills whose term is already in the past. A subset of Total Unpaid, listed separately " +
+    "because these are the ones costing you late fees.",
   paid: "Paid",
+  totalBilled:
+    "Every bill with a term inside the period, paid or not. It is what the period owes in total, " +
+    "regardless of what you have settled so far.",
+  totalPaid:
+    "Bills in the period you have marked paid. Marking a bill paid is what moves it here — " +
+    "recording a transaction against it does not do it on its own.",
+  totalUnpaid:
+    "Bills in the period still not marked paid, whether or not their term has passed. This is the " +
+    "amount the dashboard's Outcome carries as committed but unsettled.",
   unpaid: "Unpaid",
 };
 
@@ -120,10 +132,30 @@ export function Bills() {
       ) : (
         <>
           <div className={styles.statGrid}>
-            <StatCard accent="net" label={LABELS.totalBilled} value={totalBilledValue} />
-            <StatCard accent="revenue" label={LABELS.totalPaid} value={totalPaidValue} />
-            <StatCard accent="outcome" label={LABELS.totalUnpaid} value={totalUnpaidValue} />
-            <StatCard accent="credit" label={LABELS.overdue} value={overdueValue} />
+            <StatCard
+              accent="net"
+              info={TEXT.totalBilled}
+              label={LABELS.totalBilled}
+              value={totalBilledValue}
+            />
+            <StatCard
+              accent="revenue"
+              info={TEXT.totalPaid}
+              label={LABELS.totalPaid}
+              value={totalPaidValue}
+            />
+            <StatCard
+              accent="outcome"
+              info={TEXT.totalUnpaid}
+              label={LABELS.totalUnpaid}
+              value={totalUnpaidValue}
+            />
+            <StatCard
+              accent="credit"
+              info={TEXT.overdue}
+              label={LABELS.overdue}
+              value={overdueValue}
+            />
           </div>
 
           <div className={styles.filterBar}>

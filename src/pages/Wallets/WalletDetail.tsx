@@ -34,7 +34,17 @@ const LABELS = {
 };
 
 const TEXT = {
+  currentBalance:
+    "The wallet's balance right now, not at the end of the period. Only debit movements change " +
+    "it — credit spending stays in Pending Credit until you settle the statement, so this reads " +
+    "higher than what is really available.",
   no: "No",
+  periodAvg:
+    "Average of this wallet's daily balances across the selected period. The chart below plots the " +
+    "same series, with this value as its dashed line.",
+  status:
+    "Archived wallets keep their history and stay attached to past transactions, but no longer " +
+    "count toward patrimony or appear in transaction forms.",
   yes: "Yes",
 };
 
@@ -197,9 +207,24 @@ export function WalletDetail() {
           />
 
           <div className={styles.statGrid}>
-            <StatCard accent="net" label={LABELS.currentBalance} value={currentBalanceValue} />
-            <StatCard accent="revenue" label={LABELS.periodAvg} value={periodAvgValue} />
-            <StatCard accent={isArchived ? "outcome" : "revenue"} label={LABELS.status} value={statusValue} />
+            <StatCard
+              accent="net"
+              info={TEXT.currentBalance}
+              label={LABELS.currentBalance}
+              value={currentBalanceValue}
+            />
+            <StatCard
+              accent="revenue"
+              info={TEXT.periodAvg}
+              label={LABELS.periodAvg}
+              value={periodAvgValue}
+            />
+            <StatCard
+              accent={isArchived ? "outcome" : "revenue"}
+              info={TEXT.status}
+              label={LABELS.status}
+              value={statusValue}
+            />
           </div>
 
           <div className={styles.chartWrap}>

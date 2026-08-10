@@ -8,14 +8,32 @@ import type { DashboardResponse } from "@/types/api";
 import type { FlowSegment } from "./FlowBar";
 
 const LABELS = {
-  transactionsIn: "Transactions in",
-  transactionsOut: "Transactions out",
+  pendingCredit: "Pending credit",
+  settledIn: "Settled in",
+  settledOut: "Settled out",
   unpaidBills: "Unpaid bills",
   unreceivedRevenues: "Unreceived revenues",
 };
 
 const TEXT = {
   empty: "—",
+  incomeInfo:
+    "Everything expected to land in your wallets over the period. Credit counts on its statement " +
+    "date, so each installment falls in the month it is charged. The faded slices are committed but " +
+    "not settled yet: pending credit and revenues you have not marked received.",
+  netInfo:
+    "Income minus Outcome for the period, counting money that has not settled yet — pending credit, " +
+    "unpaid bills and unreceived revenues are all included. It is what the period ends at if " +
+    "everything currently scheduled goes through, not your current wallet balance.",
+  outcomeInfo:
+    "Everything expected to leave your wallets over the period. Credit counts on its statement date, " +
+    "so a parcelled purchase spreads across the months it is actually charged instead of landing in " +
+    "full on the purchase month. The faded slices are committed but not settled yet: pending credit " +
+    "and bills you have not marked paid.",
+  savingsRateInfo:
+    "Net as a percentage of Income for the period. Negative means the period spends more than it " +
+    "brings in. It moves with the same settlement basis as the bars, so committed-but-unsettled " +
+    "amounts already count against it.",
 };
 
 const ZERO = "0.00";
@@ -37,11 +55,13 @@ export function useDashboard() {
   const flowScaleMax = Math.max(Number(incomeTotal), Number(outcomeTotal));
 
   const incomeSegments: FlowSegment[] = [
-    { label: LABELS.transactionsIn, value: data?.income.transactions ?? ZERO },
+    { label: LABELS.settledIn, value: data?.income.settled ?? ZERO },
+    { label: LABELS.pendingCredit, value: data?.income.pendingCredit ?? ZERO },
     { label: LABELS.unreceivedRevenues, value: data?.income.unreceived ?? ZERO },
   ];
   const outcomeSegments: FlowSegment[] = [
-    { label: LABELS.transactionsOut, value: data?.outcome.transactions ?? ZERO },
+    { label: LABELS.settledOut, value: data?.outcome.settled ?? ZERO },
+    { label: LABELS.pendingCredit, value: data?.outcome.pendingCredit ?? ZERO },
     { label: LABELS.unpaidBills, value: data?.outcome.unpaid ?? ZERO },
   ];
 
@@ -50,13 +70,17 @@ export function useDashboard() {
     cashFlow: data?.cashFlow ?? [],
     error: query.error,
     flowScaleMax,
+    incomeInfo: TEXT.incomeInfo,
     incomeSegments,
     incomeTotal,
     isLoading: query.isLoading,
+    netInfo: TEXT.netInfo,
     netValue: data ? formatMoney(data.net) : TEXT.empty,
+    outcomeInfo: TEXT.outcomeInfo,
     outcomeSegments,
     outcomeTotal,
     periodLabel,
+    savingsRateInfo: TEXT.savingsRateInfo,
     savingsRateValue: data ? formatPercent(data.savingsRate) : TEXT.empty,
   };
 }

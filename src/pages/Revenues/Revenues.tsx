@@ -32,8 +32,20 @@ const LABELS = {
 
 const TEXT = {
   flag: "! flag",
+  overdue:
+    "Pending revenues whose term is already in the past — money you expected by now and have not " +
+    "marked received. A subset of Total Pending.",
   pending: "Pending",
   received: "Received",
+  totalExpected:
+    "Every revenue with a term inside the period, received or not. It is what the period should " +
+    "bring in before anything is confirmed.",
+  totalPending:
+    "Revenues in the period not marked received yet. This is the amount the dashboard's Income " +
+    "carries as expected but unsettled.",
+  totalReceived:
+    "Revenues in the period you have marked received. Marking it received is what moves it here — " +
+    "recording a transaction against it does not do it on its own.",
 };
 
 const COLUMNS: Column<Revenue>[] = [
@@ -120,10 +132,30 @@ export function Revenues() {
       ) : (
         <>
           <div className={styles.statGrid}>
-            <StatCard accent="net" label={LABELS.totalExpected} value={totalExpectedValue} />
-            <StatCard accent="revenue" label={LABELS.totalReceived} value={totalReceivedValue} />
-            <StatCard accent="outcome" label={LABELS.totalPending} value={totalPendingValue} />
-            <StatCard accent="credit" label={LABELS.overdue} value={overdueValue} />
+            <StatCard
+              accent="net"
+              info={TEXT.totalExpected}
+              label={LABELS.totalExpected}
+              value={totalExpectedValue}
+            />
+            <StatCard
+              accent="revenue"
+              info={TEXT.totalReceived}
+              label={LABELS.totalReceived}
+              value={totalReceivedValue}
+            />
+            <StatCard
+              accent="outcome"
+              info={TEXT.totalPending}
+              label={LABELS.totalPending}
+              value={totalPendingValue}
+            />
+            <StatCard
+              accent="credit"
+              info={TEXT.overdue}
+              label={LABELS.overdue}
+              value={overdueValue}
+            />
           </div>
 
           <div className={styles.filterBar}>

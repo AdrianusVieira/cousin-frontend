@@ -16,6 +16,15 @@ const LABELS = {
   title: "Credit",
 };
 
+const TEXT = {
+  openStatements:
+    "How many statements in the period still have at least one unsettled transaction. A statement " +
+    "is one wallet's card bill for one term, so this is the number of card bills you still owe.",
+  settledInPeriod:
+    "Total of the statements in the period where every transaction is already marked settled — " +
+    "card bills you have paid off. Partly settled statements count as open, not here.",
+};
+
 export function Credit() {
   const {
     error,
@@ -48,8 +57,18 @@ export function Credit() {
         <>
           <div className={styles.statGrid}>
             <PendingCreditPanel perWallet={pendingCreditPerWallet} total={pendingCreditTotal} />
-            <StatCard accent="net" label={LABELS.openStatements} value={openStatementsValue} />
-            <StatCard accent="revenue" label={LABELS.settledInPeriod} value={settledInPeriodValue} />
+            <StatCard
+              accent="net"
+              info={TEXT.openStatements}
+              label={LABELS.openStatements}
+              value={openStatementsValue}
+            />
+            <StatCard
+              accent="revenue"
+              info={TEXT.settledInPeriod}
+              label={LABELS.settledInPeriod}
+              value={settledInPeriodValue}
+            />
           </div>
 
           <div className={styles.chartSection}>

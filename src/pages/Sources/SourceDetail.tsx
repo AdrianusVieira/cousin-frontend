@@ -43,6 +43,14 @@ const TEXT = {
   paid: "Paid",
   pending: "Pending",
   received: "Received",
+  totalIncome:
+    "Money that came in from this source over the period, counted on the transaction date. Only " +
+    "recorded transactions count — bills and revenues attached to the source do not, until they " +
+    "have a transaction against them.",
+  totalOutcome:
+    "Money that went out to this source over the period, counted on the transaction date. A " +
+    "parcelled credit purchase counts in full on the day you bought it here, unlike the " +
+    "dashboard's Outcome.",
   unpaid: "Unpaid",
 };
 
@@ -204,8 +212,18 @@ export function SourceDetail() {
           {archiveBlocked && <div className={styles.notice}>{LABELS.archiveBlocked}</div>}
 
           <div className={styles.statGrid}>
-            <StatCard accent="revenue" label={LABELS.totalIncome} value={totalIncomeValue} />
-            <StatCard accent="outcome" label={LABELS.totalOutcome} value={totalOutcomeValue} />
+            <StatCard
+              accent="revenue"
+              info={TEXT.totalIncome}
+              label={LABELS.totalIncome}
+              value={totalIncomeValue}
+            />
+            <StatCard
+              accent="outcome"
+              info={TEXT.totalOutcome}
+              label={LABELS.totalOutcome}
+              value={totalOutcomeValue}
+            />
           </div>
 
           <div className={styles.splitRow}>

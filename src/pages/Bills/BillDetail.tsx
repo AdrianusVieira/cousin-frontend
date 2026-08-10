@@ -38,6 +38,17 @@ const LABELS = {
 const TEXT = {
   deleteBlocked: "! Cannot delete a paid bill.",
   flagged: "! This bill is overdue and unpaid.",
+  linkedTxn:
+    "The transaction recorded against this bill, if any. Paying a bill and marking it paid are " +
+    "separate steps — a paid bill with no linked transaction means the money never left a wallet " +
+    "in your records.",
+  status:
+    "Whether the bill is marked paid. This flag is what the dashboard reads: an unpaid bill " +
+    "counts toward Outcome as committed but unsettled, whatever its term.",
+  term:
+    "The due date. It is the date every period filter uses for this bill, and what decides " +
+    "whether it counts as overdue.",
+  value: "The amount owed. Editing it recalculates every total the bill feeds, including past periods.",
 };
 
 function EditModal({
@@ -193,14 +204,25 @@ export function BillDetail() {
           {bill.flagged && <div className={styles.notice}>{TEXT.flagged}</div>}
 
           <div className={styles.statGrid}>
-            <StatCard accent="net" label={LABELS.value} value={valueFormatted} />
-            <StatCard accent="net" label={LABELS.term} value={formatDateWithYear(bill.term)} />
+            <StatCard accent="net" info={TEXT.value} label={LABELS.value} value={valueFormatted} />
+            <StatCard
+              accent="net"
+              info={TEXT.term}
+              label={LABELS.term}
+              value={formatDateWithYear(bill.term)}
+            />
             <StatCard
               accent={bill.paid ? "revenue" : "outcome"}
+              info={TEXT.status}
               label={LABELS.status}
               value={statusValue}
             />
-            <StatCard accent="credit" label={LABELS.linkedTxn} value={linkedTxnValue} />
+            <StatCard
+              accent="credit"
+              info={TEXT.linkedTxn}
+              label={LABELS.linkedTxn}
+              value={linkedTxnValue}
+            />
           </div>
         </>
       )}
