@@ -46,10 +46,17 @@ const LABELS = {
 };
 
 const TEXT = {
+  estimatedValue:
+    "The template's expected amount, used to pre-fill each generated instance and to project " +
+    "Recurring Outflow. Variable recurrences overwrite it per instance, so the chart below is " +
+    "where you see what was actually charged.",
   no: "No",
   paid: "Paid",
   pending: "Pending",
   received: "Received",
+  type:
+    "Whether this schedule generates bills or revenues. It is fixed at creation — a recurrence " +
+    "cannot switch sides once instances exist.",
   unpaid: "Unpaid",
   yes: "Yes",
 };
@@ -241,9 +248,15 @@ export function RecurrenceDetail() {
           />
 
           <div className={styles.statGrid}>
-            <StatCard accent="net" label={LABELS.estimatedValue} value={estimatedValueFormatted} />
+            <StatCard
+              accent="net"
+              info={TEXT.estimatedValue}
+              label={LABELS.estimatedValue}
+              value={estimatedValueFormatted}
+            />
             <StatCard
               accent={typeLabel === "Bill" ? "outcome" : "revenue"}
+              info={TEXT.type}
               label={LABELS.type}
               value={typeLabel}
             />

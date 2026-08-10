@@ -20,13 +20,17 @@ export function Dashboard() {
     cashFlow,
     error,
     flowScaleMax,
+    incomeInfo,
     incomeSegments,
     incomeTotal,
     isLoading,
+    netInfo,
     netValue,
+    outcomeInfo,
     outcomeSegments,
     outcomeTotal,
     periodLabel,
+    savingsRateInfo,
     savingsRateValue,
   } = useDashboard();
 
@@ -41,13 +45,19 @@ export function Dashboard() {
       ) : (
         <>
           <div className={styles.statRow}>
-            <StatCard accent="net" label={LABELS.net} value={netValue} />
-            <StatCard accent="credit" label={LABELS.savingsRate} value={savingsRateValue} />
+            <StatCard accent="net" info={netInfo} label={LABELS.net} value={netValue} />
+            <StatCard
+              accent="credit"
+              info={savingsRateInfo}
+              label={LABELS.savingsRate}
+              value={savingsRateValue}
+            />
           </div>
 
           <div className={styles.flowBars}>
             <FlowBar
               accent="revenue"
+              info={incomeInfo}
               label={LABELS.income}
               scaleMax={flowScaleMax}
               segments={incomeSegments}
@@ -55,6 +65,7 @@ export function Dashboard() {
             />
             <FlowBar
               accent="outcome"
+              info={outcomeInfo}
               label={LABELS.outcome}
               scaleMax={flowScaleMax}
               segments={outcomeSegments}

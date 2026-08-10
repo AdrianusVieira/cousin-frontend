@@ -38,6 +38,19 @@ const LABELS = {
 const TEXT = {
   deleteBlocked: "! Cannot delete a received revenue.",
   flagged: "! This revenue is overdue and not yet received.",
+  linkedTxn:
+    "The transaction recorded against this revenue, if any. Receiving money and marking the " +
+    "revenue received are separate steps — a received revenue with no linked transaction means no " +
+    "wallet balance ever moved in your records.",
+  status:
+    "Whether the revenue is marked received. This flag is what the dashboard reads: a pending " +
+    "revenue counts toward Income as expected but unsettled, whatever its term.",
+  term:
+    "The expected date. It is the date every period filter uses for this revenue, and what " +
+    "decides whether it counts as overdue.",
+  value:
+    "The amount expected. Editing it recalculates every total the revenue feeds, including past " +
+    "periods.",
 };
 
 function EditModal({
@@ -193,14 +206,25 @@ export function RevenueDetail() {
           {revenue.flagged && <div className={styles.notice}>{TEXT.flagged}</div>}
 
           <div className={styles.statGrid}>
-            <StatCard accent="net" label={LABELS.value} value={valueFormatted} />
-            <StatCard accent="net" label={LABELS.term} value={formatDateWithYear(revenue.term)} />
+            <StatCard accent="net" info={TEXT.value} label={LABELS.value} value={valueFormatted} />
+            <StatCard
+              accent="net"
+              info={TEXT.term}
+              label={LABELS.term}
+              value={formatDateWithYear(revenue.term)}
+            />
             <StatCard
               accent={revenue.received ? "revenue" : "outcome"}
+              info={TEXT.status}
               label={LABELS.status}
               value={statusValue}
             />
-            <StatCard accent="credit" label={LABELS.linkedTxn} value={linkedTxnValue} />
+            <StatCard
+              accent="credit"
+              info={TEXT.linkedTxn}
+              label={LABELS.linkedTxn}
+              value={linkedTxnValue}
+            />
           </div>
         </>
       )}

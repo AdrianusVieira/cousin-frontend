@@ -136,8 +136,8 @@ export interface Transaction {
 /* ---------------------------------------------------------------- responses */
 
 export interface DashboardResponse {
-  income: { total: Money; transactions: Money; unreceived: Money };
-  outcome: { total: Money; transactions: Money; unpaid: Money };
+  income: { pendingCredit: Money; settled: Money; total: Money; unreceived: Money };
+  outcome: { pendingCredit: Money; settled: Money; total: Money; unpaid: Money };
   net: Money;
   savingsRate: number;
   cashFlow: Array<{ date: ISODate; in: Money; out: Money }>;

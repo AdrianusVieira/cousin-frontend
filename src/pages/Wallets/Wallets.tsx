@@ -31,7 +31,16 @@ const LABELS = {
 };
 
 const TEXT = {
+  activeWallets:
+    "Wallets not archived. These are the ones you can pick as the source of a transaction.",
   archived: "Archived",
+  archivedCount:
+    "Wallets you have archived. They keep their history and stay linked to past transactions, but " +
+    "no longer count toward patrimony or show up in forms.",
+  totalPatrimony:
+    "Combined balance of every active wallet right now, with the note comparing it to the period " +
+    "average. Only debit movements change a balance — credit spending sits in Pending Credit " +
+    "until you settle it, so this reads higher than what you can actually spend.",
 };
 
 const COLUMNS: Column<WalletRow>[] = [
@@ -121,12 +130,23 @@ export function Wallets() {
           <div className={styles.statGrid}>
             <StatCard
               accent="net"
+              info={TEXT.totalPatrimony}
               label={LABELS.totalPatrimony}
               note={patrimonyNote}
               value={patrimonyValue}
             />
-            <StatCard accent="revenue" label={LABELS.activeWallets} value={activeCountValue} />
-            <StatCard accent="outcome" label={LABELS.archived} value={archivedCountValue} />
+            <StatCard
+              accent="revenue"
+              info={TEXT.activeWallets}
+              label={LABELS.activeWallets}
+              value={activeCountValue}
+            />
+            <StatCard
+              accent="outcome"
+              info={TEXT.archivedCount}
+              label={LABELS.archived}
+              value={archivedCountValue}
+            />
           </div>
 
           <div className={styles.chartRow}>
