@@ -28,6 +28,14 @@ const LABELS = {
   title: "Cash Flow",
 };
 
+const TEXT = {
+  info:
+    "Money entering and leaving your wallets, day by day, across the selected period. " +
+    "Debit counts on the purchase date and credit on its statement date, so each installment " +
+    "of a parcelled purchase lands in the month it is charged. Internal transfers and manual " +
+    "adjustments are excluded.",
+};
+
 export function CashFlowChart({ data }: CashFlowChartProps) {
   const { theme } = useTheme();
   const colors = { in: chartColor("revenue", theme), out: chartColor("outcome", theme) };
@@ -38,7 +46,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
   );
 
   return (
-    <ChartFrame fill title={LABELS.title}>
+    <ChartFrame fill info={TEXT.info} title={LABELS.title}>
       <AreaChart data={chartData}>
         <defs>
           <linearGradient id="gradIn" x1="0" x2="0" y1="0" y2="1">

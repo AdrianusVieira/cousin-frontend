@@ -11,11 +11,17 @@
   min-width: 0;
 }
 
+.header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-7);
+}
+
 .label {
   color: var(--color-text-muted);
   font-size: var(--text-label);
   letter-spacing: 0.15em;
-  margin-bottom: var(--space-7);
   text-transform: uppercase;
 }
 
