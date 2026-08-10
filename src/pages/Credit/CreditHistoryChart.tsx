@@ -16,6 +16,13 @@ const LABELS = {
   title: "Statement History",
 };
 
+const TEXT = {
+  info:
+    "Total credit charged per statement month, stacked by wallet. A purchase split into " +
+    "installments contributes one installment to each month's bar rather than its full value " +
+    "to the month of purchase.",
+};
+
 const LEGEND_STYLE = { fontSize: 12 };
 
 /** One bar per term; each wallet contributes a stacked segment keyed by its id. */
@@ -37,7 +44,7 @@ export function CreditHistoryChart({ points, wallets }: CreditHistoryChartProps)
   if (points.length === 0) return null;
 
   return (
-    <ChartFrame title={LABELS.title}>
+    <ChartFrame info={TEXT.info} title={LABELS.title}>
       <BarChart data={points}>
         <CartesianGrid stroke="none" />
         <XAxis dataKey="term" tickFormatter={formatChartMonth} {...CHART_AXIS} />

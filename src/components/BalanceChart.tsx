@@ -19,6 +19,13 @@ const LABELS = {
   title: "Balance Over Period",
 };
 
+const TEXT = {
+  info:
+    "This wallet's balance at each point in the selected period, with the dashed line at the " +
+    "period average. Only debit movements change a balance — credit spending is tracked on the " +
+    "Credit page and never moves this line.",
+};
+
 interface BalanceChartProps {
   average?: Money;
   data: Array<{ balance: Money; date: ISODate }>;
@@ -37,7 +44,7 @@ export function BalanceChart({ average, data }: BalanceChartProps) {
   if (chartData.length === 0) return null;
 
   return (
-    <ChartFrame title={LABELS.title}>
+    <ChartFrame info={TEXT.info} title={LABELS.title}>
       <LineChart data={chartData}>
         <CartesianGrid stroke="none" />
         <XAxis dataKey="date" tickFormatter={formatChartDate} {...CHART_AXIS} />

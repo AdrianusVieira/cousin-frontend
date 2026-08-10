@@ -18,6 +18,13 @@ const LABELS = {
   title: "Estimated vs Actual",
 };
 
+const TEXT = {
+  info:
+    "Every instance of this recurrence: the estimated value against the amount actually " +
+    "recorded. Only settled instances and the current one plot an actual value — future " +
+    "instances show the estimate alone.",
+};
+
 interface VarianceChartProps {
   data: Array<{ actual: Money | null; date: ISODate; estimated: Money }>;
 }
@@ -53,7 +60,7 @@ export function VarianceChart({ data }: VarianceChartProps) {
   if (chartData.length === 0) return null;
 
   return (
-    <ChartFrame title={LABELS.title}>
+    <ChartFrame info={TEXT.info} title={LABELS.title}>
       <LineChart data={chartData}>
         <CartesianGrid stroke="none" />
         <XAxis dataKey="date" tickFormatter={formatChartDate} {...CHART_AXIS} />
