@@ -2,6 +2,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { LAST_UPDATED_QUERY_KEY } from "@/hooks/useLastUpdated";
 import { api } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
 import { formatMoney } from "@/lib/format";
@@ -101,6 +102,7 @@ export function useTransactions() {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["wallets"] });
+      queryClient.invalidateQueries({ queryKey: LAST_UPDATED_QUERY_KEY });
       setFormOpen(false);
     },
   });
@@ -112,6 +114,7 @@ export function useTransactions() {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["wallets"] });
+      queryClient.invalidateQueries({ queryKey: LAST_UPDATED_QUERY_KEY });
       setEditing(null);
     },
   });
@@ -122,6 +125,7 @@ export function useTransactions() {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["wallets"] });
+      queryClient.invalidateQueries({ queryKey: LAST_UPDATED_QUERY_KEY });
       setDeleting(null);
     },
   });
