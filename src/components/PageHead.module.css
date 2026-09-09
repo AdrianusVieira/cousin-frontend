@@ -19,9 +19,18 @@
   text-transform: uppercase;
 }
 
-.periodLabel {
+.meta {
+  align-items: baseline;
   color: var(--color-text-muted);
+  display: flex;
   font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+  gap: var(--space-2);
+}
+
+.meta > * + *::before {
+  content: "\00b7";
+  margin-right: var(--space-2);
 }
 
 .actions {

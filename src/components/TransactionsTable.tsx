@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
+import { LAST_UPDATED_QUERY_KEY } from "@/hooks/useLastUpdated";
 import { api } from "@/lib/api/client";
 import { formatDate, formatMoney } from "@/lib/format";
 import { Pill } from "@/components/Pill";
@@ -97,6 +98,7 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
       queryClient.invalidateQueries({ queryKey: ["wallets"] });
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: LAST_UPDATED_QUERY_KEY });
       setEditing(null);
     },
   });
@@ -108,6 +110,7 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
       queryClient.invalidateQueries({ queryKey: ["wallets"] });
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: LAST_UPDATED_QUERY_KEY });
       setDeleting(null);
     },
   });
