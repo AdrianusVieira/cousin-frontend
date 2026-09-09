@@ -7,6 +7,7 @@
  * API shapes. The const objects there are the source of truth; these are the derived types.
  */
 
+import type { MetaEntity } from "@/constants/meta";
 import type {
   TxnEndpointType,
   TxnFromType,
@@ -15,7 +16,7 @@ import type {
   TxnToType,
 } from "@/constants/transactions";
 
-export type { TxnEndpointType, TxnFromType, TxnKind, TxnMethod, TxnToType };
+export type { MetaEntity, TxnEndpointType, TxnFromType, TxnKind, TxnMethod, TxnToType };
 
 export type UUID = string;
 export type ISODate = string; // 'YYYY-MM-DD'
@@ -243,6 +244,9 @@ export interface CategoryDetailResponse {
   summary: { totalIncome: Money; totalOutcome: Money };
   breakdown: Array<{ bucket: ISODate; income: Money; outcome: Money }>;
 }
+
+/** `max(updated_at)` per table; `null` when the table is empty. */
+export type LastUpdatedResponse = Record<MetaEntity, ISODateTime | null>;
 
 /* ----------------------------------------------------------- request bodies */
 

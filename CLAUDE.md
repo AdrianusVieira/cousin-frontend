@@ -132,6 +132,16 @@ modal. It accepts `from`/`to` and optional `wallet`/`category` filter props, mak
 into any detail page (WalletDetail, CategoryDetail) without the parent needing to manage transaction
 state.
 
+**`PageHead` stamps "last updated" itself.** Like `TransactionsTable`, `PageHead`
+(`src/components/PageHead.tsx`) owns a query rather than taking data as a prop: given an optional
+`entity` prop (`@/constants/meta`), it renders `max(updated_at)` for that table from
+`GET /api/meta/last-updated` via `useLastUpdated`. All headers share one query key
+(`LAST_UPDATED_QUERY_KEY`), so the stamp costs a single request app-wide and adding it to a page is
+one prop. **Any mutation that writes an entity must invalidate that key**, or its header goes stale
+until remount. Currently wired for `transactions` (Transactions page + `TransactionsTable`); other
+entities need the prop and the matching invalidation. Note the stamp reflects inserts and updates
+only — the `set_updated_at()` trigger can't see a hard delete.
+
 **`useWatch` over `watch()`.** For react-hook-form fields that drive conditional rendering (e.g.
 `intervalUnit` in BillForm/RevenueForm), use `useWatch({ control, name })` instead of `watch()`.
 This avoids `react-hooks/incompatible-library` lint warnings from the React Compiler eslint plugin.

@@ -6,6 +6,7 @@ import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
 import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
+import { META_ENTITY } from "@/constants/meta";
 import { formatDate, formatMoney } from "@/lib/format";
 import type { Transaction } from "@/types/api";
 
@@ -202,6 +203,7 @@ export function Transactions() {
             </button>
           )
         }
+        entity={META_ENTITY.Transactions}
         periodLabel={periodLabel}
         title={LABELS.title}
       />

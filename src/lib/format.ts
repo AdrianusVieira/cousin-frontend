@@ -1,4 +1,4 @@
-import type { Money } from "@/types/api";
+import type { ISODateTime, Money } from "@/types/api";
 
 /**
  * Format a Money string for display. Money is always a decimal string in the API —
@@ -29,6 +29,16 @@ export function formatDateWithYear(iso: string): string {
   const d = new Date(iso + "T00:00:00");
 
   return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
+}
+
+/** Display an RFC 3339 timestamp as "Sep 8, 01:19 PM", in the viewer's locale time. */
+export function formatDateTime(iso: ISODateTime): string {
+  const d = new Date(iso);
+
+  const date = d.toLocaleDateString("en-US", { day: "numeric", month: "short" });
+  const time = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+
+  return `${date}, ${time}`;
 }
 
 export function formatPercent(value: number): string {
