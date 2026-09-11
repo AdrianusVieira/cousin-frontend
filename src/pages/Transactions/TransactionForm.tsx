@@ -75,6 +75,7 @@ interface FormValues {
 interface TransactionFormProps {
   bills: Bill[];
   categories: Category[];
+  defaultMethod: string;
   isSubmitting: boolean;
   onClose: () => void;
   onSubmit: (data: CreateTransaction) => void;
@@ -103,6 +104,7 @@ function defaultTerm(): string {
 export function TransactionForm({
   bills,
   categories,
+  defaultMethod,
   isSubmitting,
   onClose,
   onSubmit,
@@ -110,6 +112,9 @@ export function TransactionForm({
   serverError,
   wallets,
 }: TransactionFormProps) {
+  const initialMethod =
+    defaultMethod === TXN_METHOD.Credit ? TXN_METHOD.Credit : TXN_METHOD.Debit;
+
   const {
     control,
     formState: { errors },
@@ -125,9 +130,9 @@ export function TransactionForm({
       date: todayISO(),
       description: "",
       fromId: "",
-      fromType: "",
+      fromType: initialMethod === TXN_METHOD.Credit ? TXN_FROM_TYPE.Wallet : "",
       installmentTotal: "",
-      method: "debit",
+      method: initialMethod,
       term: defaultTerm(),
       toId: "",
       toType: "",
