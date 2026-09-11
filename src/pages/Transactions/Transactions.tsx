@@ -266,6 +266,7 @@ export function Transactions() {
         <TransactionForm
           bills={bills}
           categories={categories}
+          defaultMethod={method}
           isSubmitting={isSubmitting}
           onClose={closeForm}
           onSubmit={createTransaction}
