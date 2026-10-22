@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 
+import { BrandIcon } from "@/components/BrandIcon";
 import { checkHealth } from "@/lib/api/health";
 
 import styles from "./HealthGate.module.css";
@@ -44,7 +45,10 @@ export function HealthGate({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.gate}>
-      <div className={styles.brand}>{TEXT.brand}</div>
+      <div className={styles.brand}>
+        <BrandIcon className={styles.brandIcon} />
+        <span>{TEXT.brand}</span>
+      </div>
       <div className={styles.message}>{TEXT.message}</div>
       <div className={styles.submessage}>{TEXT.submessage}</div>
     </div>

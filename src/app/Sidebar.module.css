@@ -1,4 +1,4 @@
-/* The same curved texture mask and outlined navigation as Mute. */
+/* Plain background keeps the outlined navigation easy to read. */
 .sidebar {
   background: var(--color-bg);
   border-right: 1px solid var(--color-border);
@@ -28,6 +28,9 @@
 }
 
 .brand {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
   font-family: var(--font-brand);
   font-size: var(--text-value-sm);
   color: var(--color-net);
@@ -111,19 +114,6 @@
   }
 }
 
-.sidebar::before {
-  background-color: var(--color-pattern);
-  content: "";
-  inset: 180px 0 90px;
-  mask-image: url("/textures/sidebar-dots.svg");
-  mask-position: left center;
-  mask-repeat: no-repeat;
-  mask-size: cover;
-  opacity: var(--pattern-opacity);
-  pointer-events: none;
-  position: absolute;
-  z-index: -1;
-}
 .footer {
   display: grid;
   gap: var(--space-3);
@@ -146,7 +136,6 @@
     display: none;
     margin: 0;
   }
-  .sidebar::before,
   .groupTitle {
     display: none;
   }

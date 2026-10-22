@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 
 import { AppearanceButton } from "@/components/AppearanceButton";
+import { BrandIcon } from "@/components/BrandIcon";
 import { useAuth } from "@/hooks/useAuth";
 
 import styles from "./Login.module.css";
@@ -35,7 +36,10 @@ export function Login() {
   return (
     <div className={`${styles.page} page-shell`}>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.brand}>{TEXT.brand}</div>
+        <div className={styles.brand}>
+          <BrandIcon className={styles.brandIcon} />
+          <span>{TEXT.brand}</span>
+        </div>
         <div className={styles.subtitle}>{TEXT.subtitle}</div>
 
         {error && <div className={styles.error}>{error}</div>}

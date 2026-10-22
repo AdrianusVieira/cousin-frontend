@@ -3,6 +3,10 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { AppearanceOptions } from "@/components/AppearanceOptions";
 import { THEME_STORAGE_KEY, THEMES } from "@/providers/themeContext";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import tokens from "@/styles/tokens.css?raw";
+
+let tokenStyle: HTMLStyleElement;
+let icon: HTMLLinkElement;
 
 function makeSut() {
   return render(
@@ -14,6 +18,13 @@ function makeSut() {
 
 beforeEach(() => {
   localStorage.clear();
+  tokenStyle = document.createElement("style");
+  tokenStyle.textContent = tokens;
+  document.head.append(tokenStyle);
+  icon = document.createElement("link");
+  icon.rel = "icon";
+  icon.href = "/favicon.svg";
+  document.head.append(icon);
   vi.stubGlobal(
     "matchMedia",
     vi.fn(() => ({ matches: true }) as MediaQueryList),
@@ -21,6 +32,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  tokenStyle.remove();
+  icon.remove();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -92,15 +105,27 @@ describe("Cousin appearance", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Browser storage is unavailable");
   });
 
-  it("should preserve Cousin's favicon", () => {
-    const icon = document.createElement("link");
-    icon.rel = "icon";
-    icon.href = "/cousin-icon.svg";
-    document.head.append(icon);
+  it.each(THEMES)("should recolor the Cousin favicon for $label", ({ id, label, color }) => {
     makeSut();
-    fireEvent.click(screen.getByRole("radio", { name: "Purple" }));
+    fireEvent.click(screen.getByRole("radio", { name: label }));
 
-    expect(icon.getAttribute("href")).toBe("/cousin-icon.svg");
-    icon.remove();
+    const svg = decodeURIComponent(icon.href.split(",")[1]);
+    expect(svg).toContain(`fill="${color}"`);
+    expect(svg).toContain(
+      `fill="${id === "light" ? "#132348" : id === "purple" ? "#eee8fb" : id === "monochrome" ? "#edf1f5" : "#e0edf7"}"`,
+    );
+    expect(svg).toContain(
+      `flood-opacity="${id === "light" ? 0 : id === "monochrome" ? 0.2 : 0.55}"`,
+    );
+  });
+
+  it("should recolor the favicon after an appearance change in another tab", () => {
+    makeSut();
+    act(() => {
+      localStorage.setItem(THEME_STORAGE_KEY, "green");
+      window.dispatchEvent(new StorageEvent("storage", { key: THEME_STORAGE_KEY }));
+    });
+
+    expect(decodeURIComponent(icon.href)).toContain('fill="#43ef9b"');
   });
 });

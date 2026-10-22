@@ -14,6 +14,8 @@ export default defineConfig({
     port: 5173,
   },
   test: {
+    // Keep the real palette tokens for favicon contrast and theme regression checks.
+    css: { include: [/tokens\.css/] },
     environment: "jsdom",
     globals: true,
     include: ["src/**/*.{spec,test}.{ts,tsx}"],
