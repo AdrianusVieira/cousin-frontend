@@ -1,0 +1,61 @@
+.appearance {
+  display: grid;
+  gap: var(--space-6);
+}
+.note {
+  color: var(--color-text-sub);
+  line-height: 1.6;
+  margin: 0;
+}
+.fieldset {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+.fieldset legend {
+  color: var(--color-text-sub);
+  font-size: var(--text-label);
+  letter-spacing: 0.12em;
+  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+}
+.themes {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+}
+.choice {
+  align-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-2);
+  position: relative;
+}
+.choice:has(input:checked) {
+  background: color-mix(in srgb, var(--color-net) 8%, var(--color-surface));
+  border-color: var(--color-net);
+  color: var(--color-net);
+}
+.choice:has(input:focus-visible) {
+  outline: 2px solid var(--color-net);
+  outline-offset: 3px;
+}
+.choice input {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+.swatch {
+  background: var(--swatch);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+}

@@ -1,17 +1,18 @@
 .statGrid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .splitRow {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: var(--space-4);
 }
 
-.splitCol {}
+.splitCol {
+}
 
 .sectionTitle {
   color: var(--color-text-muted);
@@ -54,4 +55,11 @@
   font-size: var(--text-body);
   margin-bottom: var(--space-4);
   padding: var(--space-3) var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .statGrid,
+  .splitRow {
+    grid-template-columns: 1fr;
+  }
 }

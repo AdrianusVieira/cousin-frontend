@@ -13,7 +13,7 @@
 .statRow {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .loading {
@@ -29,4 +29,16 @@
   color: var(--color-outcome);
   font-size: var(--text-body);
   padding: var(--space-3) var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .statRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .chartRow {
+    flex-direction: column;
+  }
 }

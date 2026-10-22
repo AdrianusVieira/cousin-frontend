@@ -1,7 +1,7 @@
 .statGrid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .chartRow {
@@ -39,4 +39,22 @@
   color: var(--color-outcome);
   font-size: var(--text-body);
   padding: var(--space-3) var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .statGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .chartRow {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1100px) {
+  .statGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

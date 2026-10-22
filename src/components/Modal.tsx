@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useRef, type ReactNode } from "react";
 
 import styles from "./Modal.module.css";
+
+const LABELS = { close: "Close dialog" };
 
 interface ModalProps {
   children: ReactNode;
@@ -10,33 +12,48 @@ interface ModalProps {
 }
 
 export function Modal({ children, footer, onClose, title }: ModalProps) {
-  const overlayRef = useRef<HTMLDivElement>(null);
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    },
-    [onClose],
-  );
+  const titleId = useId();
+  const overlayRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+    const opener = document.activeElement;
+    const dialog = overlayRef.current;
+    dialog?.showModal();
+    return () => {
+      dialog?.close();
+      if (opener instanceof HTMLElement) opener.focus();
+    };
+  }, []);
 
   const handleOverlayClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === overlayRef.current) onClose();
+    (event: React.MouseEvent) => {
+      if (event.target === overlayRef.current) onClose();
     },
     [onClose],
   );
 
   return (
-    <div className={styles.overlay} onClick={handleOverlayClick} ref={overlayRef}>
+    <dialog
+      aria-labelledby={titleId}
+      className={styles.overlay}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={handleOverlayClick}
+      ref={overlayRef}
+    >
       <div className={styles.modal}>
         <header className={styles.header}>
-          <span className={styles.title}>{title}</span>
-          <button className={styles.close} onClick={onClose} type="button">
+          <span className={styles.title} id={titleId}>
+            {title}
+          </span>
+          <button
+            aria-label={LABELS.close}
+            className={styles.close}
+            onClick={onClose}
+            type="button"
+          >
             ×
           </button>
         </header>
@@ -45,6 +62,6 @@ export function Modal({ children, footer, onClose, title }: ModalProps) {
 
         <footer className={styles.footer}>{footer}</footer>
       </div>
-    </div>
+    </dialog>
   );
 }

@@ -1,6 +1,14 @@
 .overlay {
   align-items: center;
-  background: rgba(0, 0, 0, 0.4);
+  background: transparent;
+  border: 0;
+  color: var(--color-text);
+  height: 100dvh;
+  margin: 0;
+  max-height: none;
+  max-width: none;
+  width: 100%;
+  padding: var(--space-4);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -15,7 +23,7 @@
   box-shadow: var(--shadow-dropdown);
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  max-height: 90dvh;
   max-width: 480px;
   width: 100%;
 }
@@ -42,7 +50,9 @@
   cursor: pointer;
   font-size: var(--text-value-sm);
   line-height: 1;
-  padding: 0;
+  padding: var(--space-2);
+  min-width: 36px;
+  min-height: 36px;
 }
 
 .close:hover {
@@ -60,4 +70,12 @@
   gap: var(--space-3);
   justify-content: flex-end;
   padding: var(--space-5) var(--space-6);
+}
+
+.footer {
+  flex-wrap: wrap;
+}
+
+.overlay::backdrop {
+  background: color-mix(in srgb, var(--color-bg) 75%, transparent);
 }

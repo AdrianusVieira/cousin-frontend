@@ -6,33 +6,42 @@ import {
   seriesColor,
 } from "@/lib/chart";
 
+import { THEMES } from "@/providers/themeContext";
+
 const PALETTE_SIZE = 6;
 
 describe("chartColor", () => {
+  it.each(THEMES)("should resolve all chart semantics in $label", ({ id, color }) => {
+    expect(chartColor("net", id)).toBe(color);
+    expect(
+      new Set([chartColor("net", id), chartColor("outcome", id), chartColor("revenue", id)]).size,
+    ).toBe(3);
+  });
+
   it("should resolve a semantic key against the dark theme", () => {
-    expect(chartColor("net", "dark")).toBe("#569cd6");
+    expect(chartColor("net", "monochrome")).toBe("#e4edf3");
   });
 
   it("should resolve the same semantic key to a different hue in the light theme", () => {
-    expect(chartColor("net", "light")).toBe("#267f99");
+    expect(chartColor("net", "light")).toBe("#2456d9");
   });
 
   it("should give each semantic key its own hue within a theme", () => {
     const keys = ["net", "outcome", "revenue"] as const;
 
-    expect(new Set(keys.map((key) => chartColor(key, "dark"))).size).toBe(keys.length);
+    expect(new Set(keys.map((key) => chartColor(key, "monochrome"))).size).toBe(keys.length);
   });
 });
 
 describe("seriesColor", () => {
   it("should return a distinct colour for every index within the palette", () => {
-    const colors = Array.from({ length: PALETTE_SIZE }, (_, i) => seriesColor(i, "dark"));
+    const colors = Array.from({ length: PALETTE_SIZE }, (_, i) => seriesColor(i, "monochrome"));
 
     expect(new Set(colors).size).toBe(PALETTE_SIZE);
   });
 
   it("should wrap around once the palette is exhausted", () => {
-    expect(seriesColor(PALETTE_SIZE, "dark")).toBe(seriesColor(0, "dark"));
+    expect(seriesColor(PALETTE_SIZE, "monochrome")).toBe(seriesColor(0, "monochrome"));
   });
 
   it("should stay in range for an index far beyond the palette", () => {
@@ -40,7 +49,7 @@ describe("seriesColor", () => {
   });
 
   it("should resolve the theme variant of the requested index", () => {
-    expect(seriesColor(0, "light")).toBe("#267f99");
+    expect(seriesColor(0, "light")).toBe("#2456d9");
   });
 });
 

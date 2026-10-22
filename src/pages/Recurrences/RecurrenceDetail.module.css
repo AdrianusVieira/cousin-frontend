@@ -1,7 +1,7 @@
 .statGrid {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .chartWrap {
@@ -55,7 +55,7 @@
 .row {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .loading {
@@ -72,4 +72,15 @@
   font-size: var(--text-body);
   margin-bottom: var(--space-4);
   padding: var(--space-3) var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .statGrid,
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartHeader {
+  flex-wrap: wrap;
 }

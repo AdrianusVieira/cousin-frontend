@@ -22,7 +22,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* No font-weight above 400 anywhere (design-system §8). */
+/* Keep the interface's typography light and consistent. */
 strong,
 b {
   font-weight: 400;
@@ -46,14 +46,83 @@ table,
   font-variant-numeric: tabular-nums;
 }
 
-/* Page shell carries the ledger-line texture; cards stay opaque over it (§6). */
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--color-net);
+  outline-offset: 3px;
+}
+button svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+button {
+  color: inherit;
+}
+::selection {
+  background: color-mix(in srgb, var(--color-net) 30%, transparent);
+}
+
+/* Decoration stays outside opaque cards and never intercepts interactions. */
 .page-shell {
   background-color: var(--color-bg);
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 27px,
-    var(--color-rule) 27px,
-    var(--color-rule) 28px
-  );
+  isolation: isolate;
+  position: relative;
+}
+.page-shell::before,
+.page-shell::after {
+  background-color: var(--color-pattern);
+  content: "";
+  height: 320px;
+  mask-image: url("/textures/corner-dots.svg");
+  mask-position: top right;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  opacity: var(--pattern-opacity);
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  width: min(640px, 90%);
+  z-index: -1;
+}
+.page-shell::before {
+  top: -45px;
+}
+.page-shell::after {
+  bottom: 0;
+  transform: scaleY(-1);
+}
+
+body {
+  line-height: 1.5;
+}
+input,
+select,
+textarea {
+  min-width: 0;
+  accent-color: var(--color-net);
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-net);
+  outline-offset: 2px;
+}
+button:disabled {
+  cursor: default;
+}
+@media (max-width: 600px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }

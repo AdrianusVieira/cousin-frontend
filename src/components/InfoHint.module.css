@@ -33,7 +33,7 @@
   box-shadow: var(--shadow-dropdown);
   color: var(--color-text-sub);
   font-size: var(--text-body);
-  left: 0;
+  right: 0;
   letter-spacing: normal;
   line-height: 1.5;
   opacity: 0;
@@ -52,4 +52,18 @@
 .trigger:focus-visible + .tooltip {
   opacity: 1;
   visibility: visible;
+}
+
+@media (max-width: 780px) {
+  .tooltip {
+    bottom: var(--space-6);
+    left: var(--space-4);
+    max-height: 50dvh;
+    overflow-y: auto;
+    position: fixed;
+    right: var(--space-4);
+    top: auto;
+    width: auto;
+    z-index: 101;
+  }
 }

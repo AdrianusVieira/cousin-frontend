@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from "react";
 
+import { AppearanceButton } from "@/components/AppearanceButton";
 import { useAuth } from "@/hooks/useAuth";
 
 import styles from "./Login.module.css";
@@ -32,7 +33,7 @@ export function Login() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} page-shell`}>
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.brand}>{TEXT.brand}</div>
         <div className={styles.subtitle}>{TEXT.subtitle}</div>
@@ -62,6 +63,7 @@ export function Login() {
         <button className={styles.button} disabled={loading} type="submit">
           {loading ? "…" : TEXT.signIn}
         </button>
+        <AppearanceButton />
       </form>
     </div>
   );
