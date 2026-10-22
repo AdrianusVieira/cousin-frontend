@@ -1,14 +1,15 @@
-/* Sidebar does NOT carry the ledger texture (ui-spec §0.1). */
+/* The same curved texture mask and outlined navigation as Mute. */
 .sidebar {
-  background: var(--color-surface);
+  background: var(--color-bg);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-6) var(--space-5);
   position: sticky;
+  isolation: isolate;
   top: 0;
   transition:
     margin-left 180ms ease,
@@ -27,16 +28,16 @@
 }
 
 .brand {
-  font-family: var(--font-serif);
+  font-family: var(--font-brand);
   font-size: var(--text-value-sm);
   color: var(--color-net);
   letter-spacing: -0.3px;
   padding: 0 var(--space-3);
-  margin-bottom: var(--space-9);
+  margin-bottom: var(--space-4);
 }
 
 .period {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
   padding: 0 var(--space-3);
 }
 
@@ -45,7 +46,7 @@
 }
 
 .group {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
 }
 
 .groupTitle {
@@ -58,12 +59,16 @@
 }
 
 .item {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin-bottom: var(--space-1);
   font-size: var(--text-body);
   color: var(--color-text-sub);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
-  border-left: 2px solid transparent;
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
 }
 
 .item:hover {
@@ -72,6 +77,7 @@
 
 .itemActive {
   color: var(--color-net);
+  border-color: color-mix(in srgb, var(--color-net) 30%, transparent);
   border-left-color: var(--color-net);
   background: color-mix(in srgb, var(--color-net) 8%, transparent);
 }
@@ -79,24 +85,6 @@
 .footer {
   margin-top: auto;
   padding-top: var(--space-6);
-}
-
-.themeToggle {
-  background: none;
-  border: none;
-  border-radius: var(--radius);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  display: block;
-  font-size: var(--text-body);
-  padding: var(--space-2) var(--space-3);
-  text-align: left;
-  width: 100%;
-}
-
-.themeToggle:hover {
-  background: var(--color-bg);
-  color: var(--color-text-sub);
 }
 
 .signOut {
@@ -120,5 +108,85 @@
   .sidebar,
   .sidebarHidden {
     transition: none;
+  }
+}
+
+.sidebar::before {
+  background-color: var(--color-pattern);
+  content: "";
+  inset: 180px 0 90px;
+  mask-image: url("/textures/sidebar-dots.svg");
+  mask-position: left center;
+  mask-repeat: no-repeat;
+  mask-size: cover;
+  opacity: var(--pattern-opacity);
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+.footer {
+  display: grid;
+  gap: var(--space-3);
+}
+@media (max-width: 780px) {
+  .sidebar {
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+    border-right: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    height: auto;
+    overflow: visible;
+    padding: var(--space-4);
+    position: static;
+    width: 100%;
+  }
+  .sidebarHidden {
+    display: none;
+    margin: 0;
+  }
+  .sidebar::before,
+  .groupTitle {
+    display: none;
+  }
+  .brand {
+    margin: 0 0 var(--space-2);
+    padding: 0;
+    width: 100%;
+  }
+  .period {
+    margin: 0 0 var(--space-2);
+    padding: 0;
+    width: 100%;
+  }
+  .period > div:last-child {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .group {
+    display: contents;
+  }
+  .item {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+  }
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    width: 100%;
+  }
+  .signOut {
+    width: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .period > div:last-child {
+    grid-template-columns: 1fr;
   }
 }

@@ -10,7 +10,7 @@
 
 .brand {
   color: var(--color-net);
-  font-family: var(--font-serif);
+  font-family: var(--font-brand);
   font-size: var(--text-value-lg);
   letter-spacing: -0.3px;
   margin-bottom: var(--space-4);

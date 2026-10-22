@@ -1,40 +1,30 @@
-/* Design tokens — design-system.md v0.2. Light is default; [data-theme="dark"] overrides. */
-
+/* Cousin appearance: shared geometry and layout, five interchangeable palettes. */
 :root {
-  /* Surfaces — VS Code Light+ */
-  --color-bg: #f3f3f3;
-  --color-surface: #ffffff;
-
-  /* Text */
-  --color-text: #1f1f1f;
-  --color-text-sub: #3b3b3b;
-  --color-text-muted: #717171;
-
-  /* Structure */
-  --color-border: #e4e4e4;
-  --color-rule: rgba(0, 0, 0, 0.055);
-
-  /* Semantic accents — VS Code Light+ syntax tokens */
-  --color-revenue: #098658;
-  --color-outcome: #a31515;
-  --color-net: #267f99;
-  --color-credit: #795e26;
-
-  /* Elevation (light only; dark is flat) */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
-  --shadow-dropdown: 0 6px 18px rgba(0, 0, 0, 0.15);
-
-  /* Typography */
-  --font-serif: "Playfair Display", Georgia, serif;
+  --color-bg: #fbfaf7;
+  --color-surface: #fffefb;
+  --color-text: #132348;
+  --color-text-sub: #405474;
+  --color-text-muted: #5b6d88;
+  --color-border: #d5dfed;
+  --color-rule: #e7edf6;
+  --color-revenue: #137653;
+  --color-outcome: #ac4022;
+  --color-net: #2456d9;
+  --color-credit: #866100;
+  --color-info: #176caa;
+  --color-pattern: #2456d9;
+  --pattern-opacity: 0.18;
+  --shadow-card: none;
+  --shadow-dropdown: 0 6px 18px rgba(10, 24, 50, 0.12);
+  --font-serif: "Inter", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-
-  --text-label: 9px;
-  --text-body: 12px;
+  --font-brand: "Playfair Display", Georgia, serif;
+  --font-mono: "Courier New", Courier, monospace;
+  --text-label: 12px;
+  --text-body: 13px;
   --text-title: 15px;
-  --text-value-sm: 21px;
+  --text-value-sm: 24px;
   --text-value-lg: 27px;
-
-  /* Spacing — base unit 3px, strict multiples */
   --space-1: 3px;
   --space-2: 6px;
   --space-3: 9px;
@@ -44,36 +34,68 @@
   --space-7: 21px;
   --space-8: 24px;
   --space-9: 27px;
-
-  /* Shape */
-  --radius: 3px;
-
-  /* Layout */
-  --max-width: 1200px;
-  --sidebar-width: 201px;
+  --radius: 6px;
+  --max-width: 1440px;
+  --sidebar-width: 240px;
 }
 
 [data-theme="dark"] {
-  /* Surfaces — VS Code Dark+ */
-  --color-bg: #1e1e1e;
-  --color-surface: #252526;
+  --color-bg: #040b11;
+  --color-surface: #07121b;
+  --color-text: #e0edf7;
+  --color-text-sub: #b2c9dd;
+  --color-text-muted: #87a4bc;
+  --color-border: #1c3442;
+  --color-rule: #112630;
+  --color-revenue: #53e3ac;
+  --color-outcome: #ff9c5a;
+  --color-net: #43ef9b;
+  --color-credit: #f2d75e;
+  --color-info: #4dc5ff;
+  --color-pattern: var(--color-net);
+  --pattern-opacity: 0.46;
+  --shadow-dropdown: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
 
-  /* Text */
-  --color-text: #d4d4d4;
-  --color-text-sub: #9d9d9d;
-  --color-text-muted: #6e6e6e;
+[data-palette="monochrome"] {
+  --color-bg: #090c10;
+  --color-surface: #10151b;
+  --color-text: #edf1f5;
+  --color-text-sub: #bdc7d2;
+  --color-text-muted: #92a0b0;
+  --color-border: #2b3540;
+  --color-rule: #202932;
+  --color-net: #e4edf3;
+  --color-revenue: #c5dfd5;
+  --color-outcome: #edb3a3;
+  --color-credit: #e2d5a7;
+  --color-info: #b1cce5;
+  --pattern-opacity: 0.24;
+}
 
-  /* Structure */
-  --color-border: #3c3c3c;
-  --color-rule: rgba(255, 255, 255, 0.04);
+[data-palette="purple"] {
+  --color-bg: #0b0814;
+  --color-surface: #130f20;
+  --color-border: #342744;
+  --color-rule: #241a33;
+  --color-text: #eee8fb;
+  --color-text-sub: #c8bce0;
+  --color-text-muted: #a396bc;
+  --color-net: #bb92ff;
+}
 
-  /* Semantic accents — VS Code Dark+ syntax tokens */
-  --color-revenue: #4ec9b0;
-  --color-outcome: #ce9178;
-  --color-net: #569cd6;
-  --color-credit: #dcdcaa;
+[data-palette="green"] {
+  --color-bg: #030c0e;
+  --color-surface: #061418;
+  --color-border: #183a3d;
+  --color-rule: #10292e;
+  --color-net: #43ef9b;
+}
 
-  /* Flat in dark mode */
-  --shadow-card: none;
-  --shadow-dropdown: 0 6px 18px rgba(0, 0, 0, 0.45);
+[data-palette="blue"] {
+  --color-bg: #050b19;
+  --color-surface: #0a1428;
+  --color-border: #223b60;
+  --color-rule: #142a49;
+  --color-net: #6195ff;
 }

@@ -2,23 +2,37 @@ import { formatDate } from "@/lib/format";
 import type { Theme } from "@/providers/themeContext";
 
 const CHART_COLORS = {
-  net: { dark: "#569cd6", light: "#267f99" },
-  outcome: { dark: "#ce9178", light: "#a31515" },
-  revenue: { dark: "#4ec9b0", light: "#098658" },
+  net: {
+    monochrome: "#e4edf3",
+    purple: "#bb92ff",
+    green: "#43ef9b",
+    blue: "#6195ff",
+    light: "#2456d9",
+  },
+  outcome: {
+    monochrome: "#edb3a3",
+    purple: "#ff9c5a",
+    green: "#ff9c5a",
+    blue: "#ff9c5a",
+    light: "#ac4022",
+  },
+  revenue: {
+    monochrome: "#c5dfd5",
+    purple: "#53e3ac",
+    green: "#53e3ac",
+    blue: "#53e3ac",
+    light: "#137653",
+  },
 } as const;
 
-/**
- * Categorical palette for charts with one series per entity (e.g. a wallet), where the
- * colour carries identity rather than meaning. Kept separate from CHART_COLORS so the
- * semantic net/outcome/revenue hues never stand in for "some wallet".
- */
+/** Categorical series remain distinct from the selected interface accent. */
 const CHART_SERIES = [
-  { dark: "#569cd6", light: "#267f99" },
-  { dark: "#4ec9b0", light: "#098658" },
-  { dark: "#ce9178", light: "#a31515" },
-  { dark: "#c586c0", light: "#af00db" },
-  { dark: "#dcdcaa", light: "#795e26" },
-  { dark: "#9cdcfe", light: "#001080" },
+  { dark: "#6195ff", light: "#2456d9" },
+  { dark: "#53e3ac", light: "#137653" },
+  { dark: "#ff9c5a", light: "#ac4022" },
+  { dark: "#bb92ff", light: "#7940b5" },
+  { dark: "#f2d75e", light: "#866100" },
+  { dark: "#4dc5ff", light: "#176caa" },
 ] as const;
 
 /** Shared Recharts XAxis/YAxis styling. Spread onto each axis alongside its unique props. */
@@ -40,7 +54,7 @@ export const CHART_REFERENCE_LABEL = {
 export const CHART_TOOLTIP_STYLE = {
   background: "var(--color-surface)",
   border: "1px solid var(--color-border)",
-  borderRadius: 3,
+  borderRadius: 6,
   fontSize: 12,
 } as const;
 
@@ -52,7 +66,7 @@ export function chartColor(key: ChartColorKey, theme: Theme): string {
 
 /** Colour for the nth series of a categorical chart; cycles once the palette runs out. */
 export function seriesColor(index: number, theme: Theme): string {
-  return CHART_SERIES[index % CHART_SERIES.length]![theme];
+  return CHART_SERIES[index % CHART_SERIES.length]![theme === "light" ? "light" : "dark"];
 }
 
 export function formatChartDate(value: unknown): string {

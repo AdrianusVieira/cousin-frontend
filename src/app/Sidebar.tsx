@@ -2,21 +2,18 @@ import { NavLink } from "react-router-dom";
 
 import { PeriodSelector } from "@/components/PeriodSelector";
 import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "@/hooks/useTheme";
+import { AppearanceButton } from "@/components/AppearanceButton";
 
 import { NAV_GROUPS } from "./navigation";
 import styles from "./Sidebar.module.css";
 
 const LABELS = {
-  dark: "Dark",
-  light: "Light",
   period: "Period",
   signOut: "Sign out",
 };
 
 export function Sidebar({ hidden }: { hidden: boolean }) {
   const { signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav
@@ -50,9 +47,7 @@ export function Sidebar({ hidden }: { hidden: boolean }) {
       ))}
 
       <div className={styles.footer}>
-        <button className={styles.themeToggle} onClick={toggleTheme} type="button">
-          {theme === "dark" ? LABELS.light : LABELS.dark}
-        </button>
+        <AppearanceButton />
         <button className={styles.signOut} onClick={signOut} type="button">
           {LABELS.signOut}
         </button>

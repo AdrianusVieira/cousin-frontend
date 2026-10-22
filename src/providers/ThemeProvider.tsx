@@ -1,44 +1,50 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { THEME_STORAGE_KEY, ThemeContext, type Theme } from "./themeContext";
+import { THEMES, THEME_STORAGE_KEY, ThemeContext, type Theme } from "./themeContext";
 
-function resolveInitialTheme(): Theme {
-  const stored = localStorage.getItem(THEME_STORAGE_KEY);
-
-  if (stored === "dark" || stored === "light") {
-    return stored;
+function initialAppearance() {
+  let theme: Theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "monochrome"
+    : "light";
+  let storageError = false;
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === "dark") theme = "monochrome";
+    else if (THEMES.some((entry) => entry.id === stored)) theme = stored as Theme;
+  } catch {
+    storageError = true;
   }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return { storageError, theme };
 }
 
-/**
- * The only truly global client state (design-system §9). Sets `data-theme` on <html>;
- * components read tokens only and contain zero theme logic. An explicit user choice in
- * localStorage wins over `prefers-color-scheme`.
- */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(resolveInitialTheme);
+  const [appearance, setAppearance] = useState(initialAppearance);
+  const { storageError, theme } = appearance;
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    const root = document.documentElement;
+    root.dataset.theme = theme === "light" ? "light" : "dark";
+    root.dataset.palette = theme;
+    root.style.colorScheme = theme === "light" ? "light" : "dark";
   }, [theme]);
 
+  useEffect(() => {
+    const sync = (event: StorageEvent) => {
+      if (event.key === null || event.key === THEME_STORAGE_KEY) setAppearance(initialAppearance());
+    };
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
+  }, []);
+
   const setTheme = useCallback((next: Theme) => {
-    localStorage.setItem(THEME_STORAGE_KEY, next);
-    setThemeState(next);
-  }, []);
-
-  const toggleTheme = useCallback(() => {
-    setThemeState((current) => {
-      const next = current === "dark" ? "light" : "dark";
+    let failed = false;
+    try {
       localStorage.setItem(THEME_STORAGE_KEY, next);
-
-      return next;
-    });
+    } catch {
+      failed = true;
+    }
+    setAppearance({ storageError: failed, theme: next });
   }, []);
-
-  const value = useMemo(() => ({ setTheme, theme, toggleTheme }), [setTheme, theme, toggleTheme]);
-
+  const value = useMemo(() => ({ setTheme, storageError, theme }), [setTheme, storageError, theme]);
   return <ThemeContext value={value}>{children}</ThemeContext>;
 }

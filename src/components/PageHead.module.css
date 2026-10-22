@@ -2,7 +2,11 @@
   align-items: flex-start;
   display: flex;
   justify-content: space-between;
-  margin-bottom: var(--space-9);
+  margin-bottom: var(--space-8);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .left {
@@ -35,5 +39,10 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-3);
+}
+
+.meta {
+  flex-wrap: wrap;
 }

@@ -12,24 +12,26 @@ const LABELS = {
   showGlyph: "»",
 };
 
-/** Persistent sidebar + scrollable main area; main carries the ledger-line texture. */
+/** Persistent navigation and responsive content; decoration stays behind cards. */
 export function AppShell({ children }: { children: ReactNode }) {
   const { sidebarOpen, toggleSidebar } = useSidebar();
 
   return (
     <div className={styles.shell}>
       <Sidebar hidden={!sidebarOpen} />
-      <button
-        aria-expanded={sidebarOpen}
-        aria-label={sidebarOpen ? LABELS.hide : LABELS.show}
-        className={styles.sidebarToggle}
-        onClick={toggleSidebar}
-        type="button"
-      >
-        {sidebarOpen ? LABELS.hideGlyph : LABELS.showGlyph}
-      </button>
       <main className={`${styles.main} page-shell`}>
-        <div className={styles.content}>{children}</div>
+        <div className={styles.content}>
+          <button
+            aria-expanded={sidebarOpen}
+            aria-label={sidebarOpen ? LABELS.hide : LABELS.show}
+            className={styles.sidebarToggle}
+            onClick={toggleSidebar}
+            type="button"
+          >
+            {sidebarOpen ? LABELS.hideGlyph : LABELS.showGlyph}
+          </button>
+          {children}
+        </div>
       </main>
     </div>
   );
