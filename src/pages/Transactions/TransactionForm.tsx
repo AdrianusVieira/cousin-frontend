@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { mapFieldErrors } from "@/lib/api/mapFieldErrors";
 
@@ -45,6 +45,14 @@ const METHOD_OPTIONS = [
   { label: "Debit", value: "debit" },
   { label: "Credit", value: "credit" },
 ];
+
+const TEXT = {
+  invalidAmount: "Enter an amount greater than zero with up to two decimal places",
+  required: "Required",
+};
+
+const AMOUNT_INPUT_PATTERN = /^\d*(\.\d{0,2})?$/;
+const AMOUNT_PATTERN = /^\d+(\.\d{1,2})?$/;
 
 const FROM_TYPE_OPTIONS = [
   { label: "External", value: "external" },
@@ -112,8 +120,7 @@ export function TransactionForm({
   serverError,
   wallets,
 }: TransactionFormProps) {
-  const initialMethod =
-    defaultMethod === TXN_METHOD.Credit ? TXN_METHOD.Credit : TXN_METHOD.Debit;
+  const initialMethod = defaultMethod === TXN_METHOD.Credit ? TXN_METHOD.Credit : TXN_METHOD.Debit;
 
   const {
     control,
@@ -154,11 +161,11 @@ export function TransactionForm({
       return toTypesFor(TXN_FROM_TYPE.Wallet);
     }
 
-    return toTypesFor(fromType as typeof TXN_FROM_TYPE[keyof typeof TXN_FROM_TYPE]);
+    return toTypesFor(fromType as (typeof TXN_FROM_TYPE)[keyof typeof TXN_FROM_TYPE]);
   }, [fromType, isCredit]);
 
   useEffect(() => {
-    if (toType && !validToTypes.includes(toType as typeof validToTypes[number])) {
+    if (toType && !validToTypes.includes(toType as (typeof validToTypes)[number])) {
       setValue("toType", "");
       resetField("toId", { defaultValue: "" });
     }
@@ -201,11 +208,6 @@ export function TransactionForm({
 
   const processSubmit = useCallback(
     (values: FormValues) => {
-      if (!values.amount || Number(values.amount) <= 0) {
-        setError("amount", { message: "Required" });
-        return;
-      }
-
       if (!values.date) {
         setError("date", { message: "Required" });
         return;
@@ -234,8 +236,8 @@ export function TransactionForm({
       const base = {
         amount: values.amount,
         date: values.date,
+        description: values.description.trim(),
         ...(values.categoryId ? { categoryId: values.categoryId } : {}),
-        ...(values.description ? { description: values.description } : {}),
       };
 
       if (values.method === TXN_METHOD.Credit) {
@@ -288,22 +290,37 @@ export function TransactionForm({
     >
       <div className={styles.form}>
         <FormField label={LABELS.method}>
-          <FilterSegment
-            onChange={handleMethodChange}
-            options={METHOD_OPTIONS}
-            value={method}
-          />
+          <FilterSegment onChange={handleMethodChange} options={METHOD_OPTIONS} value={method} />
         </FormField>
 
         <div className={styles.row}>
           <FormField error={errors.amount?.message} label={LABELS.amount} required>
-            <input
-              className={form.input}
-              inputMode="decimal"
-              placeholder="0.00"
-              step="0.01"
-              type="number"
-              {...register("amount")}
+            <Controller
+              control={control}
+              name="amount"
+              render={({ field }) => (
+                <input
+                  {...field}
+                  aria-label={LABELS.amount}
+                  className={form.input}
+                  inputMode="decimal"
+                  onChange={(event) => {
+                    if (AMOUNT_INPUT_PATTERN.test(event.target.value)) {
+                      field.onChange(event);
+                    }
+                  }}
+                  placeholder="0.00"
+                  type="text"
+                />
+              )}
+              rules={{
+                required: TEXT.required,
+                validate: (value) =>
+                  (AMOUNT_PATTERN.test(value) &&
+                    Number.isFinite(Number(value)) &&
+                    Number(value) > 0) ||
+                  TEXT.invalidAmount,
+              }}
             />
           </FormField>
 
@@ -317,7 +334,9 @@ export function TransactionForm({
             <select className={form.select} {...register("fromType")}>
               <option value="">{LABELS.placeholder}</option>
               {FROM_TYPE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
           </FormField>
@@ -328,7 +347,9 @@ export function TransactionForm({
             <select className={form.select} {...register("fromId")}>
               <option value="">{LABELS.placeholder}</option>
               {fromIdOptions.map((item) => (
-                <option key={item.id} value={item.id}>{item.name}</option>
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
               ))}
             </select>
           </FormField>
@@ -338,7 +359,9 @@ export function TransactionForm({
           <select className={form.select} {...register("toType")}>
             <option value="">{LABELS.placeholder}</option>
             {validToTypes.map((t) => (
-              <option key={t} value={t}>{TO_TYPE_LABELS[t]}</option>
+              <option key={t} value={t}>
+                {TO_TYPE_LABELS[t]}
+              </option>
             ))}
           </select>
         </FormField>
@@ -348,7 +371,9 @@ export function TransactionForm({
             <select className={form.select} {...register("toId")}>
               <option value="">{LABELS.placeholder}</option>
               {toIdOptions.map((item) => (
-                <option key={item.id} value={item.id}>{item.name}</option>
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
               ))}
             </select>
           </FormField>
@@ -358,17 +383,23 @@ export function TransactionForm({
           <select className={form.select} {...register("categoryId")}>
             <option value="">{LABELS.none}</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
             ))}
           </select>
         </FormField>
 
-        <FormField label={LABELS.description}>
+        <FormField error={errors.description?.message} label={LABELS.description} required>
           <input
+            aria-label={LABELS.description}
+            aria-required="true"
             className={form.input}
             placeholder=""
             type="text"
-            {...register("description")}
+            {...register("description", {
+              validate: (value) => value.trim().length > 0 || TEXT.required,
+            })}
           />
         </FormField>
 
