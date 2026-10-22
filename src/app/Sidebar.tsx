@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 
+import { BrandIcon } from "@/components/BrandIcon";
 import { PeriodSelector } from "@/components/PeriodSelector";
 import { useAuth } from "@/hooks/useAuth";
 import { AppearanceButton } from "@/components/AppearanceButton";
@@ -8,6 +9,7 @@ import { NAV_GROUPS } from "./navigation";
 import styles from "./Sidebar.module.css";
 
 const LABELS = {
+  brand: "cou$in",
   period: "Period",
   signOut: "Sign out",
 };
@@ -20,7 +22,10 @@ export function Sidebar({ hidden }: { hidden: boolean }) {
       aria-label="Primary"
       className={hidden ? `${styles.sidebar} ${styles.sidebarHidden}` : styles.sidebar}
     >
-      <div className={styles.brand}>cou$in</div>
+      <div className={styles.brand}>
+        <BrandIcon />
+        <span>{LABELS.brand}</span>
+      </div>
 
       <div className={styles.period}>
         <div className={styles.groupTitle}>{LABELS.period}</div>

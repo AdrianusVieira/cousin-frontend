@@ -54,8 +54,15 @@ src/
 
 Open **Appearance** from the sidebar or sign-in screen to select **Monochrome, Purple,
 Green, Blue, or Light**. All themes share the same layout. Palettes, outlined navigation,
-and the original curved SVG dot masks in `public/textures/` follow the local Mute
-reference; Cousin keeps its wordmark and favicon. Income, expenses, and warnings retain
+and the corner SVG dot mask in `public/textures/` follow the local Mute
+reference. The sidebar has a plain background to keep navigation legible.
+Cousin's Shinx mark replaces its tail star with a `$` and adds three electric
+sparks. The sidebar, sign-in screen, server wake-up screen, and favicon share the same
+traced SVG geometry. The outline follows the text color; sparks, eyes, ear markings,
+ankle bands, and tail follow the selected accent. Light mode uses dark outlines without
+glow. The restrained brand glow in dark palettes is a deliberate exception to the
+interface's no-glow rule. Source artwork and a palette preview live in `docs/brand/`.
+Income, expenses, and warnings retain
 separate semantic colors, including in charts.
 
 Preferences use `cousin-theme` and `cousin-sidebar` in localStorage and synchronize across

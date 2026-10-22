@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cousin — icon appearances</title>
+    <style>
+      body {
+        margin: 0;
+        background: #090c10;
+        color: #edf1f5;
+        font:
+          400 14px/1.5 system-ui,
+          sans-serif;
+      }
+      main {
+        margin: auto;
+        max-width: 1440px;
+        padding: 48px;
+      }
+      h1 {
+        font-size: 30px;
+        font-weight: 400;
+        margin: 0 0 6px;
+      }
+      p {
+        color: #bdc7d2;
+        margin: 0 0 30px;
+      }
+      .palettes {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+      article {
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        color: var(--color-text);
+        padding: 24px 12px;
+        text-align: center;
+      }
+      h2 {
+        color: var(--color-net);
+        font-size: 15px;
+        font-weight: 400;
+        margin: 0 0 18px;
+      }
+      .hero {
+        display: block;
+        height: auto;
+        margin: auto;
+        max-width: 100%;
+        width: 210px;
+      }
+      .small {
+        align-items: center;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 24px;
+      }
+      .small svg {
+        height: 54px;
+        width: 54px;
+      }
+      .wordmark {
+        color: var(--color-net);
+        font:
+          400 24px Georgia,
+          serif;
+      }
+      .favicons {
+        align-items: center;
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        margin-top: 24px;
+      }
+      .favicon {
+        display: block;
+        height: 16px;
+        width: 16px;
+      }
+      .favicon.large {
+        height: 32px;
+        width: 32px;
+      }
+      footer {
+        color: #92a0b0;
+        font-size: 12px;
+        margin-top: 24px;
+      }
+      @media (max-width: 900px) {
+        .palettes {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        main {
+          padding: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>cou$in</h1>
+      <p>Shinx, a dollar tail, and three electric sparks. One mark across every appearance.</p>
+      <div class="palettes"></div>
+      <footer>
+        Large mark · sidebar size · 16px and 32px favicon. Colors use Cousin’s appearance tokens.
+      </footer>
+    </main>
+    <script type="module">
+      import tokens from "/src/styles/tokens.css?raw";
+      import { brandSvg } from "/src/lib/brand.ts";
+      import { THEMES } from "/src/providers/themeContext.ts";
+
+      // Scope the production root tokens to each swatch for simultaneous comparison.
+      const style = document.createElement("style");
+      style.textContent = tokens.replace(":root", "article");
+      document.head.append(style);
+      const palettes = document.querySelector(".palettes");
+      for (const theme of THEMES) {
+        const article = document.createElement("article");
+        article.dataset.theme = theme.id === "light" ? "light" : "dark";
+        article.dataset.palette = theme.id;
+        palettes.append(article);
+        const colors = getComputedStyle(article);
+        const svg = brandSvg(
+          colors.getPropertyValue("--color-net").trim(),
+          colors.getPropertyValue("--color-text").trim(),
+          Number(colors.getPropertyValue("--brand-glow")),
+        );
+        const image = (className) => svg.replace("<svg ", `<svg class="${className}" `);
+        article.innerHTML = `<h2>${theme.label}</h2>${image("hero")}<div class="small">${image("sidebar")}<span class="wordmark">cou$in</span></div><div class="favicons">${image("favicon")}${image("favicon large")}</div>`;
+      }
+    </script>
+  </body>
+</html>

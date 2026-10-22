@@ -13,6 +13,8 @@
   --color-credit: #866100;
   --color-info: #176caa;
   --color-pattern: #2456d9;
+  --brand-body: var(--color-text);
+  --brand-glow: 0;
   --pattern-opacity: 0.18;
   --shadow-card: none;
   --shadow-dropdown: 0 6px 18px rgba(10, 24, 50, 0.12);
@@ -40,6 +42,7 @@
 }
 
 [data-theme="dark"] {
+  --brand-glow: 0.55;
   --color-bg: #040b11;
   --color-surface: #07121b;
   --color-text: #e0edf7;
@@ -58,6 +61,7 @@
 }
 
 [data-palette="monochrome"] {
+  --brand-glow: 0.2;
   --color-bg: #090c10;
   --color-surface: #10151b;
   --color-text: #edf1f5;

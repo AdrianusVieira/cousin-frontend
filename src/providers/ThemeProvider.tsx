@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { brandSvg } from "@/lib/brand";
 import { THEMES, THEME_STORAGE_KEY, ThemeContext, type Theme } from "./themeContext";
 
 function initialAppearance() {
@@ -26,6 +27,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.dataset.theme = theme === "light" ? "light" : "dark";
     root.dataset.palette = theme;
     root.style.colorScheme = theme === "light" ? "light" : "dark";
+    const style = getComputedStyle(root);
+    const accent = style.getPropertyValue("--color-net").trim();
+    const body = style.getPropertyValue("--color-text").trim();
+    const glow = Number(style.getPropertyValue("--brand-glow"));
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (icon && accent && body) {
+      icon.href = `data:image/svg+xml,${encodeURIComponent(brandSvg(accent, body, glow))}`;
+    }
   }, [theme]);
 
   useEffect(() => {
