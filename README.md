@@ -36,7 +36,7 @@ src/
     env.ts      validated env access
     query.ts    QueryClient (cold-start retry/backoff)
     supabase.ts Supabase client + access-token helper
-  pages/        screen components (placeholders for now)
+  pages/        implemented screens and co-located query hooks
   providers/    ThemeProvider (data-theme + data-palette on <html>)
   styles/       design-system tokens + globals
   types/        API types mirroring api-contracts.md
@@ -47,7 +47,7 @@ src/
 - **Money is a string**, never a number — parse only for display, re-serialize on submit.
 - API is camelCase under `/api`; every request carries the Supabase bearer token.
 - Cold starts (~30–60s on Render free tier) are handled by the 60s client timeout +
-  query retry/backoff; a `/health` gate screen is still to be built.
+  query retry/backoff; the `/health` gate shows server warm-up progress.
 - Design tokens only — no raw hex in components, spacing in multiples of 3, no font-weight > 400.
 
 ## Appearance
@@ -74,3 +74,19 @@ Layout adapts to desktop, tablet, and mobile. Wide financial tables scroll withi
 frames; forms stack on small screens and dialogs contain scrolling and keyboard focus.
 Run `npm test` for existing financial/form tests plus appearance persistence and palette
 coverage, and `npm run lint` / `npm run build` before delivery.
+
+## Transaction cleanup and explainable reporting
+
+Transactions supports description search, wallet/category filters (including Uncategorized),
+category edits, and bulk assignment to up to 200 selected rows. Filters persist in the URL.
+Creation requires an active category; existing uncategorized history is preserved.
+A shared edit dialog keeps category edits available from wallet and category detail tables.
+
+Dashboard totals expose **View details**, listing the exact contributions with their statement
+or obligation date, purchase/movement date, and actual settlement date. Net and savings rate
+show their formula. Dashboard calculations keep their existing date basis.
+
+Wallets includes a **Cash forecast** preview below Patrimony Trend. The 30/60/90-day horizon
+always starts today, independently of the selected history period. It shows projected closing
+and lowest balances and the contributing schedule. Only already-generated scheduled items
+are included; this is a cash projection, not an investment valuation or spending allowance.

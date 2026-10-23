@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 import form from "@/styles/form.module.css";
 
+import { CashForecast } from "./CashForecast";
 import { PatrimonyChart } from "./PatrimonyChart";
 import { WalletForm } from "./WalletForm";
 import styles from "./Wallets.module.css";
@@ -39,7 +40,7 @@ const TEXT = {
     "no longer count toward patrimony or show up in forms.",
   totalPatrimony:
     "Combined balance of every active wallet right now, with the note comparing it to the period " +
-    "average. Only debit movements change a balance — credit spending sits in Pending Credit " +
+    "average. Debit movements and settled card payments change a balance — open credit sits in Pending Credit " +
     "until you settle it, so this reads higher than what you can actually spend.",
 };
 
@@ -47,9 +48,7 @@ const COLUMNS: Column<WalletRow>[] = [
   {
     header: LABELS.name,
     key: "name",
-    render: (w) => (
-      <span className={w.archived ? styles.dimmed : undefined}>{w.name}</span>
-    ),
+    render: (w) => <span className={w.archived ? styles.dimmed : undefined}>{w.name}</span>,
   },
   {
     header: LABELS.delta,
@@ -58,10 +57,7 @@ const COLUMNS: Column<WalletRow>[] = [
       const num = Number(w.vsAverageDelta);
 
       return (
-        <span
-          className={styles.delta}
-          data-sign={num > 0 ? "+" : num < 0 ? "-" : null}
-        >
+        <span className={styles.delta} data-sign={num > 0 ? "+" : num < 0 ? "-" : null}>
           {formatMoneyDelta(w.vsAverageDelta)}
         </span>
       );
@@ -70,17 +66,14 @@ const COLUMNS: Column<WalletRow>[] = [
   {
     header: LABELS.status,
     key: "status",
-    render: (w) =>
-      w.archived ? <Pill accent="outcome">{TEXT.archived}</Pill> : null,
+    render: (w) => (w.archived ? <Pill accent="outcome">{TEXT.archived}</Pill> : null),
   },
   {
     align: "right",
     header: LABELS.balance,
     key: "balance",
     render: (w) => (
-      <span className={w.archived ? styles.dimmed : undefined}>
-        {formatMoney(w.balance)}
-      </span>
+      <span className={w.archived ? styles.dimmed : undefined}>{formatMoney(w.balance)}</span>
     ),
   },
 ];
@@ -152,6 +145,8 @@ export function Wallets() {
           <div className={styles.chartRow}>
             <PatrimonyChart data={trend} />
           </div>
+
+          <CashForecast />
 
           <div className={styles.tableWrap}>
             <DataTable

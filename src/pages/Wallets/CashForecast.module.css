@@ -1,0 +1,65 @@
+.panel {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-9);
+  padding-top: var(--space-8);
+}
+.heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+}
+.heading h2 {
+  color: var(--color-text);
+  font-size: 21px;
+  font-weight: 400;
+  margin: var(--space-2) 0 0;
+}
+.eyebrow {
+  color: var(--color-text-muted);
+  font-size: var(--text-label);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.copy,
+.assumptions {
+  color: var(--color-text-sub);
+  font-size: var(--text-body);
+  line-height: 1.65;
+}
+.copy {
+  margin: var(--space-3) 0 var(--space-6);
+  max-width: 720px;
+}
+.assumptions {
+  color: var(--color-text-muted);
+  margin: var(--space-5) 0 0;
+}
+.stats {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.chart {
+  display: flex;
+  margin-top: var(--space-4);
+}
+.schedule {
+  color: var(--color-text-sub);
+  font-size: var(--text-body);
+  margin-top: var(--space-4);
+}
+.schedule summary {
+  cursor: pointer;
+  padding: var(--space-3) 0;
+}
+.error {
+  color: var(--color-outcome);
+  font-size: var(--text-body);
+}
+@media (max-width: 600px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}

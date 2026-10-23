@@ -1,14 +1,14 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 
-import { LAST_UPDATED_QUERY_KEY } from "@/hooks/useLastUpdated";
+import { invalidateFinanceQueries } from "@/lib/invalidateFinanceQueries";
+import { TransactionEditDialog } from "./TransactionEditDialog";
 import { api } from "@/lib/api/client";
 import { formatDate, formatMoney } from "@/lib/format";
 import { Pill } from "@/components/Pill";
 import type { Transaction, TransactionListResponse } from "@/types/api";
 
 import { Modal } from "./Modal";
-import { FormField } from "./FormField";
 
 import form from "@/styles/form.module.css";
 
@@ -68,14 +68,10 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
 
-  const filterKey = useMemo(
-    () => ({ category, from, to, wallet }),
-    [category, from, to, wallet],
-  );
+  const filterKey = useMemo(() => ({ category, from, to, wallet }), [category, from, to, wallet]);
 
   const query = useInfiniteQuery({
-    getNextPageParam: (lastPage: TransactionListResponse) =>
-      lastPage.nextCursor ?? undefined,
+    getNextPageParam: (lastPage: TransactionListResponse) => lastPage.nextCursor ?? undefined,
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) =>
       api.get<TransactionListResponse>("/transactions", {
@@ -91,14 +87,18 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
   });
 
   const editMutation = useMutation({
-    mutationFn: ({ id, ...body }: { amount?: string; categoryId?: string | null; date?: string; description?: string | null; id: string }) =>
-      api.patch<Transaction>(`/transactions/${id}`, body),
+    mutationFn: ({
+      id,
+      ...body
+    }: {
+      amount?: string;
+      categoryId?: string | null;
+      date?: string;
+      description?: string | null;
+      id: string;
+    }) => api.patch<Transaction>(`/transactions/${id}`, body),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["wallets"] });
-      queryClient.invalidateQueries({ queryKey: ["wallet"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      queryClient.invalidateQueries({ queryKey: LAST_UPDATED_QUERY_KEY });
+      void invalidateFinanceQueries(queryClient);
       setEditing(null);
     },
   });
@@ -106,31 +106,16 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete<void>(`/transactions/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["wallets"] });
-      queryClient.invalidateQueries({ queryKey: ["wallet"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      queryClient.invalidateQueries({ queryKey: LAST_UPDATED_QUERY_KEY });
+      void invalidateFinanceQueries(queryClient);
       setDeleting(null);
     },
   });
 
-  const items = useMemo(
-    () => query.data?.pages.flatMap((p) => p.items) ?? [],
-    [query.data],
-  );
+  const items = useMemo(() => query.data?.pages.flatMap((p) => p.items) ?? [], [query.data]);
 
   const handleEditSubmit = useCallback(
-    (values: { amount: string; date: string; description: string }) => {
-      if (!editing) return;
-
-      const payload: Record<string, string | null> = { id: editing.id };
-      if (values.amount !== editing.amount) payload.amount = values.amount;
-      if (values.date !== editing.date) payload.date = values.date;
-      if (values.description !== (editing.description ?? ""))
-        payload.description = values.description || null;
-
-      editMutation.mutate(payload as Parameters<typeof editMutation.mutate>[0]);
+    (values: import("@/types/api").PatchTransaction) => {
+      if (editing) editMutation.mutate({ id: editing.id, ...values });
     },
     [editMutation, editing],
   );
@@ -141,6 +126,7 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
 
   return (
     <>
+      {query.error && <p role="alert">{query.error.message}</p>}
       {items.length === 0 ? (
         <div className={styles.empty}>{LABELS.noTransactions}</div>
       ) : (
@@ -213,7 +199,8 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
       )}
 
       {editing && (
-        <EditModal
+        <TransactionEditDialog
+          error={editMutation.error}
           isSubmitting={editMutation.isPending}
           onClose={() => setEditing(null)}
           onSubmit={handleEditSubmit}
@@ -242,75 +229,9 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
           title={LABELS.deleteTitle}
         >
           <p className={styles.confirmText}>{LABELS.confirmDelete}</p>
+          {deleteMutation.error && <p role="alert">{deleteMutation.error.message}</p>}
         </Modal>
       )}
     </>
-  );
-}
-
-function EditModal({
-  isSubmitting,
-  onClose,
-  onSubmit,
-  transaction,
-}: {
-  isSubmitting: boolean;
-  onClose: () => void;
-  onSubmit: (values: { amount: string; date: string; description: string }) => void;
-  transaction: Transaction;
-}) {
-  const [amount, setAmount] = useState(transaction.amount);
-  const [date, setDate] = useState(transaction.date);
-  const [description, setDescription] = useState(transaction.description ?? "");
-
-  return (
-    <Modal
-      footer={
-        <>
-          <button className={form.btnSecondary} onClick={onClose} type="button">
-            {LABELS.cancel}
-          </button>
-          <button
-            className={form.btnPrimary}
-            disabled={isSubmitting}
-            onClick={() => onSubmit({ amount, date, description })}
-            type="button"
-          >
-            {LABELS.save}
-          </button>
-        </>
-      }
-      onClose={onClose}
-      title={LABELS.editTitle}
-    >
-      <div className={styles.editForm}>
-        <FormField label={LABELS.amount}>
-          <input
-            className={form.input}
-            inputMode="decimal"
-            onChange={(e) => setAmount(e.target.value)}
-            step="0.01"
-            type="number"
-            value={amount}
-          />
-        </FormField>
-        <FormField label={LABELS.date}>
-          <input
-            className={form.input}
-            onChange={(e) => setDate(e.target.value)}
-            type="date"
-            value={date}
-          />
-        </FormField>
-        <FormField label={LABELS.description}>
-          <input
-            className={form.input}
-            onChange={(e) => setDescription(e.target.value)}
-            type="text"
-            value={description}
-          />
-        </FormField>
-      </div>
-    </Modal>
   );
 }

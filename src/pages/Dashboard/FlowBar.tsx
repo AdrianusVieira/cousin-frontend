@@ -9,7 +9,10 @@ export interface FlowSegment {
   value: Money;
 }
 
+const LABELS = { details: "View details" };
+
 interface FlowBarProps {
+  onInspect?: () => void;
   accent: "revenue" | "outcome";
   info?: string;
   label: string;
@@ -28,7 +31,15 @@ const SETTLED_OPACITY = 0.85;
 
 const segmentOpacity = (index: number) => (index === 0 ? SETTLED_OPACITY : PENDING_OPACITY);
 
-export function FlowBar({ accent, info, label, scaleMax, segments, total }: FlowBarProps) {
+export function FlowBar({
+  accent,
+  info,
+  label,
+  onInspect,
+  scaleMax,
+  segments,
+  total,
+}: FlowBarProps) {
   const accentVar = `var(--color-${accent})`;
 
   return (
@@ -55,6 +66,12 @@ export function FlowBar({ accent, info, label, scaleMax, segments, total }: Flow
           </span>
         ))}
       </div>
+
+      {onInspect && (
+        <button className={styles.inspect} onClick={onInspect} type="button">
+          {LABELS.details}
+        </button>
+      )}
 
       <div className={styles.track}>
         {segments.map((segment, index) => {

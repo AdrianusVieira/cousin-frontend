@@ -28,4 +28,5 @@
 
 .chartWrap {
   height: 210px;
+  overflow: hidden;
 }

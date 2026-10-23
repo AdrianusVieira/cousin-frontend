@@ -31,6 +31,7 @@ export function useBillDetail() {
     mutationFn: (data: Partial<Pick<Bill, "description" | "name" | "paid" | "term" | "value">>) =>
       api.patch<Bill>(`/bills/${id}`, data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["bill", id] });
       queryClient.invalidateQueries({ queryKey: ["bills"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
@@ -44,6 +45,7 @@ export function useBillDetail() {
   const deleteMutation = useMutation({
     mutationFn: () => api.delete<void>(`/bills/${id}`),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["bills"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["recurrence"] });

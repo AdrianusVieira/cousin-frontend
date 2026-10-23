@@ -20,7 +20,16 @@ function makeSut(defaultMethod = "debit") {
   render(
     <TransactionForm
       bills={[]}
-      categories={[]}
+      categories={[
+        {
+          id: "category-1",
+          name: "Food",
+          archived: false,
+          description: null,
+          createdAt: "",
+          updatedAt: "",
+        },
+      ]}
       defaultMethod={defaultMethod}
       isSubmitting={false}
       onClose={vi.fn()}
@@ -38,6 +47,18 @@ function select(label: string): HTMLSelectElement {
 }
 
 describe("TransactionForm", () => {
+  it.each(["debit", "credit"])("should require a category for %s creation", async (method) => {
+    const { onSubmit, user } = makeSut(method);
+    await user.type(screen.getByRole("textbox", { name: "Amount" }), "12.34");
+    await user.type(screen.getByRole("textbox", { name: "Description" }), "Lunch");
+    await user.click(screen.getByRole("button", { name: "Create transaction" }));
+    expect(
+      await within(screen.getByRole("combobox", { name: "Category" }).parentElement!).findByText(
+        "Required",
+      ),
+    ).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
   it("should ignore letters and pasted non-decimal amounts", async () => {
     const { user } = makeSut();
     const amount = screen.getByRole("textbox", { name: "Amount" });
@@ -59,7 +80,7 @@ describe("TransactionForm", () => {
       await user.click(screen.getByRole("button", { name: "Create transaction" }));
 
       expect(
-        await screen.findByText(
+        await within(screen.getByRole("textbox", { name: "Amount" }).parentElement!).findByText(
           value ? "Enter an amount greater than zero with up to two decimal places" : "Required",
         ),
       ).toBeInTheDocument();
@@ -93,11 +114,13 @@ describe("TransactionForm", () => {
       }
       await user.selectOptions(select("From"), wallet.id);
       await user.selectOptions(select("To type"), "external");
+      await user.selectOptions(screen.getByRole("combobox", { name: "Category" }), "category-1");
       await user.click(screen.getByRole("button", { name: "Create transaction" }));
 
       await waitFor(() =>
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
+            categoryId: "category-1",
             amount: "12.34",
             description: "Lunch",
             fromId: wallet.id,

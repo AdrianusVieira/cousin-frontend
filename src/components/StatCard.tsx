@@ -4,7 +4,10 @@ import styles from "./StatCard.module.css";
 
 export type StatAccent = "credit" | "net" | "outcome" | "revenue";
 
+const LABELS = { details: "View details" };
+
 interface StatCardProps {
+  onInspect?: () => void;
   accent: StatAccent;
   info?: string;
   label: string;
@@ -20,14 +23,32 @@ const ACCENT_VAR: Record<StatAccent, string> = {
   revenue: "var(--color-revenue)",
 };
 
-export function StatCard({ accent, info, label, note, noteAccent, value }: StatCardProps) {
+export function StatCard({
+  accent,
+  info,
+  label,
+  note,
+  noteAccent,
+  onInspect,
+  value,
+}: StatCardProps) {
   return (
-    <div className={styles.card} style={{ borderLeftWidth: 2, borderLeftColor: ACCENT_VAR[accent] }}>
+    <div
+      className={styles.card}
+      style={{ borderLeftWidth: 2, borderLeftColor: ACCENT_VAR[accent] }}
+    >
       <div className={styles.header}>
         <span className={styles.label}>{label}</span>
         {info !== undefined && <InfoHint text={info} />}
       </div>
-      <div className={styles.value} style={{ color: ACCENT_VAR[accent] }}>{value}</div>
+      <div className={styles.value} style={{ color: ACCENT_VAR[accent] }}>
+        {value}
+      </div>
+      {onInspect && (
+        <button className={styles.inspect} onClick={onInspect} type="button">
+          {LABELS.details}
+        </button>
+      )}
       {note && (
         <div
           className={styles.note}

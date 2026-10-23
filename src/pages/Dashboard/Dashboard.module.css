@@ -42,3 +42,20 @@
     flex-direction: column;
   }
 }
+
+.details {
+  color: var(--color-text-sub);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-size: var(--text-body);
+}
+.details p {
+  margin: 0;
+}
+.detailTotal {
+  color: var(--color-net);
+  font-family: var(--font-serif);
+  font-size: var(--text-value-sm);
+  font-variant-numeric: tabular-nums;
+}

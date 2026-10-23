@@ -34,3 +34,15 @@
   font-size: var(--text-body);
   margin-top: var(--space-1);
 }
+
+.inspect {
+  background: transparent;
+  border: 0;
+  color: var(--color-text-sub);
+  cursor: pointer;
+  font-size: var(--text-body);
+  margin-top: var(--space-3);
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

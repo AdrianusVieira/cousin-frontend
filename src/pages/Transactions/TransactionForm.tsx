@@ -33,7 +33,7 @@ const LABELS = {
   fromType: "From type",
   installments: "Installments",
   method: "Method",
-  none: "None",
+  none: "Choose a category",
   placeholder: "—",
   term: "Term",
   title: "New Transaction",
@@ -49,6 +49,7 @@ const METHOD_OPTIONS = [
 const TEXT = {
   invalidAmount: "Enter an amount greater than zero with up to two decimal places",
   required: "Required",
+  noCategories: "Create an active category in Categories before recording a transaction.",
 };
 
 const AMOUNT_INPUT_PATTERN = /^\d*(\.\d{0,2})?$/;
@@ -237,7 +238,7 @@ export function TransactionForm({
         amount: values.amount,
         date: values.date,
         description: values.description.trim(),
-        ...(values.categoryId ? { categoryId: values.categoryId } : {}),
+        categoryId: values.categoryId,
       };
 
       if (values.method === TXN_METHOD.Credit) {
@@ -379,16 +380,27 @@ export function TransactionForm({
           </FormField>
         )}
 
-        <FormField label={LABELS.category}>
-          <select className={form.select} {...register("categoryId")}>
+        <FormField error={errors.categoryId?.message} label={LABELS.category} required>
+          <select
+            aria-label={LABELS.category}
+            aria-required="true"
+            className={form.select}
+            {...register("categoryId", { required: TEXT.required })}
+          >
             <option value="">{LABELS.none}</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
+            {categories
+              .filter((cat) => !cat.archived)
+              .map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
           </select>
         </FormField>
+
+        {categories.filter((cat) => !cat.archived).length === 0 && (
+          <p role="status">{TEXT.noCategories}</p>
+        )}
 
         <FormField error={errors.description?.message} label={LABELS.description} required>
           <input

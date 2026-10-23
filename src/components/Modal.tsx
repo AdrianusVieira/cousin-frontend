@@ -5,13 +5,14 @@ import styles from "./Modal.module.css";
 const LABELS = { close: "Close dialog" };
 
 interface ModalProps {
+  wide?: boolean;
   children: ReactNode;
   footer: ReactNode;
   onClose: () => void;
   title: string;
 }
 
-export function Modal({ children, footer, onClose, title }: ModalProps) {
+export function Modal({ children, footer, onClose, title, wide = false }: ModalProps) {
   const titleId = useId();
   const overlayRef = useRef<HTMLDialogElement>(null);
 
@@ -43,7 +44,7 @@ export function Modal({ children, footer, onClose, title }: ModalProps) {
       onClick={handleOverlayClick}
       ref={overlayRef}
     >
-      <div className={styles.modal}>
+      <div className={wide ? `${styles.modal} ${styles.wide}` : styles.modal}>
         <header className={styles.header}>
           <span className={styles.title} id={titleId}>
             {title}
