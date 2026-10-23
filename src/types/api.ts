@@ -121,6 +121,7 @@ export interface Transaction {
   description: string | null;
   method: TxnMethod;
   category: { id: UUID; name: string } | null;
+  categoryAllocations: CategoryAllocation[];
   from: TxnEndpoint;
   to: TxnEndpoint;
   installmentNumber: number | null;
@@ -274,7 +275,7 @@ export interface CreateDebitTransaction {
   amount: Money;
   date: ISODate;
   description?: string;
-  categoryId: UUID;
+  categoryAllocations: CategoryAllocationInput[];
   fromType: TxnFromType;
   fromId?: UUID; // omit iff fromType = 'external'
   toType: TxnToType;
@@ -286,7 +287,7 @@ export interface CreateCreditTransaction {
   amount: Money;
   date: ISODate;
   description?: string;
-  categoryId: UUID;
+  categoryAllocations: CategoryAllocationInput[];
   fromId: UUID; // wallet
   toType: TxnToType;
   toId?: UUID;
@@ -303,8 +304,18 @@ export interface SettleRequest {
 export interface PatchTransaction {
   amount?: Money;
   categoryId?: UUID | null;
+  categoryAllocations?: CategoryAllocationInput[];
   date?: ISODate;
   description?: string | null;
+}
+
+export interface CategoryAllocationInput {
+  categoryId: UUID;
+  amount: Money;
+}
+
+export interface CategoryAllocation extends CategoryAllocationInput {
+  categoryName: string;
 }
 
 export type DashboardMetric = "income" | "outcome" | "net" | "savingsRate";

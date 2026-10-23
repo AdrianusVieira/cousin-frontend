@@ -19,16 +19,22 @@ const transaction = {
   description: "Lunch",
   method: "debit",
   category,
+  categoryAllocations: [{ categoryId: category.id, categoryName: category.name, amount: "12.34" }],
   from: { name: "Wallet" },
   to: { name: null },
   sign: "-",
 };
-function makeSut(entry = "/transactions") {
+function makeSut(entry = "/transactions", allocations = transaction.categoryAllocations) {
+  const record = {
+    ...transaction,
+    categoryAllocations: allocations,
+    category: allocations.length === 1 ? category : null,
+  };
   vi.mocked(api.get).mockImplementation(async (path) => {
-    if (path.startsWith("/transactions/")) return transaction;
+    if (path.startsWith("/transactions/")) return record;
     if (path === "/transactions")
       return {
-        items: [transaction],
+        items: [record],
         summary: { totalIn: "0.00", totalOut: "12.34", net: "-12.34" },
         nextCursor: null,
       };
@@ -38,7 +44,7 @@ function makeSut(entry = "/transactions") {
       return { items: [{ id: "wallet-1", name: "Wallet", archived: false }] };
     return {};
   });
-  vi.mocked(api.patch).mockResolvedValue(transaction);
+  vi.mocked(api.patch).mockResolvedValue(record);
   render(
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
@@ -101,7 +107,9 @@ describe("transaction cleanup", () => {
     );
     await user.click(within(dialog).getByRole("button", { name: "Save" }));
     await waitFor(() =>
-      expect(api.patch).toHaveBeenCalledWith("/transactions/txn-1", { categoryId: "category-2" }),
+      expect(api.patch).toHaveBeenCalledWith("/transactions/txn-1", {
+        categoryAllocations: [{ categoryId: "category-2", amount: "12.34" }],
+      }),
     );
   });
   it("bulk assigns only the selected IDs", async () => {
@@ -119,5 +127,63 @@ describe("transaction cleanup", () => {
         transactionIds: ["txn-1"],
       }),
     );
+  });
+  it("saves unequal category amounts without changing the transaction total", async () => {
+    const user = makeSut();
+    await screen.findByRole("cell", { name: "Lunch" });
+    await user.click(screen.getByRole("button", { name: "Edit" }));
+    const dialog = within(screen.getByRole("dialog", { name: "Edit Transaction" }));
+    await dialog.findByRole("option", { name: "Home" });
+    await user.click(dialog.getByRole("button", { name: "Add category" }));
+    await user.selectOptions(dialog.getByRole("combobox", { name: "Category 2" }), "category-2");
+    await user.clear(dialog.getByRole("textbox", { name: "Category amount" }));
+    await user.type(dialog.getByRole("textbox", { name: "Category amount" }), "10.00");
+    await user.type(dialog.getByRole("textbox", { name: "Category amount 2" }), "2.34");
+    await user.click(dialog.getByRole("button", { name: "Save" }));
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledWith("/transactions/txn-1", {
+        categoryAllocations: [
+          { categoryId: "category-1", amount: "10.00" },
+          { categoryId: "category-2", amount: "2.34" },
+        ],
+      }),
+    );
+  });
+  it("keeps custom split amounts when the total changes and requires the user to rebalance them", async () => {
+    const user = makeSut("/transactions", [
+      { categoryId: "category-1", categoryName: "Food", amount: "10.00" },
+      { categoryId: "category-2", categoryName: "Home", amount: "2.34" },
+    ]);
+    await screen.findByRole("cell", { name: "Food: 10.00 · Home: 2.34" });
+    await user.click(screen.getByRole("button", { name: "Edit" }));
+    const dialog = within(screen.getByRole("dialog", { name: "Edit Transaction" }));
+    await user.clear(dialog.getByRole("textbox", { name: "Amount" }));
+    await user.type(dialog.getByRole("textbox", { name: "Amount" }), "15.00");
+    expect(dialog.getByRole("textbox", { name: "Category amount" })).toHaveValue("10.00");
+    expect(dialog.getByRole("textbox", { name: "Category amount 2" })).toHaveValue("2.34");
+    expect(dialog.getByText("Remaining: 2.66")).toBeInTheDocument();
+    await user.click(dialog.getByRole("button", { name: "Save" }));
+    expect(await dialog.findByRole("alert")).toHaveTextContent("Category amounts must add up");
+    expect(api.patch).not.toHaveBeenCalled();
+    await user.clear(dialog.getByRole("textbox", { name: "Category amount 2" }));
+    await user.type(dialog.getByRole("textbox", { name: "Category amount 2" }), "5.00");
+    await user.click(dialog.getByRole("button", { name: "Save" }));
+    await waitFor(() =>
+      expect(api.patch).toHaveBeenCalledWith("/transactions/txn-1", {
+        amount: "15.00",
+        categoryAllocations: [
+          { categoryId: "category-1", amount: "10.00" },
+          { categoryId: "category-2", amount: "5.00" },
+        ],
+      }),
+    );
+  });
+
+  it("shows the selected category amount in filtered rows", async () => {
+    makeSut("/transactions?category=category-2", [
+      { categoryId: "category-1", categoryName: "Food", amount: "10.00" },
+      { categoryId: "category-2", categoryName: "Home", amount: "2.34" },
+    ]);
+    expect(await screen.findByRole("cell", { name: "−2.34" })).toBeInTheDocument();
   });
 });

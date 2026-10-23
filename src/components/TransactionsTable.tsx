@@ -4,9 +4,10 @@ import { useCallback, useMemo, useState } from "react";
 import { invalidateFinanceQueries } from "@/lib/invalidateFinanceQueries";
 import { TransactionEditDialog } from "./TransactionEditDialog";
 import { api } from "@/lib/api/client";
+import { categoryAmount, formatTransactionCategories } from "@/lib/categoryAllocations";
 import { formatDate, formatMoney } from "@/lib/format";
 import { Pill } from "@/components/Pill";
-import type { Transaction, TransactionListResponse } from "@/types/api";
+import type { PatchTransaction, Transaction, TransactionListResponse } from "@/types/api";
 
 import { Modal } from "./Modal";
 
@@ -54,8 +55,8 @@ function formatEndpoint(endpoint: { name: string | null }): string {
   return endpoint.name ?? TEXT.external;
 }
 
-function formatSignedAmount(txn: Transaction): string {
-  const formatted = formatMoney(txn.amount);
+function formatSignedAmount(txn: Transaction, category?: string): string {
+  const formatted = formatMoney(categoryAmount(txn, category));
 
   if (txn.sign === "+") return `+${formatted}`;
   if (txn.sign === "-") return `−${formatted}`;
@@ -87,16 +88,8 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
   });
 
   const editMutation = useMutation({
-    mutationFn: ({
-      id,
-      ...body
-    }: {
-      amount?: string;
-      categoryId?: string | null;
-      date?: string;
-      description?: string | null;
-      id: string;
-    }) => api.patch<Transaction>(`/transactions/${id}`, body),
+    mutationFn: ({ id, ...body }: PatchTransaction & { id: string }) =>
+      api.patch<Transaction>(`/transactions/${id}`, body),
     onSuccess: () => {
       void invalidateFinanceQueries(queryClient);
       setEditing(null);
@@ -137,6 +130,7 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
                 <th className={styles.th}>{LABELS.date}</th>
                 <th className={styles.th}>{LABELS.description}</th>
                 <th className={styles.th}>{LABELS.method}</th>
+                <th className={styles.th}>{LABELS.category}</th>
                 <th className={styles.th}>{LABELS.fromTo}</th>
                 <th className={styles.thRight}>{LABELS.amount}</th>
                 <th className={styles.th} />
@@ -152,6 +146,7 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
                       {txn.method === "credit" ? TEXT.credit : TEXT.debit}
                     </Pill>
                   </td>
+                  <td className={styles.td}>{formatTransactionCategories(txn)}</td>
                   <td className={styles.td}>
                     <span className={styles.fromTo}>
                       {formatEndpoint(txn.from)} → {formatEndpoint(txn.to)}
@@ -159,7 +154,7 @@ export function TransactionsTable({ category, from, to, wallet }: TransactionsTa
                   </td>
                   <td className={styles.tdRight}>
                     <span className={styles.amount} data-sign={txn.sign}>
-                      {formatSignedAmount(txn)}
+                      {formatSignedAmount(txn, category)}
                     </span>
                   </td>
                   <td className={styles.tdAction}>

@@ -1,24 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
+import { CategoryAllocationFields } from "./CategoryAllocationFields";
+import { transactionAllocations, validateCategoryAllocations } from "@/lib/categoryAllocations";
+import type { CategoryAllocationInput } from "@/types/api";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
 import { api } from "@/lib/api/client";
 import { mapFieldErrors } from "@/lib/api/mapFieldErrors";
-import type { CategoryListResponse, PatchTransaction, Transaction } from "@/types/api";
+import type { Category, CategoryListResponse, PatchTransaction, Transaction } from "@/types/api";
 import form from "@/styles/form.module.css";
 import styles from "./TransactionsTable.module.css";
 
 const LABELS = {
   amount: "Amount",
   cancel: "Cancel",
-  category: "Category",
   date: "Date",
   description: "Description",
   save: "Save",
   title: "Edit Transaction",
-  uncategorized: "Uncategorized",
 };
 const TEXT = {
   failed: "Could not save this transaction.",
@@ -27,7 +28,7 @@ const TEXT = {
 };
 interface Values {
   amount: string;
-  categoryId: string;
+  categoryAllocations: CategoryAllocationInput[];
   date: string;
   description: string;
 }
@@ -49,19 +50,38 @@ export function TransactionEditDialog({
     queryKey: ["categories", "edit"],
     queryFn: () => api.get<CategoryListResponse>("/categories", { query: { active: true } }),
   });
+  const originalAllocations = transactionAllocations(transaction);
   const {
+    control,
+    getValues,
     formState: { errors, isDirty },
     handleSubmit,
     register,
     setError,
+    setValue,
   } = useForm<Values>({
     defaultValues: {
       amount: transaction.amount,
-      categoryId: transaction.category?.id ?? "",
+      categoryAllocations: originalAllocations,
       date: transaction.date,
       description: transaction.description ?? "",
     },
   });
+  const amount = useWatch({ control, name: "amount" });
+  useEffect(() => {
+    if (getValues("categoryAllocations").length === 1) {
+      setValue("categoryAllocations.0.amount", amount);
+    }
+  }, [amount, getValues, setValue]);
+  const categoryOptions: Pick<Category, "id" | "name" | "archived">[] = [...(data?.items ?? [])];
+  for (const item of transaction.categoryAllocations ?? []) {
+    if (!categoryOptions.some((cat) => cat.id === item.categoryId)) {
+      categoryOptions.push({ id: item.categoryId, name: item.categoryName, archived: true });
+    }
+  }
+  if (transaction.category && !categoryOptions.some((cat) => cat.id === transaction.category!.id)) {
+    categoryOptions.push({ ...transaction.category, archived: true });
+  }
   useEffect(() => {
     mapFieldErrors(error, setError as Parameters<typeof mapFieldErrors>[1]);
   }, [error, setError]);
@@ -71,8 +91,8 @@ export function TransactionEditDialog({
     if (values.date !== transaction.date) patch.date = values.date;
     if (values.description !== (transaction.description ?? ""))
       patch.description = values.description || null;
-    if (values.categoryId !== (transaction.category?.id ?? ""))
-      patch.categoryId = values.categoryId || null;
+    if (JSON.stringify(values.categoryAllocations) !== JSON.stringify(originalAllocations))
+      patch.categoryAllocations = values.categoryAllocations;
     if (Object.keys(patch).length) onSubmit(patch);
   });
   return (
@@ -124,20 +144,22 @@ export function TransactionEditDialog({
             {...register("description")}
           />
         </FormField>
-        <FormField error={errors.categoryId?.message} label={LABELS.category}>
-          <select aria-label={LABELS.category} className={form.select} {...register("categoryId")}>
-            <option value="">{LABELS.uncategorized}</option>
-            {transaction.category &&
-              !data?.items.some((item) => item.id === transaction.category!.id) && (
-                <option value={transaction.category.id}>{transaction.category.name}</option>
-              )}
-            {data?.items.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </FormField>
+        <Controller
+          control={control}
+          name="categoryAllocations"
+          rules={{
+            validate: (items) => validateCategoryAllocations(items, getValues("amount"), false),
+          }}
+          render={({ field }) => (
+            <CategoryAllocationFields
+              categories={categoryOptions}
+              error={errors.categoryAllocations?.message}
+              onChange={field.onChange}
+              total={amount}
+              value={field.value}
+            />
+          )}
+        />
       </div>
     </Modal>
   );

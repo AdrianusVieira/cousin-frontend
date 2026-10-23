@@ -3,6 +3,13 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { mapFieldErrors } from "@/lib/api/mapFieldErrors";
 
+import { CategoryAllocationFields } from "@/components/CategoryAllocationFields";
+import {
+  AMOUNT_INPUT_PATTERN,
+  AMOUNT_PATTERN,
+  validateCategoryAllocations,
+} from "@/lib/categoryAllocations";
+import type { CategoryAllocationInput } from "@/types/api";
 import { FilterSegment } from "@/components/FilterSegment";
 import { FormField } from "@/components/FormField";
 import { Modal } from "@/components/Modal";
@@ -25,7 +32,6 @@ import styles from "./TransactionForm.module.css";
 const LABELS = {
   amount: "Amount",
   cancel: "Cancel",
-  category: "Category",
   create: "Create transaction",
   date: "Date",
   description: "Description",
@@ -33,7 +39,6 @@ const LABELS = {
   fromType: "From type",
   installments: "Installments",
   method: "Method",
-  none: "Choose a category",
   placeholder: "—",
   term: "Term",
   title: "New Transaction",
@@ -47,13 +52,11 @@ const METHOD_OPTIONS = [
 ];
 
 const TEXT = {
+  installmentAmounts: "The transaction amount and category amounts apply to each installment.",
   invalidAmount: "Enter an amount greater than zero with up to two decimal places",
   required: "Required",
   noCategories: "Create an active category in Categories before recording a transaction.",
 };
-
-const AMOUNT_INPUT_PATTERN = /^\d*(\.\d{0,2})?$/;
-const AMOUNT_PATTERN = /^\d+(\.\d{1,2})?$/;
 
 const FROM_TYPE_OPTIONS = [
   { label: "External", value: "external" },
@@ -69,7 +72,7 @@ const TO_TYPE_LABELS: Record<string, string> = {
 
 interface FormValues {
   amount: string;
-  categoryId: string;
+  categoryAllocations: CategoryAllocationInput[];
   date: string;
   description: string;
   fromId: string;
@@ -126,6 +129,7 @@ export function TransactionForm({
   const {
     control,
     formState: { errors },
+    getValues,
     handleSubmit,
     register,
     resetField,
@@ -134,7 +138,7 @@ export function TransactionForm({
   } = useForm<FormValues>({
     defaultValues: {
       amount: "",
-      categoryId: "",
+      categoryAllocations: [{ categoryId: "", amount: "" }],
       date: todayISO(),
       description: "",
       fromId: "",
@@ -151,6 +155,14 @@ export function TransactionForm({
     mapFieldErrors(serverError, setError as Parameters<typeof mapFieldErrors>[1]);
   }, [serverError, setError]);
 
+  const amount = useWatch({ control, name: "amount" });
+  useEffect(() => {
+    if (getValues("categoryAllocations").length === 1) {
+      setValue("categoryAllocations.0.amount", amount);
+    }
+  }, [amount, getValues, setValue]);
+
+  const installmentTotal = useWatch({ control, name: "installmentTotal" });
   const method = useWatch({ control, name: "method" });
   const fromType = useWatch({ control, name: "fromType" });
   const toType = useWatch({ control, name: "toType" });
@@ -238,7 +250,7 @@ export function TransactionForm({
         amount: values.amount,
         date: values.date,
         description: values.description.trim(),
-        categoryId: values.categoryId,
+        categoryAllocations: values.categoryAllocations,
       };
 
       if (values.method === TXN_METHOD.Credit) {
@@ -380,23 +392,20 @@ export function TransactionForm({
           </FormField>
         )}
 
-        <FormField error={errors.categoryId?.message} label={LABELS.category} required>
-          <select
-            aria-label={LABELS.category}
-            aria-required="true"
-            className={form.select}
-            {...register("categoryId", { required: TEXT.required })}
-          >
-            <option value="">{LABELS.none}</option>
-            {categories
-              .filter((cat) => !cat.archived)
-              .map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-          </select>
-        </FormField>
+        <Controller
+          control={control}
+          name="categoryAllocations"
+          rules={{ validate: (items) => validateCategoryAllocations(items, getValues("amount")) }}
+          render={({ field }) => (
+            <CategoryAllocationFields
+              categories={categories}
+              error={errors.categoryAllocations?.message}
+              onChange={field.onChange}
+              total={amount}
+              value={field.value}
+            />
+          )}
+        />
 
         {categories.filter((cat) => !cat.archived).length === 0 && (
           <p role="status">{TEXT.noCategories}</p>
@@ -415,6 +424,7 @@ export function TransactionForm({
           />
         </FormField>
 
+        {isCredit && Number(installmentTotal) > 1 && <p>{TEXT.installmentAmounts}</p>}
         {isCredit && (
           <div className={styles.row}>
             <FormField label={LABELS.term}>

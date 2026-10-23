@@ -29,6 +29,14 @@ function makeSut(defaultMethod = "debit") {
           createdAt: "",
           updatedAt: "",
         },
+        {
+          id: "category-2",
+          name: "Household",
+          archived: false,
+          description: null,
+          createdAt: "",
+          updatedAt: "",
+        },
       ]}
       defaultMethod={defaultMethod}
       isSubmitting={false}
@@ -52,11 +60,7 @@ describe("TransactionForm", () => {
     await user.type(screen.getByRole("textbox", { name: "Amount" }), "12.34");
     await user.type(screen.getByRole("textbox", { name: "Description" }), "Lunch");
     await user.click(screen.getByRole("button", { name: "Create transaction" }));
-    expect(
-      await within(screen.getByRole("combobox", { name: "Category" }).parentElement!).findByText(
-        "Required",
-      ),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
   it("should ignore letters and pasted non-decimal amounts", async () => {
@@ -120,7 +124,7 @@ describe("TransactionForm", () => {
       await waitFor(() =>
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
-            categoryId: "category-1",
+            categoryAllocations: [{ categoryId: "category-1", amount: "12.34" }],
             amount: "12.34",
             description: "Lunch",
             fromId: wallet.id,
@@ -131,4 +135,52 @@ describe("TransactionForm", () => {
       );
     },
   );
+  it.each(["debit", "credit"])(
+    "should submit user-entered unequal category amounts for %s",
+    async (method) => {
+      const { onSubmit, user } = makeSut(method);
+      await user.type(screen.getByRole("textbox", { name: "Amount" }), "100.01");
+      await user.type(screen.getByRole("textbox", { name: "Description" }), "Supermarket");
+      if (method === "debit") await user.selectOptions(select("From type"), "wallet");
+      await user.selectOptions(select("From"), wallet.id);
+      await user.selectOptions(select("To type"), "external");
+      await user.selectOptions(screen.getByRole("combobox", { name: "Category" }), "category-1");
+      await user.click(screen.getByRole("button", { name: "Add category" }));
+      expect(screen.getByRole("textbox", { name: "Category amount 2" })).toHaveValue("");
+      await user.selectOptions(screen.getByRole("combobox", { name: "Category 2" }), "category-2");
+      await user.clear(screen.getByRole("textbox", { name: "Category amount" }));
+      await user.type(screen.getByRole("textbox", { name: "Category amount" }), "70.01");
+      await user.type(screen.getByRole("textbox", { name: "Category amount 2" }), "30.00");
+      expect(screen.getByText("Remaining: 0.00")).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Create transaction" }));
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          amount: "100.01",
+          categoryAllocations: [
+            { categoryId: "category-1", amount: "70.01" },
+            { categoryId: "category-2", amount: "30.00" },
+          ],
+        }),
+      );
+    },
+  );
+
+  it("should reject allocations that do not add up and preserve entered amounts when a row is removed", async () => {
+    const { onSubmit, user } = makeSut();
+    await user.type(screen.getByRole("textbox", { name: "Amount" }), "100");
+    await user.type(screen.getByRole("textbox", { name: "Description" }), "Supermarket");
+    await user.selectOptions(select("From type"), "wallet");
+    await user.selectOptions(select("From"), wallet.id);
+    await user.selectOptions(select("To type"), "external");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Category" }), "category-1");
+    await user.click(screen.getByRole("button", { name: "Add category" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "Category 2" }), "category-2");
+    await user.type(screen.getByRole("textbox", { name: "Category amount 2" }), "30");
+    expect(screen.getByText("Over allocated: 30.00")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Create transaction" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Category amounts must add up");
+    expect(onSubmit).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Remove category 2" }));
+    expect(screen.getByRole("textbox", { name: "Category amount" })).toHaveValue("100");
+  });
 });

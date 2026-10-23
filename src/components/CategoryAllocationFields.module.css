@@ -1,0 +1,29 @@
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--space-3);
+}
+
+.row button {
+  grid-column: 1 / -1;
+  justify-self: end;
+}
+
+.hint {
+  color: var(--color-text-sub);
+  font-size: var(--text-body);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.error {
+  color: var(--color-text);
+  margin: 0;
+}

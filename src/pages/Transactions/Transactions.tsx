@@ -7,6 +7,7 @@ import { PageHead } from "@/components/PageHead";
 import { Pill } from "@/components/Pill";
 import { StatCard } from "@/components/StatCard";
 import { META_ENTITY } from "@/constants/meta";
+import { categoryAmount, formatTransactionCategories } from "@/lib/categoryAllocations";
 import { formatDate, formatMoney } from "@/lib/format";
 import type { Transaction } from "@/types/api";
 
@@ -53,6 +54,10 @@ const LABELS = {
 };
 
 const TEXT = {
+  bulkHelp:
+    "Assigning a category replaces all category allocations on the selected transactions with their full amount.",
+  categoryTotals:
+    "With a category selected, amounts and totals show only the amount assigned to that category.",
   credit: "Credit",
   debit: "Debit",
   empty: "—",
@@ -75,8 +80,8 @@ function formatEndpoint(endpoint: { name: string | null }): string {
   return endpoint.name ?? TEXT.external;
 }
 
-function formatSignedAmount(txn: Transaction): string {
-  const formatted = formatMoney(txn.amount);
+function formatSignedAmount(txn: Transaction, category?: string): string {
+  const formatted = formatMoney(categoryAmount(txn, category));
 
   if (txn.sign === "+") return `+${formatted}`;
   if (txn.sign === "-") return `−${formatted}`;
@@ -89,6 +94,7 @@ function buildColumns(
   onDelete: (txn: Transaction) => void,
   selectedIds: string[],
   toggleSelected: (id: string) => void,
+  category?: string,
 ): Column<Transaction>[] {
   return [
     {
@@ -125,7 +131,7 @@ function buildColumns(
     {
       header: LABELS.category,
       key: "category",
-      render: (txn) => txn.category?.name ?? TEXT.empty,
+      render: (txn) => formatTransactionCategories(txn),
     },
     {
       header: LABELS.fromTo,
@@ -142,7 +148,7 @@ function buildColumns(
       key: "amount",
       render: (txn) => (
         <span className={styles.amount} data-sign={txn.sign}>
-          {formatSignedAmount(txn)}
+          {formatSignedAmount(txn, category)}
         </span>
       ),
     },
@@ -267,6 +273,7 @@ export function Transactions() {
             <StatCard accent="net" info={TEXT.net} label={LABELS.net} value={netValue} />
           </div>
 
+          {category && category !== "uncategorized" && <p>{TEXT.categoryTotals}</p>}
           <div className={styles.filterBar}>
             <FilterSegment onChange={setMethod} options={methodOptions} value={method} />
             <input
@@ -306,6 +313,7 @@ export function Transactions() {
               ))}
             </select>
           </div>
+          {selectedIds.length > 0 && <p>{TEXT.bulkHelp}</p>}
           <div className={styles.bulkBar}>
             <label>
               <input
@@ -324,6 +332,7 @@ export function Transactions() {
               {selectedIds.length} {LABELS.selected}
             </span>
             <select
+              title={TEXT.bulkHelp}
               aria-label={LABELS.bulkCategory}
               className={form.select}
               onChange={(event) => setBulkCategoryId(event.target.value)}
@@ -358,7 +367,13 @@ export function Transactions() {
               <p role="status">{LABELS.loading}</p>
             ) : (
               <DataTable
-                columns={buildColumns(openEditModal, requestDelete, selectedIds, toggleSelected)}
+                columns={buildColumns(
+                  openEditModal,
+                  requestDelete,
+                  selectedIds,
+                  toggleSelected,
+                  category,
+                )}
                 emptyMessage={LABELS.noTransactions}
                 keyExtractor={(txn) => txn.id}
                 rows={items}
