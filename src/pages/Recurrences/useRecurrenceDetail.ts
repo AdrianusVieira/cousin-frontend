@@ -29,9 +29,16 @@ export function useRecurrenceDetail() {
   });
 
   const editMutation = useMutation({
-    mutationFn: (data: Partial<Pick<Recurrence, "intervalUnit" | "intervalValue" | "isVariable" | "recurrentDay" | "recurrentMonth">>) =>
-      api.patch<Recurrence>(`/recurrences/${id}`, data),
+    mutationFn: (
+      data: Partial<
+        Pick<
+          Recurrence,
+          "intervalUnit" | "intervalValue" | "isVariable" | "recurrentDay" | "recurrentMonth"
+        >
+      >,
+    ) => api.patch<Recurrence>(`/recurrences/${id}`, data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["recurrence", id] });
       queryClient.invalidateQueries({ queryKey: ["recurrences"] });
       setEditOpen(false);
@@ -41,6 +48,7 @@ export function useRecurrenceDetail() {
   const recomputeMutation = useMutation({
     mutationFn: () => api.post<void>(`/recurrences/${id}/recompute-estimate`),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["recurrence", id] });
       queryClient.invalidateQueries({ queryKey: ["recurrences"] });
     },
@@ -49,6 +57,7 @@ export function useRecurrenceDetail() {
   const deactivateMutation = useMutation({
     mutationFn: () => api.post<void>(`/recurrences/${id}/deactivate`),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["recurrence", id] });
       queryClient.invalidateQueries({ queryKey: ["recurrences"] });
       navigate("/recurrences");

@@ -1,7 +1,7 @@
 import type { Column } from "@/components/DataTable";
 import { DataTable } from "@/components/DataTable";
 import { FilterSegment } from "@/components/FilterSegment";
-import { FormField } from "@/components/FormField";
+import { TransactionEditDialog } from "@/components/TransactionEditDialog";
 import { Modal } from "@/components/Modal";
 import { PageHead } from "@/components/PageHead";
 import { Pill } from "@/components/Pill";
@@ -17,6 +17,17 @@ import styles from "./Transactions.module.css";
 import { useTransactions } from "./useTransactions";
 
 const LABELS = {
+  allCategories: "All categories",
+  allWallets: "All wallets",
+  applyCategory: "Apply category",
+  bulkCategory: "Assign category",
+  chooseCategory: "Choose a category",
+  search: "Search descriptions",
+  select: "Select transaction",
+  selectAll: "Select loaded transactions (up to 200)",
+  selected: "selected",
+  uncategorized: "Uncategorized",
+  wallet: "Wallet",
   amount: "Amount",
   cancel: "Cancel",
   category: "Category",
@@ -76,8 +87,22 @@ function formatSignedAmount(txn: Transaction): string {
 function buildColumns(
   onEdit: (txn: Transaction) => void,
   onDelete: (txn: Transaction) => void,
+  selectedIds: string[],
+  toggleSelected: (id: string) => void,
 ): Column<Transaction>[] {
   return [
+    {
+      header: "",
+      key: "select",
+      render: (txn) => (
+        <input
+          aria-label={`${LABELS.select}: ${txn.description ?? txn.id}`}
+          checked={selectedIds.includes(txn.id)}
+          onChange={() => toggleSelected(txn.id)}
+          type="checkbox"
+        />
+      ),
+    },
     {
       header: LABELS.date,
       key: "date",
@@ -127,9 +152,11 @@ function buildColumns(
       render: (txn) => {
         if (txn.method !== "credit") return null;
 
-        return txn.settled
-          ? <Pill accent="revenue">{TEXT.settled}</Pill>
-          : <Pill accent="outcome">{TEXT.unsettled}</Pill>;
+        return txn.settled ? (
+          <Pill accent="revenue">{TEXT.settled}</Pill>
+        ) : (
+          <Pill accent="outcome">{TEXT.unsettled}</Pill>
+        );
       },
     },
     {
@@ -152,19 +179,23 @@ function buildColumns(
 export function Transactions() {
   const {
     bills,
+    bulkCategoryId,
+    bulkError,
     categories,
+    category,
     createError,
+    deleteError,
     deleting,
-    editAmount,
-    editDate,
-    editDescription,
+    editError,
     editing,
     error,
     formOpen,
     hasNextPage,
+    isBulkUpdating,
     isDeletingTxn,
     isEditingTxn,
     isFetchingNextPage,
+    isFiltering,
     isLoading,
     isSubmitting,
     items,
@@ -173,10 +204,13 @@ export function Transactions() {
     netValue,
     periodLabel,
     revenues,
+    search,
+    selectedIds,
     totalInValue,
     totalOutValue,
+    wallet,
     wallets,
-
+    applyBulkCategory,
     cancelDelete,
     cancelEdit,
     closeForm,
@@ -186,11 +220,14 @@ export function Transactions() {
     openEditModal,
     openForm,
     requestDelete,
-    setEditAmount,
-    setEditDate,
-    setEditDescription,
+    setBulkCategoryId,
+    setCategory,
     setMethod,
+    setSearch,
+    setWallet,
     submitEdit,
+    toggleAll,
+    toggleSelected,
   } = useTransactions();
 
   return (
@@ -231,20 +268,102 @@ export function Transactions() {
           </div>
 
           <div className={styles.filterBar}>
-            <FilterSegment
-              onChange={setMethod}
-              options={methodOptions}
-              value={method}
+            <FilterSegment onChange={setMethod} options={methodOptions} value={method} />
+            <input
+              aria-label={LABELS.search}
+              className={form.input}
+              maxLength={200}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder={LABELS.search}
+              type="search"
+              value={search}
             />
+            <select
+              aria-label={LABELS.category}
+              className={form.select}
+              onChange={(event) => setCategory(event.target.value)}
+              value={category}
+            >
+              <option value="">{LABELS.allCategories}</option>
+              <option value="uncategorized">{LABELS.uncategorized}</option>
+              {categories.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            <select
+              aria-label={LABELS.wallet}
+              className={form.select}
+              onChange={(event) => setWallet(event.target.value)}
+              value={wallet}
+            >
+              <option value="">{LABELS.allWallets}</option>
+              {wallets.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
           </div>
+          <div className={styles.bulkBar}>
+            <label>
+              <input
+                aria-label={LABELS.selectAll}
+                checked={
+                  items.length > 0 &&
+                  items.slice(0, 200).every((item) => selectedIds.includes(item.id))
+                }
+                disabled={isFiltering}
+                onChange={toggleAll}
+                type="checkbox"
+              />{" "}
+              {LABELS.selectAll}
+            </label>
+            <span aria-live="polite">
+              {selectedIds.length} {LABELS.selected}
+            </span>
+            <select
+              aria-label={LABELS.bulkCategory}
+              className={form.select}
+              onChange={(event) => setBulkCategoryId(event.target.value)}
+              value={bulkCategoryId}
+            >
+              <option value="">{LABELS.chooseCategory}</option>
+              {categories
+                .filter((item) => !item.archived)
+                .map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+            </select>
+            <button
+              className={form.btnSecondary}
+              disabled={!selectedIds.length || !bulkCategoryId || isBulkUpdating || isFiltering}
+              onClick={applyBulkCategory}
+              type="button"
+            >
+              {LABELS.applyCategory}
+            </button>
+          </div>
+          {bulkError && (
+            <p className={styles.error} role="alert">
+              {bulkError.message}
+            </p>
+          )}
 
-          <div className={styles.tableWrap}>
-            <DataTable
-              columns={buildColumns(openEditModal, requestDelete)}
-              emptyMessage={LABELS.noTransactions}
-              keyExtractor={(txn) => txn.id}
-              rows={items}
-            />
+          <div aria-busy={isFiltering} className={styles.tableWrap}>
+            {isFiltering ? (
+              <p role="status">{LABELS.loading}</p>
+            ) : (
+              <DataTable
+                columns={buildColumns(openEditModal, requestDelete, selectedIds, toggleSelected)}
+                emptyMessage={LABELS.noTransactions}
+                keyExtractor={(txn) => txn.id}
+                rows={items}
+              />
+            )}
           </div>
 
           {hasNextPage && (
@@ -272,59 +391,18 @@ export function Transactions() {
           onSubmit={createTransaction}
           revenues={revenues}
           serverError={createError}
-          wallets={wallets}
+          wallets={wallets.filter((item) => !item.archived)}
         />
       )}
 
       {editing && (
-        <Modal
-          footer={
-            <>
-              <button className={form.btnSecondary} onClick={cancelEdit} type="button">
-                {LABELS.cancel}
-              </button>
-              <button
-                className={form.btnPrimary}
-                disabled={isEditingTxn}
-                onClick={submitEdit}
-                type="button"
-              >
-                {LABELS.save}
-              </button>
-            </>
-          }
+        <TransactionEditDialog
+          error={editError}
+          isSubmitting={isEditingTxn}
           onClose={cancelEdit}
-          title={LABELS.editTitle}
-        >
-          <div className={styles.editForm}>
-            <FormField label={LABELS.amount}>
-              <input
-                className={form.input}
-                inputMode="decimal"
-                onChange={(e) => setEditAmount(e.target.value)}
-                step="0.01"
-                type="number"
-                value={editAmount}
-              />
-            </FormField>
-            <FormField label={LABELS.date}>
-              <input
-                className={form.input}
-                onChange={(e) => setEditDate(e.target.value)}
-                type="date"
-                value={editDate}
-              />
-            </FormField>
-            <FormField label={LABELS.description}>
-              <input
-                className={form.input}
-                onChange={(e) => setEditDescription(e.target.value)}
-                type="text"
-                value={editDescription}
-              />
-            </FormField>
-          </div>
-        </Modal>
+          onSubmit={submitEdit}
+          transaction={editing}
+        />
       )}
 
       {deleting && (
@@ -348,6 +426,7 @@ export function Transactions() {
           title={LABELS.deleteTitle}
         >
           <p className={styles.confirmText}>{LABELS.confirmDelete}</p>
+          {deleteError && <p role="alert">{deleteError.message}</p>}
         </Modal>
       )}
     </>

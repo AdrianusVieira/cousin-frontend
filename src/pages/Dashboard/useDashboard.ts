@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/api/client";
 import { formatMoney, formatPercent } from "@/lib/format";
 import { formatPeriodLabel, usePeriod } from "@/lib/period";
-import type { DashboardResponse } from "@/types/api";
+import type { DashboardMetric, DashboardResponse } from "@/types/api";
 
 import type { FlowSegment } from "./FlowBar";
 
@@ -40,6 +41,7 @@ const ZERO = "0.00";
 
 export function useDashboard() {
   const { period } = usePeriod();
+  const [detailMetric, setDetailMetric] = useState<DashboardMetric | null>(null);
 
   const query = useQuery({
     queryFn: () =>
@@ -66,6 +68,12 @@ export function useDashboard() {
   ];
 
   return {
+    detailMetric,
+    closeDetails: () => setDetailMetric(null),
+    inspectIncome: () => setDetailMetric("income"),
+    inspectOutcome: () => setDetailMetric("outcome"),
+    inspectNet: () => setDetailMetric("net"),
+    inspectSavingsRate: () => setDetailMetric("savingsRate"),
     // data
     cashFlow: data?.cashFlow ?? [],
     error: query.error,

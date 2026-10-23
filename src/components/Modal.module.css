@@ -79,3 +79,7 @@
 .overlay::backdrop {
   background: color-mix(in srgb, var(--color-bg) 75%, transparent);
 }
+
+.wide {
+  max-width: 1080px;
+}

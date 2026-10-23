@@ -1,6 +1,7 @@
 import { PageHead } from "@/components/PageHead";
 import { StatCard } from "@/components/StatCard";
 
+import { DashboardDetails } from "./DashboardDetails";
 import { CashFlowChart } from "./CashFlowChart";
 import styles from "./Dashboard.module.css";
 import { FlowBar } from "./FlowBar";
@@ -17,6 +18,12 @@ const LABELS = {
 
 export function Dashboard() {
   const {
+    detailMetric,
+    closeDetails,
+    inspectIncome,
+    inspectOutcome,
+    inspectNet,
+    inspectSavingsRate,
     cashFlow,
     error,
     flowScaleMax,
@@ -38,6 +45,7 @@ export function Dashboard() {
     <>
       <PageHead periodLabel={periodLabel} title={LABELS.title} />
 
+      {detailMetric && <DashboardDetails metric={detailMetric} onClose={closeDetails} />}
       {error && <div className={styles.error}>! {error.message}</div>}
 
       {isLoading ? (
@@ -45,8 +53,15 @@ export function Dashboard() {
       ) : (
         <>
           <div className={styles.statRow}>
-            <StatCard accent="net" info={netInfo} label={LABELS.net} value={netValue} />
             <StatCard
+              accent="net"
+              onInspect={inspectNet}
+              info={netInfo}
+              label={LABELS.net}
+              value={netValue}
+            />
+            <StatCard
+              onInspect={inspectSavingsRate}
               accent="credit"
               info={savingsRateInfo}
               label={LABELS.savingsRate}
@@ -56,6 +71,7 @@ export function Dashboard() {
 
           <div className={styles.flowBars}>
             <FlowBar
+              onInspect={inspectIncome}
               accent="revenue"
               info={incomeInfo}
               label={LABELS.income}
@@ -64,6 +80,7 @@ export function Dashboard() {
               total={incomeTotal}
             />
             <FlowBar
+              onInspect={inspectOutcome}
               accent="outcome"
               info={outcomeInfo}
               label={LABELS.outcome}

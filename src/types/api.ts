@@ -274,7 +274,7 @@ export interface CreateDebitTransaction {
   amount: Money;
   date: ISODate;
   description?: string;
-  categoryId?: UUID;
+  categoryId: UUID;
   fromType: TxnFromType;
   fromId?: UUID; // omit iff fromType = 'external'
   toType: TxnToType;
@@ -286,7 +286,7 @@ export interface CreateCreditTransaction {
   amount: Money;
   date: ISODate;
   description?: string;
-  categoryId?: UUID;
+  categoryId: UUID;
   fromId: UUID; // wallet
   toType: TxnToType;
   toId?: UUID;
@@ -300,3 +300,49 @@ export interface SettleRequest {
   transactionIds: UUID[];
 }
 
+export interface PatchTransaction {
+  amount?: Money;
+  categoryId?: UUID | null;
+  date?: ISODate;
+  description?: string | null;
+}
+
+export type DashboardMetric = "income" | "outcome" | "net" | "savingsRate";
+
+export interface DashboardDetailsResponse {
+  income: Money;
+  outcome: Money;
+  net: Money;
+  savingsRate: number;
+  items: Array<{
+    id: UUID;
+    entity: "transaction" | "bill" | "revenue";
+    direction: "income" | "outcome";
+    state: "settled" | "pendingCredit" | "unpaid" | "unreceived";
+    label: string;
+    amount: Money;
+    date: ISODate;
+    purchaseDate: ISODate | null;
+    settlementDate: ISODate | null;
+  }>;
+}
+
+export interface WalletForecastResponse {
+  asOf: ISODate;
+  days: number;
+  openingBalance: Money;
+  closingBalance: Money;
+  lowestBalance: Money;
+  lowestDate: ISODate;
+  firstNegativeDate: ISODate | null;
+  series: Array<{ date: ISODate; balance: Money; income: Money; outcome: Money }>;
+  events: Array<{
+    id: UUID;
+    type: "bill" | "revenue" | "credit";
+    label: string;
+    date: ISODate;
+    amount: Money;
+    overdue: boolean;
+    scheduledDate: ISODate;
+  }>;
+}

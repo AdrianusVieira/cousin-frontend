@@ -28,15 +28,18 @@ export function useBills() {
 
   const setStatus = useCallback(
     (next: string) => {
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
-        if (next === "all") {
-          params.delete("status");
-        } else {
-          params.set("status", next);
-        }
-        return params;
-      }, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const params = new URLSearchParams(prev);
+          if (next === "all") {
+            params.delete("status");
+          } else {
+            params.set("status", next);
+          }
+          return params;
+        },
+        { replace: true },
+      );
     },
     [setSearchParams],
   );
@@ -62,6 +65,7 @@ export function useBills() {
   const createMutation = useMutation({
     mutationFn: (data: CreateBill) => api.post<Bill>("/bills", data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["bills"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["recurrences"] });

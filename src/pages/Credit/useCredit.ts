@@ -98,15 +98,18 @@ export function useCredit() {
 
   const setStatus = useCallback(
     (next: string) => {
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
-        if (next === "unsettled") {
-          params.delete("status");
-        } else {
-          params.set("status", next);
-        }
-        return params;
-      }, { replace: true });
+      setSearchParams(
+        (prev) => {
+          const params = new URLSearchParams(prev);
+          if (next === "unsettled") {
+            params.delete("status");
+          } else {
+            params.set("status", next);
+          }
+          return params;
+        },
+        { replace: true },
+      );
     },
     [setSearchParams],
   );
@@ -131,6 +134,8 @@ export function useCredit() {
     mutationFn: (transactionIds: string[]) =>
       api.post<Transaction[]>("/credit/settle", { transactionIds }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["credit"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -162,9 +167,6 @@ export function useCredit() {
     confirmSettle: settleMutation.mutate,
     requestSettle: setSettlingGroupKey,
     setStatus,
-    settleRow: useCallback(
-      (txnId: string) => settleMutation.mutate([txnId]),
-      [settleMutation],
-    ),
+    settleRow: useCallback((txnId: string) => settleMutation.mutate([txnId]), [settleMutation]),
   };
 }

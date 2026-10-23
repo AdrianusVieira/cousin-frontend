@@ -15,8 +15,8 @@ const LABELS = {
 const TEXT = {
   info:
     "Combined balance of every active wallet over time, with the dashed line at the period " +
-    "average. Only debit movements change a wallet balance — credit spending is not reflected " +
-    "here until you record it.",
+    "average. Debit movements and settled card payments change a wallet balance. Open credit is not reflected " +
+    "here until you settle it.",
 };
 
 interface PatrimonyChartProps {

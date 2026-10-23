@@ -28,9 +28,11 @@ export function useRevenueDetail() {
   });
 
   const editMutation = useMutation({
-    mutationFn: (data: Partial<Pick<Revenue, "description" | "name" | "received" | "term" | "value">>) =>
-      api.patch<Revenue>(`/revenues/${id}`, data),
+    mutationFn: (
+      data: Partial<Pick<Revenue, "description" | "name" | "received" | "term" | "value">>,
+    ) => api.patch<Revenue>(`/revenues/${id}`, data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["revenue", id] });
       queryClient.invalidateQueries({ queryKey: ["revenues"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
@@ -44,6 +46,7 @@ export function useRevenueDetail() {
   const deleteMutation = useMutation({
     mutationFn: () => api.delete<void>(`/revenues/${id}`),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallets", "forecast"] });
       queryClient.invalidateQueries({ queryKey: ["revenues"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["recurrence"] });
