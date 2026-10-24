@@ -4,6 +4,11 @@
   gap: var(--space-3);
 }
 
+.singleRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

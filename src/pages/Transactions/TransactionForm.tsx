@@ -157,8 +157,9 @@ export function TransactionForm({
 
   const amount = useWatch({ control, name: "amount" });
   useEffect(() => {
-    if (getValues("categoryAllocations").length === 1) {
-      setValue("categoryAllocations.0.amount", amount);
+    const allocations = getValues("categoryAllocations");
+    if (allocations.length === 1) {
+      setValue("categoryAllocations", [{ ...allocations[0], amount }]);
     }
   }, [amount, getValues, setValue]);
 
@@ -399,6 +400,7 @@ export function TransactionForm({
           render={({ field }) => (
             <CategoryAllocationFields
               categories={categories}
+              compactSingleCategory
               error={errors.categoryAllocations?.message}
               onChange={field.onChange}
               total={amount}

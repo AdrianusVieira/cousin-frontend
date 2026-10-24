@@ -21,29 +21,40 @@ const TEXT = {
 
 export function CategoryAllocationFields({
   categories,
+  compactSingleCategory = false,
   error,
   onChange,
   total,
   value,
 }: {
   categories: Pick<Category, "id" | "name" | "archived">[];
+  compactSingleCategory?: boolean;
   error?: string;
   onChange: (value: CategoryAllocationInput[]) => void;
   total: string;
   value: CategoryAllocationInput[];
 }) {
+  const showSplitFields = !compactSingleCategory || value.length > 1;
   const update = (index: number, patch: Partial<CategoryAllocationInput>) =>
     onChange(value.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  const remove = (index: number) => {
+    const remaining = value.filter((_, i) => i !== index);
+    onChange(
+      compactSingleCategory && remaining.length === 1
+        ? [{ ...remaining[0], amount: total }]
+        : remaining,
+    );
+  };
   const remaining =
     moneyCents(total) - value.reduce((sum, item) => sum + (moneyCents(item.amount) || 0), 0);
   return (
     <div className={styles.fields}>
-      <p className={styles.hint}>{TEXT.help}</p>
+      {showSplitFields && <p className={styles.hint}>{TEXT.help}</p>}
       {!value.length && <p className={styles.hint}>{TEXT.empty}</p>}
       {value.map((item, index) => {
         const suffix = index ? ` ${index + 1}` : "";
         return (
-          <div className={styles.row} key={index}>
+          <div className={showSplitFields ? styles.row : styles.singleRow} key={index}>
             <FormField label={`${LABELS.category}${suffix}`} required>
               <select
                 aria-label={`${LABELS.category}${suffix}`}
@@ -67,33 +78,37 @@ export function CategoryAllocationFields({
                   ))}
               </select>
             </FormField>
-            <FormField label={`${LABELS.amount}${suffix}`} required>
-              <input
-                aria-label={`${LABELS.amount}${suffix}`}
-                aria-required="true"
-                className={form.input}
-                inputMode="decimal"
-                onChange={(event) => {
-                  if (AMOUNT_INPUT_PATTERN.test(event.target.value))
-                    update(index, { amount: event.target.value });
-                }}
-                placeholder="0.00"
-                type="text"
-                value={item.amount}
-              />
-            </FormField>
-            <button
-              aria-label={`${LABELS.remove}${suffix}`}
-              className={form.btnSecondary}
-              onClick={() => onChange(value.filter((_, i) => i !== index))}
-              type="button"
-            >
-              {LABELS.remove}
-            </button>
+            {showSplitFields && (
+              <>
+                <FormField label={`${LABELS.amount}${suffix}`} required>
+                  <input
+                    aria-label={`${LABELS.amount}${suffix}`}
+                    aria-required="true"
+                    className={form.input}
+                    inputMode="decimal"
+                    onChange={(event) => {
+                      if (AMOUNT_INPUT_PATTERN.test(event.target.value))
+                        update(index, { amount: event.target.value });
+                    }}
+                    placeholder="0.00"
+                    type="text"
+                    value={item.amount}
+                  />
+                </FormField>
+                <button
+                  aria-label={`${LABELS.remove}${suffix}`}
+                  className={form.btnSecondary}
+                  onClick={() => remove(index)}
+                  type="button"
+                >
+                  {LABELS.remove}
+                </button>
+              </>
+            )}
           </div>
         );
       })}
-      {Number.isFinite(remaining) && (
+      {showSplitFields && Number.isFinite(remaining) && (
         <p aria-live="polite" className={styles.hint}>
           {remaining < 0 ? TEXT.over : TEXT.remaining}:{" "}
           {formatMoney((Math.abs(remaining) / 100).toFixed(2))}

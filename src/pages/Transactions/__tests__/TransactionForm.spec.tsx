@@ -55,6 +55,24 @@ function select(label: string): HTMLSelectElement {
 }
 
 describe("TransactionForm", () => {
+  it("should show only a category selector and add button until another category is added", async () => {
+    const { user } = makeSut();
+    expect(screen.getByRole("combobox", { name: "Category" })).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "Category amount" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Remove category" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Enter the amount for each category/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Remaining:/)).not.toBeInTheDocument();
+
+    await user.type(screen.getByRole("textbox", { name: "Amount" }), "100");
+    await user.click(screen.getByRole("button", { name: "Add category" }));
+
+    expect(screen.getByRole("textbox", { name: "Category amount" })).toHaveValue("100");
+    expect(screen.getByRole("textbox", { name: "Category amount 2" })).toHaveValue("");
+    expect(screen.getByRole("button", { name: "Remove category" })).toBeInTheDocument();
+    expect(screen.getByText(/Enter the amount for each category/)).toBeInTheDocument();
+    expect(screen.getByText("Remaining: 0.00")).toBeInTheDocument();
+  });
+
   it.each(["debit", "credit"])("should require a category for %s creation", async (method) => {
     const { onSubmit, user } = makeSut(method);
     await user.type(screen.getByRole("textbox", { name: "Amount" }), "12.34");
@@ -165,7 +183,7 @@ describe("TransactionForm", () => {
     },
   );
 
-  it("should reject allocations that do not add up and preserve entered amounts when a row is removed", async () => {
+  it("should reject allocations that do not add up", async () => {
     const { onSubmit, user } = makeSut();
     await user.type(screen.getByRole("textbox", { name: "Amount" }), "100");
     await user.type(screen.getByRole("textbox", { name: "Description" }), "Supermarket");
@@ -180,7 +198,46 @@ describe("TransactionForm", () => {
     await user.click(screen.getByRole("button", { name: "Create transaction" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Category amounts must add up");
     expect(onSubmit).not.toHaveBeenCalled();
-    await user.click(screen.getByRole("button", { name: "Remove category 2" }));
-    expect(screen.getByRole("textbox", { name: "Category amount" })).toHaveValue("100");
   });
+
+  it.each([
+    ["Remove category", "category-2"],
+    ["Remove category 2", "category-1"],
+  ])(
+    "should return to a single category with the full total after %s",
+    async (button, categoryId) => {
+      const { onSubmit, user } = makeSut();
+      await user.type(screen.getByRole("textbox", { name: "Amount" }), "100");
+      await user.type(screen.getByRole("textbox", { name: "Description" }), "Supermarket");
+      await user.selectOptions(select("From type"), "wallet");
+      await user.selectOptions(select("From"), wallet.id);
+      await user.selectOptions(select("To type"), "external");
+      await user.selectOptions(screen.getByRole("combobox", { name: "Category" }), "category-1");
+      await user.click(screen.getByRole("button", { name: "Add category" }));
+      await user.selectOptions(screen.getByRole("combobox", { name: "Category 2" }), "category-2");
+      await user.clear(screen.getByRole("textbox", { name: "Category amount" }));
+      await user.type(screen.getByRole("textbox", { name: "Category amount" }), "70");
+      await user.type(screen.getByRole("textbox", { name: "Category amount 2" }), "30");
+      await user.click(screen.getByRole("button", { name: button }));
+
+      expect(screen.getByRole("combobox", { name: "Category" })).toHaveValue(categoryId);
+      expect(screen.queryByRole("textbox", { name: "Category amount" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Remove category/ })).not.toBeInTheDocument();
+      expect(screen.queryByText(/Enter the amount for each category/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Remaining:/)).not.toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Create transaction" }));
+      expect(onSubmit).toHaveBeenLastCalledWith(
+        expect.objectContaining({ categoryAllocations: [{ categoryId, amount: "100" }] }),
+      );
+
+      await user.clear(screen.getByRole("textbox", { name: "Amount" }));
+      await user.type(screen.getByRole("textbox", { name: "Amount" }), "125.50");
+      await user.click(screen.getByRole("button", { name: "Create transaction" }));
+      expect(onSubmit).toHaveBeenLastCalledWith(
+        expect.objectContaining({ categoryAllocations: [{ categoryId, amount: "125.50" }] }),
+      );
+      await user.click(screen.getByRole("button", { name: "Add category" }));
+      expect(screen.getByRole("textbox", { name: "Category amount" })).toHaveValue("125.50");
+    },
+  );
 });
