@@ -77,6 +77,13 @@ coverage, and `npm run lint` / `npm run build` before delivery.
 
 ## Transaction cleanup and explainable reporting
 
+Use **Export report** on Transactions to download **CSV** or **Markdown (.md)** for a custom
+start/end date range (inclusive, by purchase/movement date). Exports fetch every matching
+page and include all transactions in the period, independent of table filters and row
+selection. CSV includes exact decimal amounts, category allocations, counterparties,
+classification, installments and settlement dates; Markdown adds server-calculated totals.
+Closing the dialog cancels an in-progress export; failed requests never download a partial report.
+
 Transactions supports description search, wallet/category filters (including Uncategorized),
 category edits, and bulk assignment to up to 200 selected rows. Filters persist in the URL.
 Creation requires an active category; existing uncategorized history is preserved.

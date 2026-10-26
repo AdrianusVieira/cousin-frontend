@@ -9,6 +9,7 @@ vi.mock("@/lib/api/client", () => ({
 }));
 import { api } from "@/lib/api/client";
 import { PeriodContext } from "@/providers/periodContext";
+import * as transactionReport from "@/lib/transactionReport";
 import { Transactions } from "../Transactions";
 
 const category = { id: "category-1", name: "Food", archived: false };
@@ -61,8 +62,84 @@ function makeSut(entry = "/transactions", allocations = transaction.categoryAllo
   return userEvent.setup();
 }
 beforeEach(() => vi.resetAllMocks());
+afterEach(() => vi.restoreAllMocks());
 
 describe("transaction cleanup", () => {
+  it("exports a custom period as Markdown from the Transactions page", async () => {
+    const download = vi
+      .spyOn(transactionReport, "downloadTransactionReport")
+      .mockImplementation(() => {});
+    const user = makeSut("/transactions?category=category-1&search=Lunch");
+    await user.click(screen.getByRole("button", { name: "Export report" }));
+    const dialog = within(screen.getByRole("dialog", { name: "Export report" }));
+    expect(dialog.getByLabelText("Start date")).toHaveValue("2026-10-01");
+    await user.clear(dialog.getByLabelText("Start date"));
+    await user.type(dialog.getByLabelText("Start date"), "2026-07-01");
+    await user.clear(dialog.getByLabelText("End date"));
+    await user.type(dialog.getByLabelText("End date"), "2026-08-31");
+    await user.selectOptions(dialog.getByRole("combobox", { name: "File format" }), "md");
+    await user.click(dialog.getByRole("button", { name: "Download report" }));
+    await waitFor(() =>
+      expect(download).toHaveBeenCalledWith(
+        expect.objectContaining({ items: [transaction] }),
+        { from: "2026-07-01", to: "2026-08-31" },
+        "md",
+      ),
+    );
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    download.mockRestore();
+  });
+
+  it("keeps the export dialog open for retry when fetching fails", async () => {
+    const user = makeSut();
+    await screen.findByRole("cell", { name: "Lunch" });
+    await user.click(screen.getByRole("button", { name: "Export report" }));
+    vi.mocked(api.get).mockRejectedValueOnce(new Error("Export unavailable"));
+    const dialog = within(screen.getByRole("dialog", { name: "Export report" }));
+    await user.click(dialog.getByRole("button", { name: "Download report" }));
+    expect(await dialog.findByRole("alert")).toHaveTextContent("Export unavailable");
+    expect(dialog.getByRole("button", { name: "Download report" })).toBeEnabled();
+  });
+
+  it("prevents exporting a reversed date range", async () => {
+    const user = makeSut();
+    await user.click(screen.getByRole("button", { name: "Export report" }));
+    const dialog = within(screen.getByRole("dialog", { name: "Export report" }));
+    await user.clear(dialog.getByLabelText("End date"));
+    await user.type(dialog.getByLabelText("End date"), "2026-09-30");
+    expect(dialog.getByRole("button", { name: "Download report" })).toBeDisabled();
+    expect(dialog.getByRole("alert")).toHaveTextContent("End date must be on or after start date.");
+  });
+
+  it("cancels an in-progress export without downloading a file", async () => {
+    const download = vi
+      .spyOn(transactionReport, "downloadTransactionReport")
+      .mockImplementation(() => {});
+    const user = makeSut();
+    await screen.findByRole("cell", { name: "Lunch" });
+    await user.click(screen.getByRole("button", { name: "Export report" }));
+    let signal: AbortSignal | undefined;
+    let resolvePage!: (page: unknown) => void;
+    vi.mocked(api.get).mockImplementationOnce((_path, options) => {
+      signal = options?.signal;
+      return new Promise((resolve) => {
+        resolvePage = resolve;
+      });
+    });
+    const dialog = within(screen.getByRole("dialog", { name: "Export report" }));
+    await user.click(dialog.getByRole("button", { name: "Download report" }));
+    expect(dialog.getByRole("button", { name: "Exporting…" })).toBeDisabled();
+    await user.click(dialog.getByRole("button", { name: "Cancel" }));
+    expect(signal?.aborted).toBe(true);
+    resolvePage({
+      items: [transaction],
+      summary: { totalIn: "0.00", totalOut: "12.34", net: "-12.34" },
+      nextCursor: null,
+    });
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(download).not.toHaveBeenCalled();
+  });
+
   it("opens an exact transaction from a dashboard link and dismisses it", async () => {
     const user = makeSut("/transactions?transaction=txn-1");
     const dialog = await screen.findByRole("dialog", { name: "Edit Transaction" });
