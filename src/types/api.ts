@@ -128,6 +128,7 @@ export interface Transaction {
   installmentTotal: number | null;
   creditGroupId: UUID | null;
   settled: boolean;
+  settledAt: ISODate | null;
   term: ISODate | null;
   kind: TxnKind; // computed
   sign: "+" | "-" | null; // computed; null for transfers & adjustments

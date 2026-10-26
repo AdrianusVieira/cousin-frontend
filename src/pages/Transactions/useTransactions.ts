@@ -35,6 +35,7 @@ export function useTransactions() {
   const { period } = usePeriod();
   const [params, setParams] = useSearchParams();
   const [formOpen, setFormOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [bulkCategoryId, setBulkCategoryId] = useState("");
@@ -160,6 +161,7 @@ export function useTransactions() {
     editError: editMutation.error,
     editing: editing ?? linkedTransaction.data ?? null,
     error: query.error ?? linkedTransaction.error ?? categoriesQuery.error ?? walletsQuery.error,
+    exportOpen,
     formOpen,
     hasNextPage: query.hasNextPage,
     isBulkUpdating: bulkMutation.isPending,
@@ -173,6 +175,7 @@ export function useTransactions() {
     method,
     methodOptions: METHOD_OPTIONS,
     netValue: summary ? formatMoney(summary.net) : TEXT.empty,
+    period,
     periodLabel: formatPeriodLabel(period),
     revenues: revenuesQuery.data?.items ?? [],
     search,
@@ -184,6 +187,7 @@ export function useTransactions() {
     applyBulkCategory: () => bulkMutation.mutate(selectedIds),
     cancelDelete: () => setDeleting(null),
     cancelEdit: closeEdit,
+    closeExport: () => setExportOpen(false),
     closeForm: () => setFormOpen(false),
     confirmDelete: () => deleting && deleteMutation.mutate(deleting.id),
     createTransaction: createMutation.mutate,
@@ -192,6 +196,7 @@ export function useTransactions() {
       editMutation.reset();
       setEditing(item);
     },
+    openExport: () => setExportOpen(true),
     openForm: () => {
       createMutation.reset();
       setFormOpen(true);

@@ -13,6 +13,7 @@ import type { Transaction } from "@/types/api";
 
 import form from "@/styles/form.module.css";
 
+import { TransactionExportDialog } from "./TransactionExportDialog";
 import { TransactionForm } from "./TransactionForm";
 import styles from "./Transactions.module.css";
 import { useTransactions } from "./useTransactions";
@@ -39,6 +40,7 @@ const LABELS = {
   description: "Description",
   edit: "Edit",
   editTitle: "Edit Transaction",
+  exportReport: "Export report",
   fromTo: "From → To",
   loading: "Loading…",
   loadMore: "Load more",
@@ -195,6 +197,7 @@ export function Transactions() {
     editError,
     editing,
     error,
+    exportOpen,
     formOpen,
     hasNextPage,
     isBulkUpdating,
@@ -208,6 +211,7 @@ export function Transactions() {
     method,
     methodOptions,
     netValue,
+    period,
     periodLabel,
     revenues,
     search,
@@ -219,11 +223,13 @@ export function Transactions() {
     applyBulkCategory,
     cancelDelete,
     cancelEdit,
+    closeExport,
     closeForm,
     confirmDelete,
     createTransaction,
     fetchNextPage,
     openEditModal,
+    openExport,
     openForm,
     requestDelete,
     setBulkCategoryId,
@@ -240,16 +246,23 @@ export function Transactions() {
     <>
       <PageHead
         actions={
-          !isLoading && (
-            <button className={form.btnPrimary} onClick={openForm} type="button">
-              {LABELS.newTransaction}
+          <>
+            <button className={form.btnSecondary} onClick={openExport} type="button">
+              {LABELS.exportReport}
             </button>
-          )
+            {!isLoading && (
+              <button className={form.btnPrimary} onClick={openForm} type="button">
+                {LABELS.newTransaction}
+              </button>
+            )}
+          </>
         }
         entity={META_ENTITY.Transactions}
         periodLabel={periodLabel}
         title={LABELS.title}
       />
+
+      {exportOpen && <TransactionExportDialog initialPeriod={period} onClose={closeExport} />}
 
       {error && <div className={styles.error}>! {error.message}</div>}
 
