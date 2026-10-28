@@ -71,6 +71,7 @@ export function CategoryAllocationFields({
                       (cat.id === item.categoryId ||
                         !value.some((entry) => entry.categoryId === cat.id)),
                   )
+                  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }))
                   .map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
