@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { mapFieldErrors } from "@/lib/api/mapFieldErrors";
@@ -87,7 +87,9 @@ interface FormValues {
 interface TransactionFormProps {
   bills: Bill[];
   categories: Category[];
+  defaultCategoryId?: string;
   defaultMethod: string;
+  defaultWalletId?: string;
   isSubmitting: boolean;
   onClose: () => void;
   onSubmit: (data: CreateTransaction) => void;
@@ -116,7 +118,9 @@ function defaultTerm(): string {
 export function TransactionForm({
   bills,
   categories,
+  defaultCategoryId,
   defaultMethod,
+  defaultWalletId,
   isSubmitting,
   onClose,
   onSubmit,
@@ -125,6 +129,19 @@ export function TransactionForm({
   wallets,
 }: TransactionFormProps) {
   const initialMethod = defaultMethod === TXN_METHOD.Credit ? TXN_METHOD.Credit : TXN_METHOD.Debit;
+
+  const walletPool =
+    initialMethod === TXN_METHOD.Credit ? wallets.filter((item) => item.creditEnabled) : wallets;
+  const initialFromId =
+    defaultWalletId && walletPool.some((item) => item.id === defaultWalletId)
+      ? defaultWalletId
+      : "";
+  const initialFromType =
+    initialMethod === TXN_METHOD.Credit
+      ? TXN_FROM_TYPE.Wallet
+      : initialFromId
+        ? TXN_FROM_TYPE.Wallet
+        : "";
 
   const {
     control,
@@ -138,11 +155,11 @@ export function TransactionForm({
   } = useForm<FormValues>({
     defaultValues: {
       amount: "",
-      categoryAllocations: [{ categoryId: "", amount: "" }],
+      categoryAllocations: [{ categoryId: defaultCategoryId ?? "", amount: "" }],
       date: todayISO(),
       description: "",
-      fromId: "",
-      fromType: initialMethod === TXN_METHOD.Credit ? TXN_FROM_TYPE.Wallet : "",
+      fromId: initialFromId,
+      fromType: initialFromType,
       installmentTotal: "",
       method: initialMethod,
       term: defaultTerm(),
@@ -185,8 +202,12 @@ export function TransactionForm({
     }
   }, [resetField, setValue, toType, validToTypes]);
 
+  const previousFromType = useRef(initialFromType);
   useEffect(() => {
-    resetField("fromId", { defaultValue: "" });
+    if (previousFromType.current !== fromType) {
+      resetField("fromId", { defaultValue: "" });
+    }
+    previousFromType.current = fromType;
   }, [fromType, resetField]);
 
   useEffect(() => {

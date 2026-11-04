@@ -413,7 +413,9 @@ export function Transactions() {
         <TransactionForm
           bills={bills}
           categories={categories}
+          defaultCategoryId={category && category !== "uncategorized" ? category : undefined}
           defaultMethod={method}
+          defaultWalletId={wallet || undefined}
           isSubmitting={isSubmitting}
           onClose={closeForm}
           onSubmit={createTransaction}
